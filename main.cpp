@@ -9,6 +9,7 @@ int main(int ac, char ** av){
     int server;
     struct sockaddr_in server_addres;
 
+    //* Создание сокета!
     client = socket(AF_INET, SOCK_STREAM, 0);
     if (client < 0){
         cout << "SERVER ERROR: estabilishing socket error" << endl;
@@ -16,6 +17,8 @@ int main(int ac, char ** av){
     }
     cout << client << endl;
     cout << "SERVER: socket for server was succesful created" << endl;
+
+    //* Привязка сокета к сетевому интерфейсу
     server_addres.sin_port = htons(DEFAULT_PORT);
     server_addres.sin_family = AF_INET;
     server_addres.sin_addr.s_addr = htons(INADDR_ANY);
