@@ -1,3 +1,5 @@
+.PHONY: all client clean fclean re
+
 NAME=IRC
 CC=clang++
 FLAGS=-Wall -Werror -Wextra -g
@@ -11,6 +13,9 @@ PATH_TO_HEADERS=.
 
 
 all: $(NAME)
+
+client:
+	$(CC) $(FLAGS) client.cpp -I$(PATH_TO_HEADERS) -o client
 
 $(NAME): $(FILES_OBJ)
 	$(CC) $(FLAGS) -I$(PATH_TO_HEADERS) $^ -o $@
