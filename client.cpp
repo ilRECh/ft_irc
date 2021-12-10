@@ -1,5 +1,5 @@
 #include "client.hpp"
-#define DEFAULT_PORT 1601
+#define DEFAULT_PORT 1602
 #define BUFFER_SIZE 256
 #define CLIENT_CLOSE_SYMOL '#'
 #define SERVER_IP "127.0.0.1"
@@ -9,9 +9,7 @@ using std::endl;
 using std::cin;
 
 int is_client_close_connection(const char * msg){
-	cout << msg << endl;
 	if (strchr(msg, CLIENT_CLOSE_SYMOL)){
-		cout << msg << endl;
 		cout << "SERVER: connection to client closed" << endl;
 		return (1);
 	}
@@ -29,10 +27,10 @@ int main( void ){
 	client = socket(AF_INET, SOCK_STREAM, 0);
 	if (client < 0)
 		exit(22);
-
 	cout << "\nCLient socket created.\n";
+
 	int ret = connect(client,
-		reinterpret_cast<const struct sockaddr*>(&server_addres),
+		reinterpret_cast<struct sockaddr*>(&server_addres),
 		sizeof(server_addres));
 	if (ret == 0)
 		cout << "=> Connection to sercver "
@@ -43,15 +41,15 @@ int main( void ){
 	recv(client, buffer, BUFFER_SIZE, 0);
 	cout << "=> Connection estabilished.\n"
 			<< "Enter " << CLIENT_CLOSE_SYMOL << " for close connection\n";
-	while(true){
+	while(client > 0){
 		cout << "Client: ";
 		cin.getline(buffer, BUFFER_SIZE);
 		send(client, buffer, BUFFER_SIZE, 0);
 		if (is_client_close_connection(buffer))
 			break ;
-		cout << "Server: ";
+
 		recv(client, buffer, BUFFER_SIZE, 0);
-		cout << buffer << endl;
+		cout << "Server: " << buffer << endl;
 		if (is_client_close_connection(buffer))
 			break ;
 	}

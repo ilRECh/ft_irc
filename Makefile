@@ -4,9 +4,9 @@ CXX			= clang++
 CPPFLAGS	= -Wall -Werror -Wextra -g -I$(PATH_TO_HEADERS)
 
 FILES		= main
-FILES_CPP	= $(addsuffix .cpp, $(FILES))
-FILES_HPP	= $(addsuffix .hpp, $(FILES))
-FILES_OBJ	= $(addsuffix .o, $(FILES))
+FILES_CPP	= $(addsuffix .cpp,	$(FILES))
+FILES_HPP	= $(addsuffix .hpp,	$(FILES))
+FILES_OBJ	= $(addsuffix .o,	$(FILES))
 
 PATH_TO_HEADERS=.
 

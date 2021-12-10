@@ -1,6 +1,6 @@
 #include "main.hpp"
 #define ERROR_S "SERVER ERROR: "
-#define DEFAULT_PORT 1601
+#define DEFAULT_PORT 1602
 #define BUFFER_SIZE 256
 #define CLIENT_CLOSE_SYMOL '#'
 
@@ -27,7 +27,6 @@ int main( void ){
 		cout << ERROR_S << "estabilishing socket error." << endl;
 		exit(1);
 	}
-
 	cout << "SERVER: Socket for server was succesfully created\n";
 
 	server_addres.sin_port = htons(DEFAULT_PORT);
@@ -46,6 +45,7 @@ int main( void ){
 	socklen_t size = sizeof(server_addres);
 	cout << "SERVER: " << "Listening clients...\n";
 	listen(client, 1);
+	cout << "ALE MALYO\n";
 	server = accept(client, reinterpret_cast<struct sockaddr*>(&server_addres), &size);
 	if (server < 0)
 		cout << ERROR_S << "Can't accepting client.\n";
@@ -55,17 +55,20 @@ int main( void ){
 	if (0 > send(server, buffer, BUFFER_SIZE, 0))
 		exit (96);
 	cout << "=> Connected to the client #1" << endl
-		<< "Enter " << CLIENT_CLOSE_SYMOL << " to end connection\n\n";
+		<< "Enter " << CLIENT_CLOSE_SYMOL << " to end connection\n" << endl;
 	while(server > 0){
-		cout << "Client: ";
 		recv(server, buffer, BUFFER_SIZE, 0);
-		cout << buffer << endl;
+		cout << "Client: " << buffer << endl;
 		if (is_client_close_connection(buffer))
 			break ;
+
 		cout << "Server: ";
+		cin.getline(buffer, BUFFER_SIZE);
 		send(server, buffer, BUFFER_SIZE, 0);
-		cout << buffer << endl;
 		if (is_client_close_connection(buffer))
 			break ;
 	}
+	close(server);
+	close(client);
+	cout << "Bye\n";
 }
