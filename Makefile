@@ -1,36 +1,34 @@
-.PHONY: all client clean fclean re
+NAME		= IRC
 
-NAME=IRC
-CC=clang++
-FLAGS=-Wall -Werror -Wextra -g
+CXX			= clang++
+CPPFLAGS	= -Wall -Werror -Wextra -g -I$(PATH_TO_HEADERS)
 
-FILES=main
-FILES_CPP=$(addsuffix .cpp, $(FILES))
-FILES_HPP=$(addsuffix .hpp, $(FILES))
-FILES_OBJ=$(addsuffix .o, $(FILES))
+FILES		= main
+FILES_CPP	= $(addsuffix .cpp, $(FILES))
+FILES_HPP	= $(addsuffix .hpp, $(FILES))
+FILES_OBJ	= $(addsuffix .o, $(FILES))
 
 PATH_TO_HEADERS=.
 
+.PHONY		: all client clean fclean re
 
-all: $(NAME)
+all			: $(NAME)
 
-client:
-	$(CC) $(FLAGS) client.cpp -I$(PATH_TO_HEADERS) -o client
+$(FILES_OBJ): $(FILES_HPP)
 
-$(NAME): $(FILES_OBJ)
-	$(CC) $(FLAGS) -I$(PATH_TO_HEADERS) $^ -o $@
+$(NAME)		: $(FILES_OBJ)
+	$(CXX) $(CPPFLAGS) $^ -o $@
 
-%.o: %.cpp $(FILES_HPP)
-	$(CC) $(FLAGS) -I$(PATH_TO_HEADERS) $< -c -o $@
+client		:
+	$(CXX) $(CPPFLAGS) client.cpp -o client
 
-clean:
-	rm $(FILES_OBJ)
+# %.o		: %.cpp $(FILES_HPP)
+# 	$(CXX) $(CPPFLAGS) $< -c -o $@
 
-fclean:	
-	rm $(FILES_OBJ)
-	rm $(NAME)
+clean		:
+	$(RM) $(FILES_OBJ)
 
-re:
-	rm $(FILES_OBJ)
-	rm $(NAME)
-	make all
+fclean		: clean
+	$(RM) $(NAME)
+
+re			: fclean all
