@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "ostream": "cpp",
+        "istream": "cpp",
+        "iostream": "cpp",
+        "exception": "cpp",
+        "vector": "cpp"
+    },
+    "editor.comments.insertSpace": false,
+    "editor.detectIndentation": false
+}
