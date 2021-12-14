@@ -13,7 +13,7 @@
 using   std::string;
 class   Client:public Account{
 private:
-    Account operator=(Account);
+    Client operator=(Client);
     struct  sockaddr_in socket_address;
     int     *count_share;
     int     fd_sock;
