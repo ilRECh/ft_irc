@@ -2,41 +2,42 @@
 #include <iostream>
 #include <vector>
 #include <iostream>
+#include <fcntl.h>
 #include <string>
 #include <string.h>
 #include <stdlib.h>
-#include <fcntl.h>
-#include <netdb.h>
-#include <arpa/inet.h>
+#include <unistd.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
-
-#include "Client.hpp"
+#include <arpa/inet.h>
 
 using	std::string;
 using	std::vector;
 using   std::cout;
 using   std::endl;
 
+typedef struct	s_account{
+	string		_name;
+	string		_password;
+	int			_fd;
+}	t_account;
+
 class Server
 {
 private:
-	int		port;
-	int		domain;
-	string	ip_addres;
-	vector<int>			fd_servs;
-	vector<Client>  	clients;		
-	//struct sockaddr_in	soketaddr;
+	string				_ip_addres;
+	vector<t_account>	_accounts;
+	struct sockaddr_in	_server_addres;
+	socklen_t			socklen;
+	bool	create_connect_to_client();
 public:
 	Server(const string & ip_addres, const int port, const int domain);
 	~Server();
-	void    addClient( void );
-	bool    binding( void );
+	void	run();
 	class sExcept: public std::exception{
 		string  reason;
 	public:
 		sExcept(const string reason);
-		~sExcept( void );
+		virtual ~sExcept( void ) throw();
 		const char * what( void ) const throw();
 	};
 };

@@ -1,11 +1,11 @@
-NAME		= IRC
+NAME		= ft_irc
 
 CXX			= clang++
 CPPFLAGS	= -Wall -Werror -Wextra -g -I$(PATH_TO_HEADERS)
 SRC=./srcs/
 
 FILES		= main \
-			$(addprefix $(SRC), Account Client Server)
+			$(addprefix $(SRC), Server)
 		
 FILES_CPP	= $(addsuffix .cpp,	$(FILES))
 FILES_HPP	= $(wildcard */**.hpp)
