@@ -9,11 +9,16 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <thread>
+#include <mutex>
 
 using	std::string;
 using	std::vector;
 using   std::cout;
 using   std::endl;
+using	std::thread;
+using	std::mutex;
+
 
 typedef struct	s_account{
 	string		_name;
@@ -23,13 +28,15 @@ typedef struct	s_account{
 
 class Server
 {
-private:
+public:
+	bool				loop_listen;
+	thread				thread_listener;
+	mutex				mutex_vector;
 	string				_ip_addres;
 	vector<t_account>	_accounts;
 	struct sockaddr_in	_server_addres;
 	socklen_t			socklen;
-	bool	create_connect_to_client();
-public:
+//private:
 	Server(const string & ip_addres, const int port, const int domain);
 	~Server();
 	void	run();
@@ -41,3 +48,5 @@ public:
 		const char * what( void ) const throw();
 	};
 };
+
+void	listener(Server & oth);

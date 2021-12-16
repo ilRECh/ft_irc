@@ -20,50 +20,62 @@ Server::Server(const string & ip_addres, const int port, const int domain){
 
 Server::~Server( void ){
     vector<t_account>::iterator i = _accounts.begin();
+
+	loop_listen = false;
+	thread_listener.join();
     while(i != _accounts.end())
         close((i++)->_fd);
-}
-
-bool	Server::create_connect_to_client(){
-	t_account	account;
-	int			sockfd;
-	sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	if (sockfd < 0)
-		throw sExcept("Фатальная ошибка, как жить дальше ?");
-cout << "bind" << endl;
-	if (bind(sockfd, reinterpret_cast<struct sockaddr*>(&_server_addres), socklen))
-		throw sExcept("Fatality! bind");
-cout << "listen" << endl;
-	if (listen(sockfd, 1))
-		throw sExcept("Listen error");
-cout << "fcntl" << endl;
-
-	fcntl(sockfd, F_SETFL, fcntl(sockfd, F_GETFL, 0) | O_NONBLOCK);
-cout << "accept" << endl;
-account._fd = accept(sockfd, reinterpret_cast<struct sockaddr*>(&_server_addres), &socklen);
-	if (close(sockfd))
-		throw sExcept("What the f....");
-	if (account._fd == EAGAIN)
-		return false;
-	if (account._fd < 0)
-		throw sExcept("Fatality! accept " + std::to_string(account._fd));
-cout << "fcntl2" << endl;
-	fcntl(account._fd, F_SETFL, fcntl(account._fd, F_GETFL, 0) | O_NONBLOCK);
-cout << "send" << endl;
-	send(account._fd, "=> Server connected!\n", 22, 0);
-	_accounts.push_back(account);
-	return true;
+	_accounts.clear();
 }
 
 void	Server::run(){
-	bool	fccheck;
-
 	cout << "Waiting first connect..." << endl;
-	do fccheck = create_connect_to_client(); while(!fccheck);
+	loop_listen = true;
+	thread_listener = thread(listener, *this);
+
+	while(true)
+	{
+		usleep(5000);
+		mutex_vector.lock();
+		if (_accounts.size()){
+			mutex_vector.unlock();
+			send(_accounts[0]._fd, "Hello world", 12, 0);
+			break ;
+		}
+		mutex_vector.unlock();
+	}
 	cout << "First connect was connected!" << endl;
-	//while(true){
-	//}
 }
+
+void	listener(Server & s){
+	t_account	account;
+	int			sockfd;
+
+	while(s.loop_listen)
+	{
+		memset(&account, 0, sizeof(t_account));
+		sockfd = socket(AF_INET, SOCK_STREAM, 0);
+		fcntl(sockfd, F_SETFL, fcntl(sockfd, F_GETFL, 0), O_NONBLOCK);
+		if (sockfd < 0)
+			throw Server::sExcept("Фатальная ошибка, как жить дальше ?");
+		if (bind(sockfd, reinterpret_cast<struct sockaddr*>(&s._server_addres), s.socklen))
+			throw Server::sExcept("Fatality! bind");
+		if (listen(sockfd, 1))
+			throw Server::sExcept("Listen error");
+		account._fd = accept(sockfd, reinterpret_cast<struct sockaddr*>(&s._server_addres), &s.socklen);
+		if (close(sockfd))
+			throw Server::sExcept("What the f....");
+		if (account._fd < 0)
+			throw Server::sExcept("Fatality! accept " + std::to_string(account._fd));
+		fcntl(account._fd, F_SETFL, fcntl(account._fd, F_GETFL, 0) | O_NONBLOCK);
+		send(account._fd, "=> Server connected!\n", 22, 0);
+		s.mutex_vector.lock();
+		s._accounts.push_back(account);
+		s.mutex_vector.unlock();
+	}
+}
+
+
 
 //* Exception
 Server::sExcept::sExcept( const string reason){

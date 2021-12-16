@@ -5,7 +5,7 @@ int main(int ac, char **av)
 {
     (void)av;
     (void)ac;
-    Server server("127.0.0.1", 1601, AF_INET);
+    Server server("127.0.0.1", 1602, AF_INET);
     try
     {
         server.run();
