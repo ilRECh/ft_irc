@@ -19,7 +19,6 @@ using   std::endl;
 using	std::thread;
 using	std::mutex;
 
-
 typedef struct	s_account{
 	string		_name;
 	string		_password;
@@ -28,7 +27,7 @@ typedef struct	s_account{
 
 class Server
 {
-public:
+private:
 	bool				loop_listen;
 	thread				thread_listener;
 	mutex				mutex_vector;
@@ -36,7 +35,8 @@ public:
 	vector<t_account>	_accounts;
 	struct sockaddr_in	_server_addres;
 	socklen_t			socklen;
-//private:
+	static void	listener(Server * s);
+public:
 	Server(const string & ip_addres, const int port, const int domain);
 	~Server();
 	void	run();
@@ -48,5 +48,3 @@ public:
 		const char * what( void ) const throw();
 	};
 };
-
-void	listener(Server & oth);
