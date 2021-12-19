@@ -1,7 +1,7 @@
 NAME		= ft_irc
 
 CXX			= clang++
-CPPFLAGS	= -Wall -Werror -Wextra -g -I$(PATH_TO_HEADERS)
+CPPFLAGS	= -Wall -Werror -Wextra -pthread -g -I$(PATH_TO_HEADERS)
 SRC=./srcs/
 
 FILES		= main \

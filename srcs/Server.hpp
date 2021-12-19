@@ -19,6 +19,8 @@ using   std::endl;
 using	std::thread;
 using	std::mutex;
 
+
+#define SIZE 256
 typedef struct	s_account{
 	string		_name;
 	string		_password;
@@ -29,15 +31,17 @@ class Server
 {
 private:
 	bool				loop_listen;
-	thread				thread_listener;
+    thread              thread_listener;
 	mutex				mutex_vector;
-	string				_ip_addres;
-	vector<t_account>	_accounts;
-	struct sockaddr_in	_server_addres;
+	string				ip_str;
+	vector<t_account>	accounts;
+	struct sockaddr_in	saddr;
 	socklen_t			socklen;
-	static void	listener(Server * s);
+    int                 sockfd;
+    char                buf[SIZE];
+    //int                 port;
 public:
-	Server(const string & ip_addres, const int port, const int domain);
+	Server(const string & ip_addres, const int port);
 	~Server();
 	void	run();
 	class sExcept: public std::exception{
