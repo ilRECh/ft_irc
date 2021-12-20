@@ -10,4 +10,6 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
+#define SIZE 256
+
 typedef int status;

@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Defines.hpp"
+#include "default.hpp"
 #include "Server.hpp"
+#include "User.hpp"
 
 class ICommand {
 private:

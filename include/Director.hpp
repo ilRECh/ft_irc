@@ -10,6 +10,5 @@ public:
     ~Director();
     Director(Director& that);
     Director& operator=(Director& that);
-    
     direct(Command *command, User *user);
 }

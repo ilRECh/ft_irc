@@ -2,33 +2,31 @@
 
 #include "default.hpp"
 
-#define SIZE 256
-struct	s_account{
+struct	s_account {
 	std::string	_Name;
 	std::string	_Password;
-	int			_fd;
+	int	_Fd;
 };
 
-class Server
-{
+class Server {
 private:
-	bool				loop_listen;
-	string				ip_str;
-	vector<t_account>	accounts;
-	struct sockaddr_in	saddr;
-	socklen_t			socklen;
-    int                 sockfd;
-    char                buf[SIZE];
-    //int                 port;
+    bool _LoopListen;
+    std::string _IpStr;
+    std::vector<s_account> _Accounts;
+    struct sockaddr_in _Saddr;
+    socklen_t _Socklen;
+    int _Sockfd;
+    char _Buf[SIZE];
+
 public:
-	Server(const string & ip_addres, const int port);
+	Server(const std::string & ip_addres, const int port);
 	~Server();
-	void	run();
+	void run();
 	class sExcept: public std::exception{
-		string  reason;
+		std::string reason;
 	public:
-		sExcept(const string reason);
-		virtual ~sExcept( void ) throw();
-		const char * what( void ) const throw();
+		sExcept(const std::string reason);
+		virtual ~sExcept() throw();
+		const char *what() const throw();
 	};
 };
