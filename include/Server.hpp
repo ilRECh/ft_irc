@@ -1,38 +1,18 @@
 #pragma once
-#include <iostream>
-#include <vector>
-#include <iostream>
-#include <fcntl.h>
-#include <string>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <thread>
-#include <mutex>
 
-using	std::string;
-using	std::vector;
-using   std::cout;
-using   std::endl;
-using	std::thread;
-using	std::mutex;
-
+#include "default.hpp"
 
 #define SIZE 256
-typedef struct	s_account{
-	string		_name;
-	string		_password;
+struct	s_account{
+	std::string	_Name;
+	std::string	_Password;
 	int			_fd;
-}	t_account;
+};
 
 class Server
 {
 private:
 	bool				loop_listen;
-    thread              thread_listener;
-	mutex				mutex_vector;
 	string				ip_str;
 	vector<t_account>	accounts;
 	struct sockaddr_in	saddr;
