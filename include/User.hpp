@@ -1,8 +1,9 @@
 #pragma once
 
 #include "Server.hpp"
+#include "Password.hpp"
 
-class User {
+class User: public Password {
 private:
     std::string _Name;
 public:

@@ -1,68 +1,63 @@
 #include "Server.hpp"
 
 //* Domain can be AF_INET
-Server::Server(const string &ip_addres, const int port)
-: loop_listen(true)
+Server::Server(const std::string &ip_addres, const int port)
+: _LoopListen(true)
 {
 	if (port < 1024 || port > 49151)
 		throw sExcept("wrong port!");
 	//this->port = port;
-	ip_str = ip_addres;
-	socklen = sizeof(struct sockaddr_in);
+	_IpStr = ip_addres;
+	_Socklen = sizeof(struct sockaddr_in);
 	
-	memset(&saddr, 0, socklen);
-	saddr.sin_family = AF_INET;
-	saddr.sin_port = htons(port);
-	saddr.sin_addr.s_addr = htons(INADDR_ANY);
-	cout << "Server will be bound to port: " << port << endl;
+	memset(&_Saddr, 0, _Socklen);
+	_Saddr.sin_family = AF_INET;
+	_Saddr.sin_port = htons(port);
+	_Saddr.sin_addr.s_addr = htons(INADDR_ANY);
+	std::cout << "Server will be bound to port: " << port << std::endl;
 
-	sockfd = socket(AF_INET, SOCK_STREAM/* | SOCK_NONBLOCK*/, 0);
-	if (sockfd < 0)
+	_Sockfd = socket(AF_INET, SOCK_STREAM/* | SOCK_NONBLOCK*/, 0);
+	if (_Sockfd < 0)
 		throw Server::sExcept("Фатальная ошибка, как жить дальше ?");
-	if (bind(sockfd, (struct sockaddr *)&saddr, socklen))
+	if (bind(_Sockfd, (struct sockaddr *)&_Saddr, _Socklen))
 		throw Server::sExcept("Fatality! bind");
-	if (listen(sockfd, 1))
+	if (listen(_Sockfd, 1))
 		throw Server::sExcept("Listen error");
 }
 
 Server::~Server(void)
 {
-	//vector<t_account>::iterator i;
+	std::vector<struct s_account>::iterator i;
 	
-	loop_listen = false;
-	thread_listener.join();
-	//if (close(sockfd))
-	//	throw Server::sExcept("What the f....");
-	//i = accounts.begin();
-	//while (i != accounts.end())
-	//	if (close((i++)->_fd))
-	//		throw Server::sExcept("What the f.... N2");
-	accounts.clear();
+	_LoopListen = false;
+	close(_Sockfd);
+    i = _Accounts.begin();
+	while (i != _Accounts.end())
+		close((i++)->_Fd);
+	_Accounts.clear();
 }
 
 
 void Server::run()
 {
-	t_account account;
+	struct s_account account;
 
-	cout << "Waiting first connect..." << endl;
-	while(loop_listen){
-		memset(&account, 0, sizeof(t_account));
-		account._fd = accept(sockfd, (struct sockaddr *)&saddr, &socklen);
-		if (account._fd < 0)
-			throw Server::sExcept("Fatality! accept " + std::to_string(account._fd));
-		send(account._fd, "=> Server connected!\n", 22, 0);
-		memset(buf, 0, SIZE);
-		recv(account._fd, buf, SIZE, 0);
-		cout << "mgs from client: " << buf << endl;
-		mutex_vector.lock();
-		accounts.push_back(account);
-		mutex_vector.unlock();
+	std::cout << "Waiting first connect..." << std::endl;
+	while(_LoopListen){
+		memset(&account, 0, sizeof(struct s_account));
+		account._Fd = accept(_Sockfd, (struct sockaddr *)&_Saddr, &_Socklen);
+		if (account._Fd < 0)
+			throw Server::sExcept("Fatality! accept " + std::to_string(account._Fd));
+		send(account._Fd, "=> Server connected!\n", 22, 0);
+		memset(_Buf, 0, SIZE);
+		recv(account._Fd, _Buf, SIZE, 0);
+		std::cout << "mgs from client: " << _Buf << std::endl;
+		_Accounts.push_back(account);
 	}
 }
 
 //* Exception
-Server::sExcept::sExcept(const string reason)
+Server::sExcept::sExcept(const std::string reason)
 {
 	this->reason = reason;
 }

@@ -1,17 +1,16 @@
 NAME		= ft_irc
 
 CXX			= clang++
-CPPFLAGS	= -Wall -Werror -Wextra -pthread -g -I$(PATH_TO_HEADERS)
+CPPFLAGS	= -Wall -Werror -Wextra -pthread -g $(addprefix -I, $(INCLUDES))
 SRC=./srcs/
+INCLUDES=./include $(SRC)cmds/
 
 FILES		= main \
-			$(addprefix $(SRC), Server)
+			$(addprefix $(SRC), Server Director User)
 		
 FILES_CPP	= $(addsuffix .cpp,	$(FILES))
-FILES_HPP	= $(wildcard */**.hpp)
+FILES_HPP	= $(wildcard **/**.hpp)
 FILES_OBJ	= $(addsuffix .o,	$(FILES))
-
-PATH_TO_HEADERS=$(SRC)
 
 .PHONY		: all client clean fclean re
 
