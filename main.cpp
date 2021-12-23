@@ -1,5 +1,12 @@
-#include "main.hpp"
+#include "Default.hpp"
+#include "Server.hpp"
+#include "User.hpp"
+#include "Password.hpp"
+#include <iostream>
 #include <string>
+
+using std::cout;
+using std::endl;
 
 int main(int ac, char **av)
 {
