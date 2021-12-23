@@ -31,7 +31,7 @@ Server::~Server(void)
 	
 	_LoopListen = false;
 	close(_Sockfd);
-    i = _Accounts.begin();
+	i = _Accounts.begin();
 	while (i != _Accounts.end())
 		close((i++)->_Fd);
 	_Accounts.clear();
@@ -46,13 +46,13 @@ void Server::run()
 	while(_LoopListen){
 		memset(&account, 0, sizeof(struct s_account));
 		account._Fd = accept(_Sockfd, (struct sockaddr *)&_Saddr, &_Socklen);
-		if (account._Fd < 0)
+		if (account._Fd < 0 && errno != EAGAIN)
 			throw Server::sExcept("Fatality! accept " + std::to_string(account._Fd));
-		send(account._Fd, "=> Server connected!\n", 22, 0);
-		memset(_Buf, 0, SIZE);
-		recv(account._Fd, _Buf, SIZE, 0);
-		std::cout << "mgs from client: " << _Buf << std::endl;
-		_Accounts.push_back(account);
+		if (account._Fd > 0){
+			send(account._Fd, "=> Server connected!\n", 22, 0);
+			std::cout << "mgs from client: " << _Buf << std::endl;
+			_Accounts.push_back(account);
+		}
 	}
 }
 
