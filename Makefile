@@ -6,7 +6,7 @@ SRC=./srcs/
 INCLUDES=./include $(SRC)cmds/
 
 FILES		= main \
-			$(addprefix $(SRC), Server Director User)
+			$(addprefix $(SRC), Server Director User ExceptionUni Password)
 		
 FILES_CPP	= $(addsuffix .cpp,	$(FILES))
 FILES_HPP	= $(wildcard **/**.hpp)
