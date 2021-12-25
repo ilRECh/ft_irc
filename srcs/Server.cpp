@@ -1,32 +1,31 @@
 #include "Server.hpp"
 
 //* Domain can be AF_INET
-Server::Server(const std::string &ip_addres, const int port)
-: _LoopListen(true)
+Server::Server(std::string const & ip, std::string const & port)
+: ip(ip), port(port), _LoopListen(true)
 {
-	if (port < 1024 || port > 49151)
-		throw ExceptionUni("wrong port!");
-	_IpStr = ip_addres;
-	_Socklen = sizeof(struct sockaddr_in);
-	
-	memset(&_Saddr, 0, _Socklen);
-	_Saddr.sin_family = AF_INET;
-	_Saddr.sin_port = htons(port);
-	_Saddr.sin_addr.s_addr = htons(INADDR_ANY);
-	std::cout << "Server will be bound to port: " << port << std::endl;
+	struct addrinfo hints;
 
+	memset(&hints, 0, sizeof hints);
+	hints.ai_family = AF_INET;
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_flags = AI_PASSIVE;
+	if (getaddrinfo(ip.c_str(), port.c_str(), &hints, &servinfo))
+		throw ExceptionUni(std::string("getaddrinfo error: ") + gai_strerror(errno));
+	if (1024 > std::atoi(port.c_str()) || std::atoi(port.c_str()) > 49151)
+		throw ExceptionUni("wrong port!");
+	std::cout << "Server will be bound to port: " << port << std::endl;
 	_Sockfd = socket(AF_INET, SOCK_STREAM/* | SOCK_NONBLOCK*/, 0);
-	// _Sockfd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
-	int oldFl = fcntl(_Sockfd, F_GETFL, 0);
-	if (oldFl < 0 || fcntl(_Sockfd, F_SETFL, oldFl | O_NONBLOCK) < 0)
-		throw ExceptionUni("error: fcntl");
 	if (_Sockfd < 0)
 		throw ExceptionUni("Фатальная ошибка, как жить дальше ?");
-	if (bind(_Sockfd, (struct sockaddr *)&_Saddr, _Socklen))
+	int	retFcntl = fcntl(_Sockfd, F_GETFL, 0);
+	if (retFcntl < 0 || fcntl(_Sockfd, F_SETFL, retFcntl | O_NONBLOCK) < 0)
+		throw ExceptionUni("error: fcntl");
+	_Socklen = sizeof(struct sockaddr);
+	if (bind(_Sockfd, servinfo->ai_addr, _Socklen))
 		throw ExceptionUni("Fatality! bind");
 	if (listen(_Sockfd, 1))
 		throw ExceptionUni("Listen error");
-	
 	FD_ZERO(&fds);
 	maxFd = 0;
 }
@@ -36,6 +35,7 @@ Server::~Server(void)
 	std::vector<struct s_account>::iterator i;
 	
 	_LoopListen = false;
+	freeaddrinfo(servinfo);
 	close(_Sockfd);
 	i = _Accounts.begin();
 	while (i != _Accounts.end())
@@ -72,7 +72,7 @@ void	Server::run()
 	std::cout << "Waiting first connect..." << std::endl;
 	while(_LoopListen){
 		memset(&account, 0, sizeof(struct s_account));
-		account._Fd = accept(_Sockfd, (struct sockaddr *)&_Saddr, &_Socklen);
+		account._Fd = accept(_Sockfd, servinfo->ai_addr, &_Socklen);
 		if (account._Fd < 0 && errno != EAGAIN)
 			throw ExceptionUni("Fatality! accept " + std::to_string(account._Fd));
 		if (account._Fd > 0){

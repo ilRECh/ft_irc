@@ -12,13 +12,19 @@ int main(int ac, char **av)
 {
 	(void)av;
 	(void)ac;
-	Server server("127.0.0.1", 1112);
-	try
-	{
-	    server.run();
+	std::string ipAddres, sPort;
+
+	if (ac > 1){
+		sPort = av[2];
+		ipAddres = av[1];
+	}else{
+		ipAddres = "127.0.0.1";
+		sPort = "2224";
 	}
-	catch(std::exception & e)
-	{
+	Server server(ipAddres, sPort);
+	try{
+	    server.run();
+	}catch(std::exception & e){
 	    cout << e.what() << endl;
 	}
 }
