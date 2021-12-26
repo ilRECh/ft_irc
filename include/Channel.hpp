@@ -7,6 +7,7 @@
 
 using std::string;
 using std::vector;
+using std::find;
 
 enum eChannelPrivateLevel {
 	CHANNEL_PRIVATE,
@@ -38,6 +39,7 @@ public:
 	void	setLevelPrivate(User const & who, eChannelPrivateLevel const ePrivateLevel);
 	void	setNameChannel(User const & who, string const & newNameChannel);
 	void	addUser(User const & who, User const & whom);
+	void	removelUser(User const & who, User const & whom);
 	void	addAdmin(User const & who, User const & whom);
-	void	dellAdmin(User const & who, User const & whom);
+	void	removeAdmin(User const & who, User const & whom);
 };

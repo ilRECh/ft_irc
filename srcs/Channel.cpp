@@ -27,6 +27,7 @@ Channel::Channel(string const & nameChannel, User const & userAdmin){
 	_NameChannel = nameChannel;
 	addAdmin(userAdmin);
 }
+
 Channel::~Channel(){}
 
 void	Channel::setLevelPrivate(User const & who, eChannelPrivateLevel const ePrivateLevel){
@@ -84,6 +85,28 @@ void	Channel::addUser(User const & who, User const & whom){
 	_Users.push_back(&whom);
 }
 
+void	Channel::removelUser(User const & who, User const & whom){
+	vector<User const *>::iterator it;
+	bool	isPrivateOwner;
+	bool	isAdmin;
+
+	isAdmin = checkAdminPermist(who);
+	isPrivateOwner = checkOwnerPermist(who) | isAdmin;
+
+	if (who != whom){
+		if (_ePrivateLevel == CHANNEL_PRIVATE)
+			if (!isAdmin)
+				throw ExceptionUni(who.getName() + " is not Admin\n" + who.getName() + " cannot delete User");
+		if (_ePrivateLevel == CHANNEL_PROTECTED)
+			if (!isPrivateOwner)
+				throw ExceptionUni(who.getName() + " is not Owner or Admin\n" + who.getName() + " cannot delete User");
+	}
+	it = find(_Users.begin(), _Users.end(), whom);
+	if (it == _Users.end())
+		throw ExceptionUni(whom.getName() + "isn't member of this channel");
+	_Users.erase(it);
+}
+
 void	Channel::addAdmin(User const & who, User const & whom){
 	vector<User const *>::iterator beg = _Admins.begin();
 	vector<User const *>::iterator end = _Admins.end();
@@ -106,13 +129,21 @@ void	Channel::addAdmin(User const & whom){
 	_Admins.push_back(&whom);
 }
 
-void	Channel::dellAdmin(User const & who, User const & whom){
-	vector<User const *>::iterator beg = _Admins.begin();
-	vector<User const *>::iterator end = _Admins.end();
+void	Channel::removeAdmin(User const & who, User const & whom){
+	vector<User const *>::iterator it;
 
 	if (!checkAdminPermist(who))
 		throw ExceptionUni(who.getName() + " is not Admin\n" + who.getName() + " cannot add new Admin");
-	while(beg != end)
-		if (**beg == whom)
-			_Admins.erase(beg);
+	if (_Admins.size() == 1){
+		if (_Users.size > 0)
+			throw ExceptionUni(
+				"A group with users cannot be without an admin, \
+				assign a new Admin, or delete all users to delete \
+				the group");
+		delete this;
+	}
+	it = find(_Admins.begin(), _Admins.end(), whom);
+	if (it == _Admins.end())
+		throw ExceptionUni(whom.getName() + "isn't member of Admins, of this channel");
+	_Admins.erase(it);
 }
