@@ -96,7 +96,7 @@ void	Channel::addUser(User const & whom){
 		_Users.push_back(&whom);
 }
 
-void	Channel::removelUser(User const & who, User const & whom){
+void	Channel::removeUser(User const & who, User const & whom){
 	vector<User const *>::iterator it;
 	bool	isPrivateOwner;
 	bool	isAdmin;
@@ -112,6 +112,9 @@ void	Channel::removelUser(User const & who, User const & whom){
 			if (!isPrivateOwner)
 				throw ExceptionUni(who.getName() + " is not Owner or Admin\n" + who.getName() + " cannot delete User");
 	}
+	it = find(_Admins.begin(), _Admins.end(), whom);
+	if (it != _Admins.end())
+		removeAdmin(who, whom);
 	it = find(_Users.begin(), _Users.end(), whom);
 	if (it == _Users.end())
 		throw ExceptionUni(whom.getName() + "isn't member of this channel");
@@ -128,7 +131,7 @@ void	Channel::addAdmin(User const & who, User const & whom){
 		if (**beg == whom)
 			return ;
 	_Admins.push_back(&whom);
-	addUser(&whom);
+	addUser(whom);
 }
 
 void	Channel::addAdmin(User const & whom){

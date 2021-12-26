@@ -36,7 +36,7 @@ public:
 	~Channel();
 	void	addAdmin(User const & who, User const & whom);
 	void	addUser(User const & who, User const & whom);
-	void	removelUser(User const & who, User const & whom);
+	void	removeUser(User const & who, User const & whom);
 	void	removeAdmin(User const & who, User const & whom);
 	const	vector<User const *>& getAdmins();
 	bool	checkAdminPermist(User const & whom) const;
