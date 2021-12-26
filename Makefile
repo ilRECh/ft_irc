@@ -3,7 +3,7 @@ NAME		= ft_irc
 CXX			= clang++
 CPPFLAGS	= -Wall -Werror -Wextra -pthread -g $(addprefix -I, $(INCLUDES))
 SRC=./srcs/
-INCLUDES=./include $(SRC)cmds/
+INCLUDES=./include ./include/cmds/
 
 FILES		= main \
 			$(addprefix $(SRC), Server Director User ExceptionUni Password)

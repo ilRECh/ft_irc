@@ -1,7 +1,7 @@
 #include "Server.hpp"
 
 //* Domain can be AF_INET
-Server::Server(std::string const & ip, std::string const & port)
+Server::Server(string const & ip, string const & port)
 : ip(ip), port(port), _LoopListen(true)
 {
 	struct addrinfo hints;
@@ -11,7 +11,7 @@ Server::Server(std::string const & ip, std::string const & port)
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_PASSIVE;
 	if (getaddrinfo(ip.c_str(), port.c_str(), &hints, &servinfo))
-		throw ExceptionUni(std::string("getaddrinfo error: ") + gai_strerror(errno));
+		throw ExceptionUni(string("getaddrinfo error: ") + gai_strerror(errno));
 	if (1024 > std::atoi(port.c_str()) || std::atoi(port.c_str()) > 49151)
 		throw ExceptionUni("wrong port!");
 	std::cout << "Server will be bound to port: " << port << std::endl;
@@ -32,7 +32,7 @@ Server::Server(std::string const & ip, std::string const & port)
 
 Server::~Server(void)
 {
-	std::vector<struct s_account>::iterator i;
+	vector<struct s_account>::iterator i;
 	
 	_LoopListen = false;
 	freeaddrinfo(servinfo);
@@ -44,7 +44,7 @@ Server::~Server(void)
 }
 
 void	Server::readerClient(fd_set fdsCpy){
-	std::vector<struct s_account>::iterator iter = _Accounts.begin();
+	vector<struct s_account>::iterator iter = _Accounts.begin();
 
 	memset(_Buf, 0, SIZE);
 	for(;iter != _Accounts.end(); iter++){

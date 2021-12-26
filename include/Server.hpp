@@ -8,9 +8,12 @@
 #include <netdb.h>
 #include "ExceptionUni.hpp"
 
+using std::vector;
+using std::string;
+
 struct	s_account {
-	std::string	_Name;
-	std::string	_Password;
+	string	_Name;
+	string	_Password;
     struct sockaddr_in _SaddrClient;
     socklen_t _Socklen;
 	int	_Fd;
@@ -18,10 +21,10 @@ struct	s_account {
 
 class Server {
 private:
-	std::string	ip;
-	std::string	port;
+	string	ip;
+	string	port;
     bool	_LoopListen;
-    std::vector<s_account> _Accounts;
+	vector<s_account> _Accounts;
 	struct addrinfo *servinfo;
     // struct sockaddr_in _Saddr;
     socklen_t _Socklen;
@@ -33,7 +36,7 @@ private:
 
 	void readerClient(fd_set);
 public:
-	Server(std::string const & ip, std::string const & port);
+	Server(string const & ip, string const & port);
 	~Server();
 	void run();
 };

@@ -4,10 +4,13 @@
 #include "Server.hpp"
 #include "User.hpp"
 
+using std::string;
+using std::vector;
+
 class ICommand {
 private:
-    std::string _Name;
-    std::vector<std::string> _Tokens;
+    string _Name;
+    vector<string> _Tokens;
     User& _User;
     Server& _Server;
 public:
