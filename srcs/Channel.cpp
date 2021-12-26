@@ -70,6 +70,7 @@ bool Channel::checkOwnerPermist(User const & whom) const{
 const vector<User const *>& Channel::getAdmins(){ return _Admins;}
 
 void	Channel::addUser(User const & who, User const & whom){
+	vector<User const *>::iterator it;
 	bool	isAdmin;
 	bool	isPrivateOwner;
 
@@ -82,7 +83,17 @@ void	Channel::addUser(User const & who, User const & whom){
 	if (_ePrivateLevel == CHANNEL_PROTECTED)
 		if (!isPrivateOwner)
 			throw ExceptionUni(who.getName() + " is not Owner or Admin\n" + who.getName() + " cannot add new User");
-	_Users.push_back(&whom);
+	it = find(_Users.begin(), _Users.end(), whom);
+	if (it == _Users.end())
+		_Users.push_back(&whom);
+}
+
+void	Channel::addUser(User const & whom){
+	vector<User const *>::iterator it;
+
+	it = find(_Users.begin(), _Users.end(), whom);
+	if (it == _Users.end())
+		_Users.push_back(&whom);
 }
 
 void	Channel::removelUser(User const & who, User const & whom){
@@ -117,6 +128,7 @@ void	Channel::addAdmin(User const & who, User const & whom){
 		if (**beg == whom)
 			return ;
 	_Admins.push_back(&whom);
+	addUser(&whom);
 }
 
 void	Channel::addAdmin(User const & whom){
