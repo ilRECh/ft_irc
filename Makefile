@@ -1,13 +1,13 @@
 NAME		= ft_irc
 
 CXX			= clang++
-CPPFLAGS	= -Wall -Werror -Wextra -pthread -g $(addprefix -I, $(INCLUDES))
+CPPFLAGS	= -Wall -Werror -Wextra -g $(addprefix -I, $(INCLUDES))
 SRC=./srcs/
 INCLUDES=./include ./include/cmds/
 
 FILES		= main \
-			$(addprefix $(SRC), Server Director User ExceptionUni Password)
-		
+			$(addprefix $(SRC), Channel Server Director User ExceptionUni Password)
+
 FILES_CPP	= $(addsuffix .cpp,	$(FILES))
 FILES_HPP	= $(wildcard **/**.hpp)
 FILES_OBJ	= $(addsuffix .o,	$(FILES))

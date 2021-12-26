@@ -7,6 +7,8 @@
 using std::string;
 using std::vector;
 
+class Channel;
+
 class User: public Password {
 private:
 	string                  _Name;

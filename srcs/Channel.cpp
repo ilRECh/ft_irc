@@ -83,7 +83,7 @@ void	Channel::addUser(User const & who, User const & whom){
 	if (_ePrivateLevel == CHANNEL_PROTECTED)
 		if (!isPrivateOwner)
 			throw ExceptionUni(who.getName() + " is not Owner or Admin\n" + who.getName() + " cannot add new User");
-	it = find(_Users.begin(), _Users.end(), whom);
+	it = find(_Users.begin(), _Users.end(), &whom);
 	if (it == _Users.end())
 		_Users.push_back(&whom);
 }
@@ -91,7 +91,7 @@ void	Channel::addUser(User const & who, User const & whom){
 void	Channel::addUser(User const & whom){
 	vector<User const *>::iterator it;
 
-	it = find(_Users.begin(), _Users.end(), whom);
+	it = find(_Users.begin(), _Users.end(), &whom);
 	if (it == _Users.end())
 		_Users.push_back(&whom);
 }
@@ -112,10 +112,10 @@ void	Channel::removeUser(User const & who, User const & whom){
 			if (!isPrivateOwner)
 				throw ExceptionUni(who.getName() + " is not Owner or Admin\n" + who.getName() + " cannot delete User");
 	}
-	it = find(_Admins.begin(), _Admins.end(), whom);
+	it = find(_Admins.begin(), _Admins.end(), &whom);
 	if (it != _Admins.end())
 		removeAdmin(who, whom);
-	it = find(_Users.begin(), _Users.end(), whom);
+	it = find(_Users.begin(), _Users.end(), &whom);
 	if (it == _Users.end())
 		throw ExceptionUni(whom.getName() + "isn't member of this channel");
 	_Users.erase(it);
@@ -150,14 +150,14 @@ void	Channel::removeAdmin(User const & who, User const & whom){
 	if (!checkAdminPermist(who))
 		throw ExceptionUni(who.getName() + " is not Admin\n" + who.getName() + " cannot add new Admin");
 	if (_Admins.size() == 1){
-		if (_Users.size > 0)
+		if (_Users.size() > 0)
 			throw ExceptionUni(
 				"A group with users cannot be without an admin, \
 				assign a new Admin, or delete all users to delete \
 				the group");
 		delete this;
 	}
-	it = find(_Admins.begin(), _Admins.end(), whom);
+	it = find(_Admins.begin(), _Admins.end(), &whom);
 	if (it == _Admins.end())
 		throw ExceptionUni(whom.getName() + "isn't member of Admins, of this channel");
 	_Admins.erase(it);
