@@ -3,7 +3,6 @@
 #include <vector>
 #include <stdlib.h>
 #include "User.hpp"
-#include "ExceptionUni.hpp"
 
 using std::string;
 using std::vector;

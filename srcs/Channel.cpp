@@ -10,7 +10,7 @@ Channel::Channel(string const & nameChannel, User const & userAdmin, eChannelPri
 
 	while(beg != end)
 		if (!std::isalnum(*(beg++)))
-			throw ExceptionUni("Name channel " + nameChannel + " is not valid, use A-Z, a-z, 0-9");
+			throw std::runtime_error("Name channel " + nameChannel + " is not valid, use A-Z, a-z, 0-9");
 	_ePrivateLevel = ePrivateLevel;
 	_NameChannel = nameChannel;
 	addAdmin(userAdmin);
@@ -22,7 +22,7 @@ Channel::Channel(string const & nameChannel, User const & userAdmin){
 
 	while(beg != end)
 		if (!std::isalnum(*(beg++)))
-			throw ExceptionUni("Name channel " + nameChannel + " is not valid, use A-Z, a-z, 0-9");
+			throw std::runtime_error("Name channel " + nameChannel + " is not valid, use A-Z, a-z, 0-9");
 	_ePrivateLevel = CHANNEL_PUBLIC;
 	_NameChannel = nameChannel;
 	addAdmin(userAdmin);
@@ -32,7 +32,7 @@ Channel::~Channel(){}
 
 void	Channel::setLevelPrivate(User const & who, eChannelPrivateLevel const ePrivateLevel){
 	if (!checkAdminPermist(who))
-		throw ExceptionUni(who.getName() + " is not Admin\n" + who.getName() + " cannot change private level");
+		throw std::runtime_error(who.getName() + " is not Admin\n" + who.getName() + " cannot change private level");
 	_ePrivateLevel = ePrivateLevel;
 }
 void	Channel::setNameChannel(User const & who, string const & newNameChannel){
@@ -40,10 +40,10 @@ void	Channel::setNameChannel(User const & who, string const & newNameChannel){
 	string::const_iterator end = newNameChannel.cend();
 
 	if (!checkAdminPermist(who))
-		throw ExceptionUni(who.getName() + " is not Admin\n" + who.getName() + " cannot change name channel");
+		throw std::runtime_error(who.getName() + " is not Admin\n" + who.getName() + " cannot change name channel");
 	while(beg != end)
 		if (!std::isalnum(*(beg++)))
-			throw ExceptionUni("Name channel " + newNameChannel + " is not valid, use A-Z, a-z, 0-9");
+			throw std::runtime_error("Name channel " + newNameChannel + " is not valid, use A-Z, a-z, 0-9");
 	_NameChannel = newNameChannel;
 }
 
@@ -79,10 +79,10 @@ void	Channel::addUser(User const & who, User const & whom){
 
 	if (_ePrivateLevel == CHANNEL_PRIVATE)
 		if (!isAdmin)
-			throw ExceptionUni(who.getName() + " is not Admin\n" + who.getName() + " cannot add new User");
+			throw std::runtime_error(who.getName() + " is not Admin\n" + who.getName() + " cannot add new User");
 	if (_ePrivateLevel == CHANNEL_PROTECTED)
 		if (!isPrivateOwner)
-			throw ExceptionUni(who.getName() + " is not Owner or Admin\n" + who.getName() + " cannot add new User");
+			throw std::runtime_error(who.getName() + " is not Owner or Admin\n" + who.getName() + " cannot add new User");
 	it = find(_Users.begin(), _Users.end(), &whom);
 	if (it == _Users.end())
 		_Users.push_back(&whom);
@@ -107,17 +107,17 @@ void	Channel::removeUser(User const & who, User const & whom){
 	if (who != whom){
 		if (_ePrivateLevel == CHANNEL_PRIVATE)
 			if (!isAdmin)
-				throw ExceptionUni(who.getName() + " is not Admin\n" + who.getName() + " cannot delete User");
+				throw std::runtime_error(who.getName() + " is not Admin\n" + who.getName() + " cannot delete User");
 		if (_ePrivateLevel == CHANNEL_PROTECTED)
 			if (!isPrivateOwner)
-				throw ExceptionUni(who.getName() + " is not Owner or Admin\n" + who.getName() + " cannot delete User");
+				throw std::runtime_error(who.getName() + " is not Owner or Admin\n" + who.getName() + " cannot delete User");
 	}
 	it = find(_Admins.begin(), _Admins.end(), &whom);
 	if (it != _Admins.end())
 		removeAdmin(who, whom);
 	it = find(_Users.begin(), _Users.end(), &whom);
 	if (it == _Users.end())
-		throw ExceptionUni(whom.getName() + "isn't member of this channel");
+		throw std::runtime_error(whom.getName() + "isn't member of this channel");
 	_Users.erase(it);
 }
 
@@ -126,7 +126,7 @@ void	Channel::addAdmin(User const & who, User const & whom){
 	vector<User const *>::iterator end = _Admins.end();
 
 	if (!checkAdminPermist(who))
-		throw ExceptionUni(who.getName() + " is not Admin\n" + who.getName() + " cannot add new Admin");
+		throw std::runtime_error(who.getName() + " is not Admin\n" + who.getName() + " cannot add new Admin");
 	while(beg != end)
 		if (**beg == whom)
 			return ;
@@ -148,10 +148,10 @@ void	Channel::removeAdmin(User const & who, User const & whom){
 	vector<User const *>::iterator it;
 
 	if (!checkAdminPermist(who))
-		throw ExceptionUni(who.getName() + " is not Admin\n" + who.getName() + " cannot add new Admin");
+		throw std::runtime_error(who.getName() + " is not Admin\n" + who.getName() + " cannot add new Admin");
 	if (_Admins.size() == 1){
 		if (_Users.size() > 0)
-			throw ExceptionUni(
+			throw std::runtime_error(
 				"A group with users cannot be without an admin, \
 				assign a new Admin, or delete all users to delete \
 				the group");
@@ -159,6 +159,6 @@ void	Channel::removeAdmin(User const & who, User const & whom){
 	}
 	it = find(_Admins.begin(), _Admins.end(), &whom);
 	if (it == _Admins.end())
-		throw ExceptionUni(whom.getName() + "isn't member of Admins, of this channel");
+		throw std::runtime_error(whom.getName() + "isn't member of Admins, of this channel");
 	_Admins.erase(it);
 }
