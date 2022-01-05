@@ -11,10 +11,10 @@ void usage() {
 }
 
 int main(int argc, char **argv) {
-	if (argc != HOST_PORTNETWORK_PASSWORDNETWORK_PORT_PASSWORD && argc != PORT_PASSWORD) {
-		usage();
-		return 1;
-	}
+	// if (argc != HOST_PORTNETWORK_PASSWORDNETWORK_PORT_PASSWORD && argc != PORT_PASSWORD) {
+	// 	usage();
+	// 	return 1;
+	// }
 	try {
 		std::vector<std::string> settings(argv + 1 /*skipping name*/, argv + argc /*past-the-last argument*/);
 		// Server server(settings);
