@@ -5,8 +5,8 @@
 //* 	1 == CHANNEL_PROTECTED,
 //* 	2 == CHANNEL_PUBLIC
 Channel::Channel(string const & nameChannel, User const & userAdmin, eChannelPrivateLevel const ePrivateLevel){
-	string::const_iterator beg = nameChannel.cbegin();
-	string::const_iterator end = nameChannel.cend();
+	string::const_iterator beg = nameChannel.begin();
+	string::const_iterator end = nameChannel.end();
 
 	while(beg != end)
 		if (!std::isalnum(*(beg++)))
@@ -17,8 +17,8 @@ Channel::Channel(string const & nameChannel, User const & userAdmin, eChannelPri
 }
 
 Channel::Channel(string const & nameChannel, User const & userAdmin){
-	string::const_iterator beg = nameChannel.cbegin();
-	string::const_iterator end = nameChannel.cend();
+	string::const_iterator beg = nameChannel.begin();
+	string::const_iterator end = nameChannel.end();
 
 	while(beg != end)
 		if (!std::isalnum(*(beg++)))
@@ -36,8 +36,8 @@ void	Channel::setLevelPrivate(User const & who, eChannelPrivateLevel const ePriv
 	_ePrivateLevel = ePrivateLevel;
 }
 void	Channel::setNameChannel(User const & who, string const & newNameChannel){
-	string::const_iterator beg = newNameChannel.cbegin();
-	string::const_iterator end = newNameChannel.cend();
+	string::const_iterator beg = newNameChannel.begin();
+	string::const_iterator end = newNameChannel.end();
 
 	if (!checkAdminPermist(who))
 		throw std::runtime_error(who.getName() + " is not Admin\n" + who.getName() + " cannot change name channel");
@@ -48,8 +48,8 @@ void	Channel::setNameChannel(User const & who, string const & newNameChannel){
 }
 
 bool Channel::checkAdminPermist(User const & whom) const{
-	vector<User const *>::const_iterator beg = _Admins.cbegin();
-	vector<User const *>::const_iterator end = _Admins.cend();
+	vector<User const *>::const_iterator beg = _Admins.begin();
+	vector<User const *>::const_iterator end = _Admins.end();
 
 	while(beg != end)
 		if (whom == **(beg++))
@@ -58,8 +58,8 @@ bool Channel::checkAdminPermist(User const & whom) const{
 }
 
 bool Channel::checkOwnerPermist(User const & whom) const{
-	vector<User const *>::const_iterator beg = _Users.cbegin();
-	vector<User const *>::const_iterator end = _Users.cend();
+	vector<User const *>::const_iterator beg = _Users.begin();
+	vector<User const *>::const_iterator end = _Users.end();
 
 	while(beg != end)
 		if (whom == **(beg++))

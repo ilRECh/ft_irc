@@ -9,6 +9,9 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <algorithm>
+#include <cerrno>
+#include <random>
 
 #define SIZE 256
 

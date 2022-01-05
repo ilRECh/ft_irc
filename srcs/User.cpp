@@ -1,8 +1,8 @@
 #include "User.hpp"
 
 User::User(string const & name, Channel const & baseChannel){
-	string::const_iterator it_begin = name.cbegin();
-	string::const_iterator it_end = name.cend();
+	string::const_iterator it_begin = name.begin();
+	string::const_iterator it_end = name.end();
 
 	while(it_begin != it_end)
 		if (!std::isalnum(*(it_begin++)))
@@ -19,8 +19,8 @@ bool User::operator!=(const User& that) const {return this->_Name != that._Name;
 
 void User::inviteToChannel(Channel const & channel){_Channels.push_back(&channel);}
 void User::setName(string const & name){
-	string::const_iterator it_begin = name.cbegin();
-	string::const_iterator it_end = name.cend();
+	string::const_iterator it_begin = name.begin();
+	string::const_iterator it_end = name.end();
 
 	while(it_begin != it_end)
 		if (!std::isalnum(*(it_begin++)))

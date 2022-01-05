@@ -74,7 +74,7 @@ void    Server::readerClient(fd_set fdsCpy){
 
     memset(_Buf, 0, SIZE);
     for(;iter != _Accounts.end(); iter++){
-        if (FD_ISSET(iter->_Fd, &fdsCpy) > 1){
+        if (FD_ISSET(iter->_Fd, &fdsCpy) > 0){
             recv(iter->_Fd, _Buf, SIZE, 0);
             std::cout << "iter: " << iter->_Fd << " _ ";
             std::cout << iter->_Name << ": ";
