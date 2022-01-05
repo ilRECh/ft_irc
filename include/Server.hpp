@@ -2,16 +2,15 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "default.hpp"
+#include "Mandatory.hpp"
 #include <sys/select.h>
 #include <sys/time.h>
 #include <netdb.h>
-#include "ExceptionUni.hpp"
 
 using std::vector;
 using std::string;
 
-struct	s_account {
+struct s_account {
 	string	_Name;
 	string	_Password;
     struct sockaddr_in _SaddrClient;
@@ -21,6 +20,11 @@ struct	s_account {
 
 class Server {
 private:
+	std::string _Password;
+	std::string _Port;
+	std::string _Host;
+	std::string _PortNetwork;
+	std::string _PasswordNetwork;
 	string	ip;
 	string	port;
     bool	_LoopListen;
@@ -37,6 +41,7 @@ private:
 	void readerClient(fd_set);
 public:
 	Server(string const & ip, string const & port);
+	Server(std::vector<std::string>& argv);
 	~Server();
 	void run();
 };

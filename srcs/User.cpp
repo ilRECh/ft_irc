@@ -6,7 +6,7 @@ User::User(string const & name, Channel const & baseChannel){
 
 	while(it_begin != it_end)
 		if (!std::isalnum(*(it_begin++)))
-			throw ExceptionUni("Name " + name + " is not valid, use A-Z, a-z, 0-9");
+			throw std::runtime_error("Name " + name + " is not valid, use A-Z, a-z, 0-9");
 	this->inviteToChannel(baseChannel);
 	this->_Name = name;
 }
@@ -24,7 +24,7 @@ void User::setName(string const & name){
 
 	while(it_begin != it_end)
 		if (!std::isalnum(*(it_begin++)))
-			throw ExceptionUni("Name " + name + " is not valid, use A-Z, a-z, 0-9");
+			throw std::runtime_error("Name " + name + " is not valid, use A-Z, a-z, 0-9");
 	_Name = name;
 }
 

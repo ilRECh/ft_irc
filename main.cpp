@@ -1,30 +1,29 @@
-#include "default.hpp"
+#include "Mandatory.hpp"
 #include "Server.hpp"
 #include "User.hpp"
 #include "Password.hpp"
-#include <iostream>
-#include <string>
 
 using std::cout;
 using std::endl;
 
-int main(int ac, char **av)
-{
-	(void)av;
-	(void)ac;
-	std::string ipAddres, sPort;
+void usage() {
+	std::cout << "\n\tUsage: ./ircserv [host:port_network:password_network] <port> <password>\n\n" << std::endl;
+}
 
-	if (ac > 1){
-		sPort = av[2];
-		ipAddres = av[1];
-	}else{
-		ipAddres = "127.0.0.1";
-		sPort = "2224";
+int main(int argc, char **argv) {
+	if (argc != HOST_PORTNETWORK_PASSWORDNETWORK_PORT_PASSWORD || argc != PORT_PASSWORD) {
+		usage();
+		return 1;
 	}
-	Server server(ipAddres, sPort);
-	try{
+	try {
+		std::vector<std::string> settings(argv + 1 /*skipping name*/, argv + argc /*past-the-last argument*/);
+		Server server(settings);
+
 	    server.run();
-	}catch(std::exception & e){
+	} catch(std::exception& e) {
 	    cout << e.what() << endl;
+	} catch(...) {
+		cout << "Unexpected error" << endl;
 	}
+	return 0;
 }
