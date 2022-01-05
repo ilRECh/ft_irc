@@ -19,7 +19,6 @@ Server::Server(std::vector<std::string>& argv)
 		}
 		_PasswordNetwork = ExistingNetwork[PASSWORD_NETWORK];
 	}
-
 }
 
 //* Domain can be AF_INET
