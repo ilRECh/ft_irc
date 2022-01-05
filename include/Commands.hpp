@@ -5,8 +5,8 @@
 
 class ACommand {
 private:
-    ACommand& operator=(ACommand& that);
-    ACommand(ACommand& that);
+    ACommand& operator=(ACommand const & that);
+    ACommand(ACommand const & that);
     ACommand();
 protected:
     ACommand(std::string Name);

@@ -5,6 +5,7 @@ std::vector<std::string> damn_basic_stuff::split(std::string const& tosplit, std
     char *str = new char[tosplit.size() + 1];
     char *tmp = NULL;
 
+    str[tosplit.size()] = '\0';
     std::memmove(str, tosplit.c_str(), tosplit.size());
     tmp = std::strtok(str, delimiters.c_str());
     while (tmp != NULL) {
