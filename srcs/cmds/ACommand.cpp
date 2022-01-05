@@ -10,9 +10,9 @@ ACommand::ACommand(std::string Name)
 
 ACommand::~ACommand() {}
 
-ACommand::ACommand(ACommand& that) {}
+ACommand::ACommand(ACommand const & that) {}
 
-ACommand& ACommand::operator=(ACommand& that) {
+ACommand& ACommand::operator=(ACommand const & that) {
     return *this;
 }
 

@@ -22,3 +22,10 @@ public:
     virtual void run() = 0;
     std::string assembleMsg();
 };
+
+//Server || User?
+//Nick
+//Join
+//Privmsg
+//-Channel
+//-Operators
