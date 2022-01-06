@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
 	try {
 		std::vector<std::string> settings(argv + 1 /*skipping name*/, argv + argc /*past-the-last argument*/);
 		// Server server(settings);
-		Server server("127.0.0.1", "2222");
+		Server server("127.0.0.1", argv[1] ? argv[1] : "2224");
 
 	    server.run();
 	} catch(std::exception& e) {
