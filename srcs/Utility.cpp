@@ -15,10 +15,3 @@ std::vector<std::string> ft::split(std::string const& tosplit, std::string const
     delete [] str;
     return ret;
 }
-
-std::string ft::to_string(int num) {
-    std::stringstream ss;
-
-    ss << num;
-    return ss.str();
-}

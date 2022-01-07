@@ -87,24 +87,25 @@ void    Server::readerClient(fd_set fdsCpy){
 }
 
 void    Server::run() {
-    struct s_account account;
+    s_account account;
     struct timeval tm;
     fd_set    fdsCpy;
     int        retSelect;
 
     tm.tv_sec = 5;
     tm.tv_usec = 0;
-    std::cout << "Waiting first connect..." << std::endl;
+    std::cout << "Waiting for a connection..." << std::endl;
     while(_LoopListen){
-        memset(&account, 0, sizeof(struct s_account));
-        account._Fd = accept(_Sockfd, servinfo->ai_addr, &_Socklen);
+        memset(&account, 0, sizeof(struct s_account)); // -> User constructor instead
+        account._Fd = accept(_Sockfd, servinfo->ai_addr, &_Socklen); // -> temporary int Fd, then check if accept failed, else 
+                                                                        // dive in creating a User and add the User to Users
         if (account._Fd < 0 && errno != EAGAIN)
-            throw std::runtime_error("Fatality! accept " + 4);//std::to_string(account._Fd));
-        if (account._Fd > 0){
-            if (account._Fd > maxFd) maxFd = account._Fd;
-            fcntl(account._Fd, F_SETFD, fcntl(account._Fd, F_GETFD) | O_NONBLOCK);
-            FD_SET(account._Fd, &fds);
-            send(account._Fd, "=> Server connected!\n", 22, 0);
+            throw std::runtime_error("Fatal. Accepting the " + ft::to_string(account._Fd) + " failed");
+        if (account._Fd > 0) {
+            if (account._Fd > maxFd) maxFd = account._Fd; // mand
+            fcntl(account._Fd, F_SETFD, fcntl(account._Fd, F_GETFD) | O_NONBLOCK); // mand
+            FD_SET(account._Fd, &fds); // mand
+            send(account._Fd, "=> Server connected!\n", 22, 0); // remove later, leaving for testing now
 
             //* Выяняем кто подключился
             account._Socklen = sizeof(account._SaddrClient);
@@ -123,4 +124,9 @@ void    Server::run() {
                 throw std::runtime_error("Error: Select");
         }
     }
+}
+
+std::vector<std::string> parseCmd(std::string & Cmd) {
+    std::vector<std::string> ret = ft::split(Cmd, " \n\t\v");
+    return ret;
 }
