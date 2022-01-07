@@ -15,3 +15,10 @@ std::vector<std::string> damn_basic_stuff::split(std::string const& tosplit, std
     delete [] str;
     return ret;
 }
+
+std::string damn_basic_stuff::to_string(int num) {
+    std::stringstream ss;
+
+    ss << num;
+    return ss.str();
+}

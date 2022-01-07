@@ -1,12 +1,12 @@
 NAME		= ircserv
 
 CXX			= clang++
-CPPFLAGS	= -g $(addprefix -I, $(INCLUDES)) -std=c++14 -pedantic
+CPPFLAGS	= -g $(addprefix -I, $(INCLUDES)) -std=c++98 -pedantic
 SRC=./srcs/
 INCLUDES=./include ./include/cmds/
 
 FILES		= main \
-			$(addprefix $(SRC), Channel Server User Password Utility)
+			$(addprefix $(SRC), Channel Server User Password Utility Replies)
 
 FILES_CPP	= $(addsuffix .cpp,	$(FILES))
 FILES_HPP	= $(wildcard **/**.hpp)

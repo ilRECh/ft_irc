@@ -4,6 +4,7 @@
 #include <vector>
 #include <fcntl.h>
 #include <string>
+#include <sstream>
 #include <cstring>
 #include <cstdlib>
 #include <unistd.h>
@@ -11,7 +12,7 @@
 #include <arpa/inet.h>
 #include <algorithm>
 #include <cerrno>
-#include <random>
+#include <cstdlib>
 
 #define SIZE 256
 
@@ -26,5 +27,13 @@ typedef int status;
 namespace damn_basic_stuff
 {
     std::vector<std::string> split(std::string const& tosplit, std::string const& delimiters);
+    std::string to_string(int num);
 } // namespace damn_basic_stuff
 
+status reply(
+    int const Rplcode,
+    int const UserSocketFd,
+    std::string const & From,
+    std::string const & To,
+    std::vector<std::string> const & MsgTokens =
+        std::vector<std::string>());
