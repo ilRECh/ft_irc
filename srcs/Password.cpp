@@ -3,8 +3,7 @@
 
 // * mode: true for encrypt, false for decrypt
 string Password::cryptor(string const & dataPass, bool mode){
-	char		buf[dataPass.length() + 1];
-	char const	*cDataPass = dataPass.c_str();
+	std::string buf(dataPass);
 	size_t len = dataPass.length();
 	size_t i = 0;
 
@@ -12,11 +11,10 @@ string Password::cryptor(string const & dataPass, bool mode){
 		srand(time(NULL));
 		_Rand = rand();
 		for (; i < len; i++)
-			buf[i] = cDataPass[i] + ((_Rand * (i + 1)) & 0b11111111);
+			buf[i] = dataPass[i] + ((_Rand * (i + 1)) & 0xff);
 	}else
 		for (; i < len; i++)
-			buf[i] = cDataPass[i] - ((_Rand * (i + 1)) & 0b11111111);
-	buf[len] = 0;
+			buf[i] = dataPass[i] - ((_Rand * (i + 1)) & 0xff);
 	return (buf);
 }
 

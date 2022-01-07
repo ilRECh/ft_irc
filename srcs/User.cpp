@@ -28,5 +28,5 @@ void User::setName(string const & name){
 	_Name = name;
 }
 
-string const & User::getName( void ) const {return _Name; };
+string const & User::getName( void ) const {return _Name; }
 

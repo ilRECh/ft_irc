@@ -1,6 +1,6 @@
 #include "Mandatory.hpp"
 
-std::vector<std::string> damn_basic_stuff::split(std::string const& tosplit, std::string const& delimiters) {
+std::vector<std::string> ft::split(std::string const& tosplit, std::string const& delimiters) {
     std::vector<std::string> ret;
     char *str = new char[tosplit.size() + 1];
     char *tmp = NULL;
@@ -16,7 +16,7 @@ std::vector<std::string> damn_basic_stuff::split(std::string const& tosplit, std
     return ret;
 }
 
-std::string damn_basic_stuff::to_string(int num) {
+std::string ft::to_string(int num) {
     std::stringstream ss;
 
     ss << num;

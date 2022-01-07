@@ -11,7 +11,7 @@ Server::Server(std::vector<std::string>& argv)
 		throw std::runtime_error("Port is out of range");
 	}
 	if (r_it != argv.rend()) {
-		std::vector<std::string> ExistingNetwork = damn_basic_stuff::split(*r_it--, ":");
+		std::vector<std::string> ExistingNetwork = ft::split(*r_it--, ":");
 		_Host = ExistingNetwork[HOST];
 		_PortNetwork = ExistingNetwork[PORT_NETWORK];
 		if (1024 > std::atoi(_PortNetwork.c_str()) || std::atoi(_PortNetwork.c_str()) > 65535) {

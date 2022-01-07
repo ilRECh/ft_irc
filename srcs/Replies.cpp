@@ -9,7 +9,7 @@ status reply(
         std::string const & To,
         std::vector<std::string> const & MsgTokens) {
     std::vector<std::string>::const_iterator CurToken = MsgTokens.begin();
-    std::string msg = From + damn_basic_stuff::to_string(Rplcode) + To + ": ";
+    std::string msg = From + ft::to_string(Rplcode) + To + ": ";
     switch (Rplcode) {
         case ERR_NOSUCHNICK:
             msg += *CurToken++ + " :No such nick/channel\n";

@@ -24,11 +24,10 @@
 
 typedef int status;
 
-namespace damn_basic_stuff
-{
+namespace ft {
     std::vector<std::string> split(std::string const& tosplit, std::string const& delimiters);
     std::string to_string(int num);
-} // namespace damn_basic_stuff
+} // namespace ft
 
 status reply(
     int const Rplcode,
