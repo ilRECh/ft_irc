@@ -2,6 +2,7 @@
 
 #include "Mandatory.hpp"
 #include "Server.hpp"
+#include "Commands.hpp"
 #include "User.hpp"
 
 using std::vector;
@@ -16,6 +17,8 @@ private:
 	std::string _Host;
 	std::string _PortNetwork;
 	std::string _PasswordNetwork;
+	std::vector<ACommand *> _Commands;
+
 	string	ip;
 	string	port;
     bool	_LoopListen;

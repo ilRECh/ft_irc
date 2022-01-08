@@ -1,9 +1,11 @@
 #include "Server.hpp"
 
 Server::Server(std::vector<std::string>& argv)
-    :   ip(0),
+    :   _Commands(),
+        ip(0),
         port(0),
         _LoopListen(true) {
+    _Commands.push_back(new USER());
     std::vector<std::string>::reverse_iterator r_it = argv.rbegin();
 	_Password = *r_it--;
 	_Port = *r_it--;
@@ -26,6 +28,7 @@ Server::Server(string const & ip, string const & port)
     :    ip(ip),
         port(port),
         _LoopListen(true) {
+    _Commands.push_back(new USER());
     addrinfo hints;
 
     memset(&hints, 0, sizeof hints);
@@ -62,6 +65,9 @@ Server::~Server(void)
     close(_Sockfd);
     for (std::vector<User *>::iterator it = _Users.begin(); it != _Users.end(); ++it) {
         close((*it)->_Fd);
+        delete *it;
+    }
+    for (std::vector<ACommand *>::iterator it = _Commands.begin(); it != _Commands.end(); ++it) {
         delete *it;
     }
 }

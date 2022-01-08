@@ -12,7 +12,6 @@ class Channel;
 
 class User : public Password {
 private:
-	User();
 	std::string _Password;
 	vector<Channel const *> _Channels;
 	std::string _Name;
