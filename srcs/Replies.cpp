@@ -1,6 +1,5 @@
 #include "Mandatory.hpp"
 #include "Replies.hpp"
-#include "User.hpp"
 
 status reply(
         int const Rplcode,

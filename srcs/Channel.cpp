@@ -1,3 +1,4 @@
+#include "Mandatory.hpp"
 #include "Channel.hpp"
 
 //! 	enum ePrivateLevel

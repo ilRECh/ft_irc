@@ -1,18 +1,13 @@
 #pragma once
 
 #include "Mandatory.hpp"
+#include "Server.hpp"
 #include "User.hpp"
 
 using std::vector;
 using std::string;
 
-struct s_account {
-	string	_Name;
-	string	_Password;
-    struct sockaddr_in _SaddrClient;
-    socklen_t _Socklen;
-	int	_Fd;
-};
+class User;
 
 class Server {
 private:
@@ -24,8 +19,8 @@ private:
 	string	ip;
 	string	port;
     bool	_LoopListen;
-	vector<s_account> _Accounts;
-	struct addrinfo *servinfo;
+	std::vector<User *> _Users;
+	addrinfo *servinfo;
     // struct sockaddr_in _Saddr;
     socklen_t _Socklen;
     int _Sockfd;

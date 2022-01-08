@@ -15,6 +15,7 @@
 #include <sys/select.h>
 #include <sys/time.h>
 #include <netdb.h>
+#include <ctime>
 
 #define SIZE 256
 #define HOST_PORTNETWORK_PASSWORDNETWORK_PORT_PASSWORD 4

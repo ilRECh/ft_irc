@@ -1,7 +1,6 @@
 #pragma once
-#include <string>
-#include <string.h>
-#include <ctime>
+
+#include "Mandatory.hpp"
 
 using std::string;
 using std::srand;

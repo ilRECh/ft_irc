@@ -1,7 +1,7 @@
 #pragma once
-#include <string>
-#include <vector>
-#include <stdlib.h>
+
+#include "Mandatory.hpp"
+#include "Server.hpp"
 #include "User.hpp"
 
 using std::string;
