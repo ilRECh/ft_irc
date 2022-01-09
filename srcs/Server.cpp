@@ -23,7 +23,8 @@ Server::Server(std::vector<std::string>& argv)
 
 //* Domain can be AF_INET
 Server::Server(string const & ip, string const & port)
-	:    ip(ip),
+	:	ip(ip),
+		maxFd(0),
 		port(port),
 		_LoopListen(true) {
 	struct addrinfo hints;
@@ -37,23 +38,22 @@ Server::Server(string const & ip, string const & port)
 	if (getaddrinfo(ip.c_str(), port.c_str(), &hints, &servinfo))
 		throw std::runtime_error(string("getaddrinfo error: ") + gai_strerror(errno));
 	if (1024 > std::atoi(port.c_str()) || std::atoi(port.c_str()) > 49151)
-		throw std::runtime_error("wrong port!");
+		throw std::runtime_error("wrong port! min 1024, max 49151,");
 
 
 	std::cout << "Server will be bound to port: " << port << std::endl;
 	_Sockfd = socket(AF_INET, SOCK_STREAM/* | SOCK_NONBLOCK*/, 0);
 	if (_Sockfd < 0)
-		throw std::runtime_error("Fatal. What to do now ?");
+		throw std::runtime_error(std::string("socket(): ")  + strerror(errno));
 	int    retFcntl = fcntl(_Sockfd, F_GETFL, 0);
 	if (retFcntl < 0 || fcntl(_Sockfd, F_SETFL, retFcntl | O_NONBLOCK) < 0)
-		throw std::runtime_error("error: fcntl");
+		throw std::runtime_error(std::string("fcntl(): ")   + strerror(errno));
 	_Socklen = sizeof(struct sockaddr);
 	if (bind(_Sockfd, servinfo->ai_addr, _Socklen))
-		throw std::runtime_error("Fatality! bind");
+		throw std::runtime_error(std::string("bind(): ")    + strerror(errno));
 	if (listen(_Sockfd, 1))
-		throw std::runtime_error("Listen error");
+		throw std::runtime_error(std::string("listen(): ")  + strerror(errno));
 	FD_ZERO(&fds);
-	maxFd = 0;
 }
 
 Server::~Server(void)
@@ -100,7 +100,8 @@ void    Server::run() {
 		memset(&account, 0, sizeof(struct s_account));
 		account._Fd = accept(_Sockfd, servinfo->ai_addr, &_Socklen);
 		if (account._Fd < 0 && errno != EAGAIN)
-			throw std::runtime_error("Fatality! accept " + std::to_string(account._Fd));
+			throw std::runtime_error("Fatality! accept " \
+				 + std::to_string(account._Fd) + ": " + strerror(errno));
 		if (account._Fd > 0){
 			if (account._Fd > maxFd) maxFd = account._Fd;
 			fcntl(account._Fd, F_SETFD, fcntl(account._Fd, F_GETFD) | O_NONBLOCK);
@@ -123,7 +124,7 @@ void    Server::run() {
 			if (retSelect > 0)
 				readerClient(fdsCpy);
 			else if (retSelect < 0)
-				throw std::runtime_error("Error: Select");
+				throw std::runtime_error(std::string("select(): ") + strerror(errno));
 		}
 	}
 }
