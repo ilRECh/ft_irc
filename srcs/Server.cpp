@@ -31,16 +31,16 @@ Server::Server(string const & ip, string const & port)
     _Commands.push_back(new USER());
     addrinfo hints;
 
-    memset(&hints, 0, sizeof hints);
-    hints.ai_family = AF_INET;
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_flags = AI_PASSIVE;
+	memset(&hints, 0, sizeof hints);
+	hints.ai_family = AF_INET;
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_flags = AI_PASSIVE;
 
 
-    if (getaddrinfo(ip.c_str(), port.c_str(), &hints, &servinfo))
-        throw std::runtime_error(string("getaddrinfo error: ") + gai_strerror(errno));
-    if (1024 > std::atoi(port.c_str()) || std::atoi(port.c_str()) > 49151)
-        throw std::runtime_error("wrong port!");
+	if (getaddrinfo(ip.c_str(), port.c_str(), &hints, &servinfo))
+		throw std::runtime_error(string("getaddrinfo error: ") + gai_strerror(errno));
+	if (1024 > std::atoi(port.c_str()) || std::atoi(port.c_str()) > 49151)
+		throw std::runtime_error("wrong port! min 1024, max 49151,");
 
 
     std::cout << "Server will be bound to port: " << port << std::endl;
