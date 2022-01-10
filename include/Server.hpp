@@ -1,22 +1,14 @@
 #pragma once
 
-#include <stdlib.h>
-#include <string.h>
 #include "Mandatory.hpp"
-#include <sys/select.h>
-#include <sys/time.h>
-#include <netdb.h>
+#include "Server.hpp"
+#include "Commands.hpp"
+#include "User.hpp"
 
 using std::vector;
 using std::string;
 
-struct s_account {
-	string	_Name;
-	string	_Password;
-    struct sockaddr_in _SaddrClient;
-    socklen_t _Socklen;
-	int	_Fd;
-};
+class User;
 
 class Server {
 private:
@@ -25,11 +17,13 @@ private:
 	std::string _Host;
 	std::string _PortNetwork;
 	std::string _PasswordNetwork;
+	std::vector<ACommand *> _Commands;
+
 	string	ip;
 	string	port;
     bool	_LoopListen;
-	vector<s_account> _Accounts;
-	struct addrinfo *servinfo;
+	std::vector<User *> _Users;
+	addrinfo *servinfo;
     // struct sockaddr_in _Saddr;
     socklen_t _Socklen;
     int _Sockfd;
@@ -44,4 +38,5 @@ public:
 	Server(std::vector<std::string>& argv);
 	~Server();
 	void run();
+	static std::vector<std::string> parseCmd(std::string Cmd);
 };

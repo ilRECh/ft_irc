@@ -1,17 +1,19 @@
 #include "Server.hpp"
 
 Server::Server(std::vector<std::string>& argv)
-	:   ip(0),
-		port(0),
-		_LoopListen(true) {
-	std::vector<std::string>::reverse_iterator r_it = argv.rbegin();
+    :   _Commands(),
+        ip(0),
+        port(0),
+        _LoopListen(true) {
+    _Commands.push_back(new USER());
+    std::vector<std::string>::reverse_iterator r_it = argv.rbegin();
 	_Password = *r_it--;
 	_Port = *r_it--;
 	if (1024 > std::atoi(_Port.c_str()) || std::atoi(_Port.c_str()) > 65535) {
 		throw std::runtime_error("Port is out of range");
 	}
 	if (r_it != argv.rend()) {
-		std::vector<std::string> ExistingNetwork = damn_basic_stuff::split(*r_it--, ":");
+		std::vector<std::string> ExistingNetwork = ft::split(*r_it--, ":");
 		_Host = ExistingNetwork[HOST];
 		_PortNetwork = ExistingNetwork[PORT_NETWORK];
 		if (1024 > std::atoi(_PortNetwork.c_str()) || std::atoi(_PortNetwork.c_str()) > 65535) {
@@ -23,11 +25,11 @@ Server::Server(std::vector<std::string>& argv)
 
 //* Domain can be AF_INET
 Server::Server(string const & ip, string const & port)
-	:	ip(ip),
-		maxFd(0),
-		port(port),
-		_LoopListen(true) {
-	struct addrinfo hints;
+    :    ip(ip),
+        port(port),
+        _LoopListen(true) {
+    _Commands.push_back(new USER());
+    addrinfo hints;
 
 	memset(&hints, 0, sizeof hints);
 	hints.ai_family = AF_INET;
@@ -41,90 +43,90 @@ Server::Server(string const & ip, string const & port)
 		throw std::runtime_error("wrong port! min 1024, max 49151,");
 
 
-	std::cout << "Server will be bound to port: " << port << std::endl;
-	_Sockfd = socket(AF_INET, SOCK_STREAM/* | SOCK_NONBLOCK*/, 0);
-	if (_Sockfd < 0)
-		throw std::runtime_error(std::string("socket(): ")  + strerror(errno));
-	int    retFcntl = fcntl(_Sockfd, F_GETFL, 0);
-	if (retFcntl < 0 || fcntl(_Sockfd, F_SETFL, retFcntl | O_NONBLOCK) < 0)
-		throw std::runtime_error(std::string("fcntl(): ")   + strerror(errno));
-	_Socklen = sizeof(struct sockaddr);
-	if (bind(_Sockfd, servinfo->ai_addr, _Socklen))
-		throw std::runtime_error(std::string("bind(): ")    + strerror(errno));
-	if (listen(_Sockfd, 1))
-		throw std::runtime_error(std::string("listen(): ")  + strerror(errno));
-	FD_ZERO(&fds);
+    std::cout << "Server will be bound to port: " << port << std::endl;
+    _Sockfd = socket(AF_INET, SOCK_STREAM/* | SOCK_NONBLOCK*/, 0);
+    if (_Sockfd < 0)
+        throw std::runtime_error("Fatal. What to do now ?");
+    int    retFcntl = fcntl(_Sockfd, F_GETFL, 0);
+    if (retFcntl < 0 || fcntl(_Sockfd, F_SETFL, retFcntl | O_NONBLOCK) < 0)
+        throw std::runtime_error("error: fcntl");
+    _Socklen = sizeof(sockaddr);
+    if (bind(_Sockfd, servinfo->ai_addr, _Socklen))
+        throw std::runtime_error("Fatality! bind");
+    if (listen(_Sockfd, 1))
+        throw std::runtime_error("Listen error");
+    FD_ZERO(&fds);
+    maxFd = 0;
 }
 
 Server::~Server(void)
 {
-	vector<s_account>::iterator i;
-	
-	_LoopListen = false;
-	freeaddrinfo(servinfo);
-	close(_Sockfd);
-	i = _Accounts.begin();
-	while (i != _Accounts.end())
-		close(i++->_Fd);
-	_Accounts.clear();
+    freeaddrinfo(servinfo);
+    close(_Sockfd);
+    for (std::vector<User *>::iterator it = _Users.begin(); it != _Users.end(); ++it) {
+        close((*it)->_Fd);
+        delete *it;
+    }
+    for (std::vector<ACommand *>::iterator it = _Commands.begin(); it != _Commands.end(); ++it) {
+        delete *it;
+    }
 }
 
-void    Server::readerClient(fd_set fdsCpy){
-	vector<s_account>::iterator iter = _Accounts.begin();
-	vector<s_account>::iterator iend = _Accounts.end();
-
-	memset(_Buf, 0, SIZE);
-	for(;iter != iend; iter++){
-		if (FD_ISSET(iter->_Fd, &fdsCpy) > 0){
-			recv(iter->_Fd, _Buf, SIZE, 0);
-			std::cout << "iter: " << iter->_Fd << " _ ";
-			std::cout << iter->_Name << ": ";
-			std::cout << _Buf << std::endl;
-			if (strchr(_Buf, '#'))
-				_LoopListen = false;
-			memset(_Buf, 0, SIZE);
-		}
-	}
+void    Server::readerClient(fd_set fdsCpy) {
+    memset(_Buf, 0, SIZE);
+    for(std::vector<User *>::iterator it = _Users.begin(); it != _Users.end(); ++it) {
+        if (FD_ISSET((*it)->_Fd, &fdsCpy) > 0){
+            recv((*it)->_Fd, _Buf, SIZE, 0);
+            std::cout << "it: " << (*it)->_Fd << " _ ";
+            std::cout << (*it)->getName() << ": ";
+            std::cout << _Buf << std::endl;
+            if (strchr(_Buf, '#'))
+                _LoopListen = false;
+            memset(_Buf, 0, SIZE);
+        }
+    }
 }
 
-void    Server::run() {
-	s_account	account;
-	timeval		tm;
-	fd_set		fdsCpy;
-	int			retSelect;
+void Server::run() {
+    timeval tm = {5, 0};
+    fd_set fdsCpy = {{0}}; // Why?
+    int retSelect = 0;
 
-	tm.tv_sec = 5;
-	tm.tv_usec = 0;
-	std::cout << "Waiting first connect..." << std::endl;
-	while(_LoopListen){
-		memset(&account, 0, sizeof(struct s_account));
-		account._Fd = accept(_Sockfd, servinfo->ai_addr, &_Socklen);
-		if (account._Fd < 0 && errno != EAGAIN)
-			throw std::runtime_error("Fatality! accept " \
-				 + std::to_string(account._Fd) + ": " + strerror(errno));
-		if (account._Fd > 0){
-			if (account._Fd > maxFd) maxFd = account._Fd;
-			fcntl(account._Fd, F_SETFD, fcntl(account._Fd, F_GETFD) | O_NONBLOCK);
-			FD_SET(account._Fd, &fds);
-			send(account._Fd, "=> Server connected!\n", 22, 0);
+    std::cout << "Waiting for a connection..." << std::endl;
+    while(_LoopListen) {
+        int const UserFd = accept(_Sockfd, servinfo->ai_addr, &_Socklen);
+        if (UserFd >= 0) {
+            if (UserFd > maxFd) {
+                maxFd = UserFd; 
+            }
+            fcntl(UserFd, F_SETFD, fcntl(UserFd, F_GETFD) | O_NONBLOCK);
+            FD_SET(UserFd, &fds);
+            send(UserFd, "=> Server connected!\n", 22, 0);
+            sockaddr_in AddrUser = {0, 0, {0}, {0}};
+            socklen_t Socklen = sizeof(AddrUser);
+            //* Выяняем кто подключился
+            std::cout << "status: " << getpeername(UserFd, (sockaddr *)&AddrUser, &Socklen) << '\n';
+            // Left for testing, remove if Release
+            std::cout << "<<<<<<< " << inet_ntoa(AddrUser.sin_addr) << std::endl;
+            User *NewUser = new User("Name", UserFd, AddrUser, Socklen);
+            _Users.push_back(NewUser);
+        } else if (UserFd < 0 && errno != EAGAIN) {
+            throw std::runtime_error("Fatal. Accepting the " + ft::to_string(UserFd) + " failed");
+        }
+        retSelect = 1;
+        while(retSelect && maxFd) {
+            fdsCpy = fds;
+            retSelect = select(maxFd + 1, &fdsCpy, NULL, NULL, &tm);
+            if (retSelect > 0) {
+                readerClient(fdsCpy);
+            } else if (retSelect < 0) {
+                throw std::runtime_error("Error: Select");
+            }
+        }
+    }
+}
 
-			//* Выяняем кто подключился
-			account._Socklen = sizeof(account._SaddrClient);
-			getpeername(account._Fd, (struct sockaddr *)&account._SaddrClient, &account._Socklen);
-			std::cout << "К нам подключились c этого ip >>> " \
-				<< inet_ntoa(account._SaddrClient.sin_addr) << " <<<" <<std::endl;
-			_Accounts.push_back(account);
-		}
-		retSelect = 1;
-		while(retSelect && maxFd){
-			fdsCpy = fds;
-			// Проверяем сообщения от клиентов
-			retSelect = select(maxFd + 1, &fdsCpy, NULL, NULL, &tm);
-			// Если был мессендж то читаем в readerClient()
-			if (retSelect > 0)
-				readerClient(fdsCpy);
-			else if (retSelect < 0)
-				throw std::runtime_error(std::string("select(): ") + strerror(errno));
-		}
-	}
+std::vector<std::string> parseCmd(std::string & Cmd) {
+    std::vector<std::string> ret = ft::split(Cmd, " \n\t\v");
+    return ret;
 }

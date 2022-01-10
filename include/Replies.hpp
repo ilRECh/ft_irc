@@ -4,7 +4,7 @@
 /*                               Error Replies.                               */
 /* -------------------------------------------------------------------------- */
 
-#define	ERR_NOSUCHNICK		401/*
+#define	ERR_NOSUCHNICK		401 /*
 "<nickname> :No such nick/channel"
 
 - Used to indicate the nickname parameter supplied to a
