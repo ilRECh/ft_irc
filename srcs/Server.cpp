@@ -46,15 +46,15 @@ Server::Server(string const & ip, string const & port)
     std::cout << "Server will be bound to port: " << port << std::endl;
     _Sockfd = socket(AF_INET, SOCK_STREAM/* | SOCK_NONBLOCK*/, 0);
     if (_Sockfd < 0)
-        throw std::runtime_error("Fatal. What to do now ?");
+        throw std::runtime_error(string("Socket: ") + strerror(errno));
     int    retFcntl = fcntl(_Sockfd, F_GETFL, 0);
     if (retFcntl < 0 || fcntl(_Sockfd, F_SETFL, retFcntl | O_NONBLOCK) < 0)
-        throw std::runtime_error("error: fcntl");
+        throw std::runtime_error(string("fcntl: ") + strerror(errno));
     _Socklen = sizeof(sockaddr);
     if (bind(_Sockfd, servinfo->ai_addr, _Socklen))
-        throw std::runtime_error("Fatality! bind");
+        throw std::runtime_error(string("bind: ") + strerror(errno));
     if (listen(_Sockfd, 1))
-        throw std::runtime_error("Listen error");
+        throw std::runtime_error(string("listen: ") + strerror(errno));
     FD_ZERO(&fds);
     maxFd = 0;
 }
@@ -89,7 +89,7 @@ void    Server::readerClient(fd_set fdsCpy) {
 
 void Server::run() {
     timeval tm = {5, 0};
-    fd_set fdsCpy = {{0}}; // Why?
+    fd_set fdsCpy = {{0}}; // Why? ... for FD_SET() & FD_ISSET()
     int retSelect = 0;
 
     std::cout << "Waiting for a connection..." << std::endl;
@@ -111,7 +111,7 @@ void Server::run() {
             User *NewUser = new User("Name", UserFd, AddrUser, Socklen);
             _Users.push_back(NewUser);
         } else if (UserFd < 0 && errno != EAGAIN) {
-            throw std::runtime_error("Fatal. Accepting the " + ft::to_string(UserFd) + " failed");
+            throw std::runtime_error("Fatal. Accepting the " + ft::to_string(UserFd) + " failed.\n" + strerror(errno));
         }
         retSelect = 1;
         while(retSelect && maxFd) {
