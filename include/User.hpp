@@ -15,6 +15,8 @@ private:
 	std::string _Password;
 	vector<Channel const *> _Channels;
 	std::string _Name;
+	std::string _NickName;
+	std::string _RealName;
 public:
 	User(
 		std::string const & Name,
@@ -28,6 +30,7 @@ public:
 	bool operator!=(const User& that) const;
 	bool operator==(const User& that) const;
 
+	std::string _Msg;
 	int const _Fd;
 	sockaddr_in const _AddrUser;
 	socklen_t const _Socklen;
