@@ -146,7 +146,7 @@ void Server::run()
     }
 }
 
-int processCmd(User *That)
+int Server::processCmd(User *That)
 {
     std::vector<std::string> Value = ft::split(That->_Msg, "\r");
 
@@ -156,12 +156,22 @@ int processCmd(User *That)
     {
         parseCmd(*it, That);
     }
+    return 0; // compiler error
 }
 
-int parseCmd(std::string &Cmd, User *That)
+int Server::parseCmd(std::string &Cmd, User *That)
 {
     std::vector<std::string> Value = ft::split(Cmd, " \t");
 
+    That->_Msg.clear();
+    for (std::vector<ACommand *>::iterator it = _Commands.begin(); it != _Commands.end(); ++it) {
+        if (Value[0] == (*it)->_Name) {
+            (*it)->run();
+            return 0; // reply() <- command successful ?
+        }
+    }
+    std::string arr[] = { Value[0] };
+    return reply(ERR_UNKNOWNCOMMAND, That->_Fd, "Server", That->getName(), std::vector<std::string>(arr, arr + sizeof(arr)));
 }
 
 std::string Server::recvReader(int Fd)
