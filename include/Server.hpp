@@ -27,7 +27,6 @@ private:
     // struct sockaddr_in _Saddr;
     socklen_t _Socklen;
     int _Sockfd;
-    char _Buf[SIZE];
 
 	fd_set	fds;
 	int		maxFd;
@@ -39,4 +38,8 @@ public:
 	~Server();
 	void run();
 	static std::vector<std::string> parseCmd(std::string Cmd);
+
+    std::string recvReader(int fd);
+    void serverLog(User *that);
+    void sendMsg(User *From, User *To);
 };
