@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Mandatory.hpp"
+#include "Server.hpp"
+#include "Replies.hpp"
 
 class Server;
 class User;
@@ -11,28 +13,25 @@ private:
     ACommand(ACommand const & that);
     ACommand();
 protected:
-    ACommand(std::string Name);
-public:
-    virtual ~ACommand();
-private:
+    ACommand(std::string Name, Server const *Server);
     User *_User;
-    Server *_Server;
     std::vector<std::string> _Tokens;
 public:
+    virtual ~ACommand();
     std::string const _Name;
-    virtual void run() = 0;
-    std::string assembleMsg();
+    Server const *_Server;
+    void setTokens(std::vector<std::string> const & Tokens);
+    void setUser(User *_User);
+    virtual int run() = 0;
 };
 
-class USER : public ACommand {
+class PASS : public ACommand {
 private:
+    PASS();
+    PASS(PASS const &that);
+    PASS& operator=(PASS const &that);
 public:
-    USER(): ACommand("USER") {} ;
-    virtual void run() {} ; //override
+    PASS(Server const *Server);
+    virtual ~PASS();
+    virtual int run(); //override
 };
-//Server || User?
-//Nick
-//Join
-//Privmsg
-//-Channel
-//-Operators

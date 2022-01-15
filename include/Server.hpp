@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Mandatory.hpp"
-#include "Server.hpp"
 #include "Commands.hpp"
 #include "User.hpp"
 #include "Replies.hpp"
@@ -10,6 +9,7 @@ using std::vector;
 using std::string;
 
 class User;
+class ACommand;
 
 class Server {
 private:

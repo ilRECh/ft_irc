@@ -9,7 +9,7 @@ std::vector<std::string> ft::split(std::string const& tosplit, std::string const
     std::memmove(str, tosplit.c_str(), tosplit.size());
     tmp = std::strtok(str, delimiters.c_str());
     while (tmp != NULL) {
-        if (delimiters[0] == '\r' && tmp[0] == '\n')
+        if (delimiters[0] == '\r' && tmp[0] == '\n' && tmp[1])
             ret.push_back(tmp + 1);
         else
             ret.push_back(tmp);

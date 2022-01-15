@@ -4,11 +4,11 @@
 status reply(
         int const Rplcode,
         int const UserSocketFd,
-        std::string const & From,
         std::string const & To,
-        std::vector<std::string> const & MsgTokens) {
+        std::vector<std::string> const & MsgTokens,
+        std::string const & From) {
     std::vector<std::string>::const_iterator CurToken = MsgTokens.begin();
-    std::string msg = From + ft::to_string(Rplcode) + To + ": ";
+    std::string msg = "(" + From + " " + ft::to_string(Rplcode) + " " + To + ") ";
     switch (Rplcode) {
         case ERR_NOSUCHNICK:
             msg += *CurToken++ + " :No such nick/channel\n";
@@ -470,9 +470,19 @@ status reply(
             msg += ":" + *CurToken++ + "\n";
             break ;
         default:
-            msg += "Failure Unknown";
+            while (CurToken != MsgTokens.end()) {
+                msg += *CurToken++;
+            }
             break ;
     }
     send(UserSocketFd, msg.c_str(), msg.size(), 0/*MSG_NOSIGNAL*/);
     return Rplcode;
+}
+
+status reply(
+    int const UserSocketFd,
+    std::string const & To,
+    std::vector<std::string> const & MsgTokens,
+    std::string const & From) {
+    return reply(0, UserSocketFd, To, MsgTokens, From);
 }

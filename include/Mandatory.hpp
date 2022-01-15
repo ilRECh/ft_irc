@@ -24,6 +24,8 @@
 #define PORT_NETWORK 1
 #define HOST 0
 
+#define L(x) std::vector<std::string>(x, x + (sizeof(x) / sizeof(std::string)))
+
 typedef int status;
 
 namespace ft {
@@ -40,7 +42,12 @@ namespace ft {
 status reply(
     int const Rplcode,
     int const UserSocketFd,
-    std::string const & From,
     std::string const & To,
-    std::vector<std::string> const & MsgTokens =
-        std::vector<std::string>());
+    std::vector<std::string> const & MsgTokens = std::vector<std::string>(),
+    std::string const & From = "Server");
+
+status reply(
+    int const UserSocketFd,
+    std::string const & To,
+    std::vector<std::string> const & MsgTokens = std::vector<std::string>(),
+    std::string const & From = "Server");
