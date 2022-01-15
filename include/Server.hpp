@@ -4,6 +4,7 @@
 #include "Server.hpp"
 #include "Commands.hpp"
 #include "User.hpp"
+#include "Replies.hpp"
 
 using std::vector;
 using std::string;
@@ -37,7 +38,11 @@ public:
 	Server(std::vector<std::string>& argv);
 	~Server();
 	void run();
-	static std::vector<std::string> parseCmd(std::string Cmd);
+	// static std::vector<std::string> parseCmd(std::string Cmd);
+
+	int processCmd(User *That);
+	int parseCmd(std::string &Cmd, User *That);
+	std::string timeStamp() { return "A long time ago"; }
 
     std::string recvReader(int fd);
     void serverLog(User *that);
