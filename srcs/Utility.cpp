@@ -39,3 +39,13 @@ std::vector<std::string> ft::splitByCmds(
     }
     return ret;
 }
+
+std::string ft::assemble(
+        std::vector<std::string>::iterator Start,
+        std::vector<std::string>::iterator Stop) {
+    std::string Result;
+    while (Start != Stop) {
+        Result += *Start++;
+    }
+    return Result;
+}

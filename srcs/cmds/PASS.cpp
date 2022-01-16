@@ -6,16 +6,13 @@ PASS::PASS(Server const *Server)
 PASS::~PASS() {}
 
 int PASS::run() {
-    for (std::vector<std::string>::iterator it = _Tokens.begin(); it != _Tokens.end(); ++it) {
-        std::cout << '|' << *it << '|' << '\n';
-    }
-    if (_Tokens.size() < 2 || _Tokens[2].empty()) {
-        std::string arr[] = {"PASS"};
+    if (_Argument.empty()) {
+        std::string arr[] = { _Name };
         return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
-    } else if (not _User->getPassword().empty()) {
+    } else if (_User->getRegistered() == true) {
         return reply(ERR_ALREADYREGISTRED, _User->_Fd, _User->getName());
     }
-    _User->setPassword(_Tokens[1]);
-    std::string arr[] = { ":", _User->getName(), " PASS ", _Tokens[1] };
+    _User->setPassword(_Argument);
+    std::string arr[] = { ":", _User->getName(), " ", _Name, _Argument };
     return reply(_User->_Fd, _User->getName(), L(arr));
 }

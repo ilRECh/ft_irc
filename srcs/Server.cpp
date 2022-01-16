@@ -83,20 +83,6 @@ Server::~Server(void)
     }
 }
 
-void Server::readerClient(fd_set fdsCpy)
-{
-    for (std::vector<User *>::iterator it = _Users.begin();
-         it != _Users.end(); ++it)
-    {
-        if (FD_ISSET((*it)->_Fd, &fdsCpy) > 0)
-        {
-            (*it)->_Msg = recvReader((*it)->_Fd);
-            processCmd(*it);
-            serverLog(*it);
-        }
-    }
-}
-
 void Server::run()
 {
     timeval tm = {5, 0};
@@ -146,39 +132,18 @@ void Server::run()
     }
 }
 
-int Server::processCmd(User *That)
+void Server::readerClient(fd_set fdsCpy)
 {
-    std::vector<std::string> Value = ft::splitByCmds(That->_Msg, "\r\n");
-
-    // That->_Msg.clear();
-    for (std::vector<std::string>::iterator it = Value.begin();
-         it != Value.end(); ++it)
+    for (std::vector<User *>::iterator it = _Users.begin();
+         it != _Users.end(); ++it)
     {
-        parseCmd(*it, That);
-        // proceeding command here instead of parseCmd
-    }
-    return 0; // compiler error
-}
-
-int Server::parseCmd(std::string &Cmd, User *User)
-{
-    std::vector<std::string> Value = ft::split(Cmd, " \t\n");
-
-
-    for (std::vector<std::string>::iterator it = Value.begin(); it != Value.end(); ++it) {
-        std::cout << '|' << *it << '|' << '\n';
-    }
-    // User->_Msg.clear();
-    for (std::vector<ACommand *>::iterator it = _Commands.begin(); it != _Commands.end(); ++it) {
-        if (Value[0] == (*it)->_Name) {
-            (*it)->setTokens(Value);
-            (*it)->setUser(User);
-            (*it)->run();
-            return 0; // reply() <- command successful ?
+        if (FD_ISSET((*it)->_Fd, &fdsCpy) > 0)
+        {
+            (*it)->_Msg = recvReader((*it)->_Fd);
+            processCmd(*it);
+            serverLog(*it);
         }
     }
-    std::string arr[] = { Value[0] };
-    return reply(ERR_UNKNOWNCOMMAND, User->_Fd, User->getName(), L(arr));
 }
 
 std::string Server::recvReader(int Fd)
@@ -197,16 +162,69 @@ std::string Server::recvReader(int Fd)
     return (ReturnValue);
 }
 
-void Server::sendMsg(User *From, User *To)
+int Server::processCmd(User *User)
 {
-    std::string ReturnValue;
+    std::vector<std::string> Cmds = ft::splitByCmds(User->_Msg, "\r\n");
 
-    ReturnValue += timeStamp() + " " + From->getName() + " " + From->_Msg;
-    send(To->_Fd , ReturnValue.c_str(), ReturnValue.size(), 0);
-    From->_Msg.clear();
+    for (std::vector<std::string>::iterator it = Cmds.begin();
+            it != Cmds.end(); ++it) {
+        std::pair<std::string, std::string> Cmd = parseCmd(*it);
+        proceedCmd(Cmd, User);
+    }
+    return 0;
 }
+
+std::pair<std::string, std::string> Server::parseCmd(std::string &Cmd)
+{
+    // std::vector<std::string> Value = ft::split(Cmd, " \t\n");
+    if (Cmd.end()[-1] == '\n') {
+        Cmd.erase(Cmd.end()-1);
+    }
+    char const *Empty = "\010\011\012\013\014\015 ";
+    size_t pos_WordStart = Cmd.find_first_not_of(Empty);
+    size_t pos_WordEnd = (pos_WordStart != Cmd.npos) ? Cmd.find_first_of(Empty, pos_WordStart) : Cmd.npos;
+    std::string pair_First;
+    if (pos_WordStart != Cmd.npos && pos_WordEnd != Cmd.npos) {
+        pair_First = Cmd.substr(pos_WordStart, pos_WordEnd - pos_WordStart);
+    } else {
+        pair_First = Cmd;
+    }
+    std::string pair_Second;
+    if (pos_WordEnd != Cmd.npos) {
+        pair_Second = Cmd.substr(pos_WordEnd);
+    }
+    std::pair<std::string, std::string> Value(pair_First, pair_Second);
+    std::cout << '|' << Value.first << '|' << Value.second << '|' << '\n';
+    // for (std::vector<std::string>::iterator it = Value.begin();
+    //         it != Value.end(); ++it) {
+    //     std::cout << '|' << *it << '|' << '\n';
+    // }
+    return Value;
+}
+
+int Server::proceedCmd(std::pair<std::string, std::string> Cmd, User *User) {
+    for (std::vector<ACommand *>::iterator command = _Commands.begin();
+            command != _Commands.end(); ++command) {
+        if (Cmd.first == (*command)->_Name) {
+            (*command)->setArgument(Cmd.second);
+            (*command)->setUser(User);
+            return (*command)->run();
+        }
+    }
+    std::string arr[] = { Cmd.first };
+    return reply(ERR_UNKNOWNCOMMAND, User->_Fd, User->getName(), L(arr));
+}
+
+// void Server::sendMsg(User *From, User *To)
+// {
+//     std::string ReturnValue;
+
+//     ReturnValue += timeStamp() + " " + From->getName() + " " + From->_Msg;
+//     send(To->_Fd , ReturnValue.c_str(), ReturnValue.size(), 0);
+//     From->_Msg.clear();
+// }
 
 void Server::serverLog(User *That)
 {
-    std::cout << That->getName() << ": "<< That->_Msg << std::endl;
+    std::cout << That->getName() << ": "<< That->_Msg;
 }

@@ -41,7 +41,10 @@ public:
 	// static std::vector<std::string> parseCmd(std::string Cmd);
 
 	int processCmd(User *That);
-	int parseCmd(std::string &Cmd, User *That);
+	std::pair<std::string, std::string> parseCmd(std::string &Cmd);
+	// std::vector<std::string> parseCmd(std::string &Cmd);
+	int proceedCmd(std::pair<std::string, std::string> Cmd, User *User);
+	// int proceedCmd(std::vector<std::string> Cmd, User *User);
 	std::string timeStamp() { return "A long time ago"; }
 
     std::string recvReader(int fd);

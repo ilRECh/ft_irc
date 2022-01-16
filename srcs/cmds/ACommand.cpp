@@ -10,8 +10,12 @@ ACommand::ACommand(std::string Name, Server const *Server)
 
 ACommand::~ACommand() {}
 
-void ACommand::setTokens(std::vector<std::string> const & Tokens) {
-    _Tokens = Tokens;
+// void ACommand::setTokens(std::vector<std::string> const & Tokens) {
+//     _Tokens = Tokens;
+// }
+
+void ACommand::setArgument(std::string const & Argument) {
+    _Argument = Argument;
 }
 
 void ACommand::setUser(User *User) {

@@ -15,12 +15,13 @@ private:
 protected:
     ACommand(std::string Name, Server const *Server);
     User *_User;
-    std::vector<std::string> _Tokens;
+    std::string _Argument;
 public:
     virtual ~ACommand();
     std::string const _Name;
     Server const *_Server;
-    void setTokens(std::vector<std::string> const & Tokens);
+    // void setTokens(std::vector<std::string> const & Tokens);
+    void setArgument(std::string const & Argument);
     void setUser(User *_User);
     virtual int run() = 0;
 };
