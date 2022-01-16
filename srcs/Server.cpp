@@ -148,7 +148,7 @@ void Server::run()
 
 int Server::processCmd(User *That)
 {
-    std::vector<std::string> Value = ft::split(That->_Msg, "\r");
+    std::vector<std::string> Value = ft::splitByCmds(That->_Msg, "\r\n");
 
     // That->_Msg.clear();
     for (std::vector<std::string>::iterator it = Value.begin();
@@ -162,9 +162,13 @@ int Server::processCmd(User *That)
 
 int Server::parseCmd(std::string &Cmd, User *User)
 {
-    std::vector<std::string> Value = ft::split(Cmd, " \t");
+    std::vector<std::string> Value = ft::split(Cmd, " \t\n");
 
-    User->_Msg.clear();
+
+    for (std::vector<std::string>::iterator it = Value.begin(); it != Value.end(); ++it) {
+        std::cout << '|' << *it << '|' << '\n';
+    }
+    // User->_Msg.clear();
     for (std::vector<ACommand *>::iterator it = _Commands.begin(); it != _Commands.end(); ++it) {
         if (Value[0] == (*it)->_Name) {
             (*it)->setTokens(Value);
