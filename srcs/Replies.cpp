@@ -473,6 +473,7 @@ status reply(
             while (CurToken != MsgTokens.end()) {
                 msg += *CurToken++;
             }
+            msg += "\n";
             break ;
     }
     send(UserSocketFd, msg.c_str(), msg.size(), 0/*MSG_NOSIGNAL*/);

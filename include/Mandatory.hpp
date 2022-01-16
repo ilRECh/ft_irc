@@ -29,8 +29,12 @@
 typedef int status;
 
 namespace ft {
-    std::vector<std::string> split(std::string const& tosplit, std::string const& delimiters);
-    std::vector<std::string> splitByCmds(std::string const& tosplit, std::string const& DelimiterWord);
+    std::vector<std::string> split(
+        std::string const& tosplit,
+        std::string const& delimiters);
+    std::vector<std::string> splitByCmds(
+        std::string const& tosplit,
+        std::string const& DelimiterWord);
     
     template <typename T>
     std::string to_string(T to_convert) {
