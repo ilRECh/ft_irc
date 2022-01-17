@@ -24,10 +24,20 @@
 #define PORT_NETWORK 1
 #define HOST 0
 
+#define L(x) std::vector<std::string>(x, x + (sizeof(x) / sizeof(std::string)))
+
 typedef int status;
 
 namespace ft {
-    std::vector<std::string> split(std::string const& tosplit, std::string const& delimiters);
+    std::vector<std::string> split(
+        std::string const& tosplit,
+        std::string const& delimiters);
+    std::vector<std::string> splitByCmds(
+        std::string const& tosplit,
+        std::string const& DelimiterWord);
+    std::string assemble(
+        std::vector<std::string>::iterator Start,
+        std::vector<std::string>::iterator Stop);
     
     template <typename T>
     std::string to_string(T to_convert) {
@@ -40,7 +50,12 @@ namespace ft {
 status reply(
     int const Rplcode,
     int const UserSocketFd,
-    std::string const & From,
     std::string const & To,
-    std::vector<std::string> const & MsgTokens =
-        std::vector<std::string>());
+    std::vector<std::string> const & MsgTokens = std::vector<std::string>(),
+    std::string const & From = "Server");
+
+status reply(
+    int const UserSocketFd,
+    std::string const & To,
+    std::vector<std::string> const & MsgTokens = std::vector<std::string>(),
+    std::string const & From = "Server");

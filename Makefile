@@ -8,7 +8,9 @@ INCLUDES=./include ./include/cmds/
 
 FILES		= main \
 			$(addprefix $(SRC), Channel Server User Password Utility Replies) \
-			$(addprefix $(CMDS), ACommand)
+			$(addprefix $(CMDS), ACommand\
+									PASS\
+									)
 
 FILES_CPP	= $(addsuffix .cpp,	$(FILES))
 FILES_HPP	= $(wildcard **/**.hpp)

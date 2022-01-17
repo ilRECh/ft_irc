@@ -10,13 +10,14 @@ using std::vector;
 
 class Channel;
 
-class User : public Password {
+class User {//: public Password {
 private:
 	std::string _Password;
 	vector<Channel const *> _Channels;
 	std::string _Name;
 	std::string _NickName;
 	std::string _RealName;
+	bool _IsRegistered;
 public:
 	User(
 		std::string const & Name,
@@ -40,6 +41,8 @@ public:
 	void setPassword(std::string const & Password);
 	std::string const & getPassword() const;
 	void setAddrUser(struct sockaddr_in & _SaddrUser);
+	void registeredIs(bool const Condition);
+	bool getRegistered() const;
 	sockaddr_in const getAddrUser() const;
 	//void setSocklen(socklen_t & Socklen);
 	//socklen_t const getSocklen() const;
