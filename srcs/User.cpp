@@ -61,3 +61,19 @@ void User::setName(string const & name) {
 string const & User::getName( void ) const {
 	return _Name;
 }
+
+void User::setPassword(std::string const & Password) {
+	_Password = Password;
+}
+
+std::string const & User::getPassword() const {
+	return _Password;
+}
+
+void User::registeredIs(bool const Condition) {
+	_IsRegistered = Condition;
+}
+
+bool User::getRegistered() const {
+	return _IsRegistered;
+}

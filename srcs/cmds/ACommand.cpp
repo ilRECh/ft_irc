@@ -1,32 +1,23 @@
 #include "Mandatory.hpp"
 #include "Commands.hpp"
 
-ACommand::ACommand(std::string Name)
+ACommand::ACommand(std::string Name, Server const *Server)
     :   _User(NULL),
-        _Server(NULL),
-        _Name(Name) {
+        _Name(Name),
+        _Server(Server) {
     
 }
 
 ACommand::~ACommand() {}
 
-ACommand::ACommand(ACommand const & that)
-    :   _User(that._User),
-        _Server(that._Server),
-        _Name(that._Name)
-{}
+// void ACommand::setTokens(std::vector<std::string> const & Tokens) {
+//     _Tokens = Tokens;
+// }
 
-ACommand& ACommand::operator=(ACommand const & that) {
-    if (&that == this) {
-        return *this;
-    }
-    return *this;
+void ACommand::setArgument(std::string const & Argument) {
+    _Argument = Argument;
 }
 
-std::string ACommand::assembleMsg() {
-    std::string msg;
-    for (std::vector<std::string>::iterator it = _Tokens.begin(); it != _Tokens.end() ; ++it) {
-        msg += *it;
-    }
-    return msg;
+void ACommand::setUser(User *User) {
+    _User = User;
 }
