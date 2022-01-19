@@ -1,4 +1,5 @@
-#include "Commands.hpp"
+#include "../../Commands.hpp"
+#include <set>
 
 class PRIVMSG : public ACommand {
 private:
@@ -9,11 +10,39 @@ public:
     PRIVMSG(Server const *Server):   ACommand("PRIVMSG", Server) {}
     virtual ~PRIVMSG() {}
     virtual int run(){
-        if (_Argument.empty()) {
-            std::string arr[] = { _Name };
-            return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
+        std::string targets = ft::SplitOneTimes(_Argument, ":");
+        ft::deleteSpaces(targets);
+        ft::deleteSpaces(_Argument);
+        if (targets.empty())
+            return ERR_NORECIPIENT;
+        if (_Argument.empty())
+            return ERR_NOTEXTTOSEND;
+        std::set<std::string> recipients;
+        for (std::string last_target, size_t set_size; !targets.empty();
+            last_target = ft::SplitOneTimes(targets, " "))
+        {
+            set_size = recipients.size();
+            recipients.insert(last_target);
+            if (recipients.size() == set_size)
+            {
+                recipients.erase(last_target);
+                /*reply*/ERR_TOOMANYTARGETS;
+            }
         }
-        //code
+        for (std::set<std::string>::iterator it = recipients.begin();
+             it != recipients.end(); ++it) {
+            if()
+        }
+        if ()
+            return ERR_CANNOTSENDTOCHAN
+        if ()
+            return ERR_NOTOPLEVEL
+        if ()
+            return ERR_WILDTOPLEVEL
+        if ()
+            return ERR_NOSUCHNICK
+        if ()
+            return RPL_AWAY
     }
 };/*
         Parameters: <receiver>{,<receiver>} <text to be sent>
@@ -41,7 +70,6 @@ public:
         RPL_AWAY
 
         Examples:
-
         :Angel PRIVMSG Wiz :Hello are you receiving this message ?
         ; Message from Angel to Wiz.
 

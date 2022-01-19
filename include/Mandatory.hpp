@@ -38,7 +38,10 @@ namespace ft {
     std::string assemble(
         std::vector<std::string>::iterator Start,
         std::vector<std::string>::iterator Stop);
-    
+    void deleteSpaces(std::string &string);
+    std::string SplitOneTimes(std:: string &str, std::string delimiter);
+
+
     template <typename T>
     std::string to_string(T to_convert) {
         std::stringstream ss;
