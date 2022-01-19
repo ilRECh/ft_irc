@@ -24,6 +24,7 @@ private:
 	string	port;
     bool	_LoopListen;
 	std::vector<User *> _Users;
+	std::vector<Channel *> _Channels;
 	addrinfo *servinfo;
     // struct sockaddr_in _Saddr;
     socklen_t _Socklen;
@@ -50,4 +51,8 @@ public:
     std::string recvReader(int fd);
     void serverLog(User *that);
     void sendMsg(User *From, User *To);
+
+	User *getUserByNickName(std::string const & NickName);
+	User *getUserByName(std::string const & NickName);
+	Channel *getChannelByName(std::string const & NameChannel);
 };
