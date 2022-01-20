@@ -4,6 +4,7 @@
 #include "Commands.hpp"
 #include "User.hpp"
 #include "Replies.hpp"
+#include "Channel.hpp"
 
 using std::vector;
 using std::string;

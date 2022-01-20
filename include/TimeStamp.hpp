@@ -40,6 +40,7 @@ public:
 // Обновляем базовое время
 	void
 	updateBaseTime();
+	
 private:
 // Вернет разницу в секундах c момента запуска создания этого объекта
 	double
@@ -60,6 +61,5 @@ public:
 	bool			operator<(TimeStamp const & oth) const;
 	bool			operator<=(TimeStamp const & oth) const;
 };
-
 
 #endif //FT_IRC_TIMESTAMP_H
