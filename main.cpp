@@ -12,21 +12,11 @@ void usage() {
 }
 
 int main(int argc, char **argv) {
-	// if (argc != HOST_PORTNETWORK_PASSWORDNETWORK_PORT_PASSWORD && argc != PORT_PASSWORD) {
-	// 	usage();
-	// 	return 1;
-	// }
+	 if (argc != HOST_PORTNETWORK_PASSWORDNETWORK_PORT_PASSWORD && argc != PORT_PASSWORD) {
+	 	usage();
+	 	return 1;
+	 }
 	{
-		// test TimeStamp
-		(void) argc;
-		(void) argv;
-		TimeStamp time;
-		#include <unistd.h>
-		while (!time.hasTimePassed(3)) {
-			std::cout << time.getTimeStrCurrent() << std::endl;
-			sleep(1);
-		}
-		exit(0);
 	}
 	try {
 		std::vector<std::string> settings(argv + 1 /*skipping name*/, argv + argc /*past-the-last argument*/);

@@ -8,7 +8,15 @@
 #include <string>
 #include <sstream>
 
-//using std::string;
+/* Example
+		// test TimeStamp
+		TimeStamp time;
+		while (!time.hasTimePassed(3)) {
+			std::cout << time.getTimeStrCurrent() << std::endl;
+			sleep(1);
+		}
+		exit(0);
+*/
 
 class TimeStamp {
 private:
@@ -40,7 +48,7 @@ public:
 // Обновляем базовое время
 	void
 	updateBaseTime();
-	
+
 private:
 // Вернет разницу в секундах c момента запуска создания этого объекта
 	double
