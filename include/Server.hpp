@@ -53,6 +53,8 @@ public:
     void serverLog(User *that);
     void sendMsg(User *From, User *To);
 
+	std::vector<User *> const &getUsers();
+
 	User *getUserByNickName(std::string const & NickName);
 	User *getUserByName(std::string const & NickName);
 	Channel *getChannelByName(std::string const & NameChannel);

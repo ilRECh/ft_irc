@@ -1,6 +1,6 @@
 #include "User.hpp"
 
-User::User(
+User::User( 
 	string const & Name,
 	// Channel const & BaseChannel,
 	int const Fd,
@@ -78,6 +78,33 @@ void User::registeredIs(bool const Condition) {
 	_IsRegistered = Condition;
 }
 
+//	* get|set mode
+bool User::getModeIsExist(char c) const {
+	return _mode_set.find(c) != _mode_set.end();
+}
+void	User::setMode(char c){
+	_mode_set.insert(c);
+}
+void	User::unsetMode(char c){
+	_mode_set.erase(c);
+}
+
+TimeStamp const & User::getTime() const{
+	return _time;
+}
+
 bool User::getRegistered() const {
 	return _IsRegistered;
+}
+
+void User::setChannel(Channel const * channel){
+	std::vector<Channel *>::iterator first, last;
+
+	if (std::find(_Channels.begin(), _Channels.end(), channel) != _Channels.end())
+		_Channels.push_back(channel);
+}
+
+std::vector<Channel const *> const &
+User::getChannels() const{
+	return _Channels;
 }

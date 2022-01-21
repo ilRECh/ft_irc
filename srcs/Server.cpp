@@ -60,7 +60,7 @@ Server::Server(string const &ip, string const &port)
     _Socklen = sizeof(sockaddr);
     if (bind(_Sockfd, servinfo->ai_addr, _Socklen))
         throw std::runtime_error(string("bind: ") + strerror(errno));
-    if (listen(_Sockfd, 1))
+    if (listen(_Sockfd, 1)) // *! Возможно второй аргумент придется увеличить
         throw std::runtime_error(string("listen: ") + strerror(errno));
     FD_ZERO(&fds);
     maxFd = 0;
@@ -86,7 +86,6 @@ Server::~Server(void)
 void Server::run()
 {
     timeval tm = {5, 0};
-    fd_set fdsCpy = {{0}}; // Why? ... for FD_SET() & FD_ISSET()
     int retSelect = 0;
 
     std::cout << "Waiting for a connection..." << '\n';
@@ -111,19 +110,18 @@ void Server::run()
             // Left for testing, remove if Release
             std::cout << "<<<<<<< " << inet_ntoa(AddrUser.sin_addr)
                       << '\n';
-            User *NewUser = new User("Name", UserFd, AddrUser, Socklen);
-            _Users.push_back(NewUser);
+            _Users.push_back(new User("Name", UserFd, AddrUser, Socklen));
         } else if (UserFd < 0 && errno != EAGAIN) {
             throw std::runtime_error("Fatal. Accepting the " + ft::to_string(UserFd) + " failed.\n" + strerror(errno));
         }
         retSelect = 1;
         while (retSelect && maxFd)
         {
-            fdsCpy = fds;
-            retSelect = select(maxFd + 1, &fdsCpy, NULL, NULL, &tm);
+            fd_set fdsCopy = fds;
+            retSelect = select(maxFd + 1, &fdsCopy, NULL, NULL, &tm);
             if (retSelect > 0)
             {
-                readerClient(fdsCpy);
+                readerClient(fdsCopy);
             } else if (retSelect < 0)
             {
                 throw std::runtime_error("Error: Select");
@@ -154,9 +152,9 @@ std::string Server::recvReader(int Fd)
 
     memset(Buffer, 0, SIZE);
     ReadByte = recv(Fd, Buffer, SIZE, 0);
-    if (ReadByte < 0)
+    if (ReadByte < 0 && errno != EAGAIN)
     {
-        ;// Error expt
+        throw std::runtime_error(std::string("recv: ") + strerror(errno));
     }
     ReturnValue += Buffer;
     return (ReturnValue);
@@ -205,7 +203,8 @@ std::pair<std::string, std::string> Server::parseCmd(std::string &Cmd)
 int Server::proceedCmd(std::pair<std::string, std::string> Cmd, User *User) {
     for (std::vector<ACommand *>::iterator command = _Commands.begin();
             command != _Commands.end(); ++command) {
-        if (Cmd.first == (*command)->_Name) {
+        std::cout << (*command)->_Name << std::endl; 
+		if (Cmd.first == (*command)->_Name) {
             (*command)->setArgument(Cmd.second);
             (*command)->setUser(User);
             return (*command)->run();
@@ -227,6 +226,10 @@ int Server::proceedCmd(std::pair<std::string, std::string> Cmd, User *User) {
 void Server::serverLog(User *That)
 {
     std::cout << That->getName() << ": "<< That->_Msg;
+}
+
+std::vector<User *> const &Server::getUsers(){
+	return _Users;
 }
 
 

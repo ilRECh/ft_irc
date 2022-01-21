@@ -16,6 +16,8 @@
 #include <sys/time.h>
 #include <netdb.h>
 #include <ctime>
+#include <set>
+#include "TimeStamp.hpp"
 
 #define SIZE 256
 #define HOST_PORTNETWORK_PASSWORDNETWORK_PORT_PASSWORD 4

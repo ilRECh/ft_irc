@@ -24,27 +24,28 @@ private:
 public:
 	TimeStamp();
 	TimeStamp(TimeStamp const & oth);
+	
 // Вернет время когда был создан этот объект
-	time_t
-	getBaseTime() const;
+	time_t	getBaseTime() const;
+	
 // Вернет текущее время в
-	static time_t
-	getCurrTime();
+	static time_t	getCurrTime();
+	
 // прошло ли время для текущего объекта ?
-	bool
-	hasTimePassed(time_t secunds) const;
+	bool	hasTimePassed(time_t secunds) const;
+	
 // прошло ли время ?
-	static bool
-	hasTimePassed(time_t base, time_t secunds);
+	static bool	hasTimePassed(time_t base, time_t secunds);
+	
 // Получаем текущее время в string
-	static std::string
-	getTimeStrCurrent();
+	static std::string	getTimeStrCurrent();
+	
 // Получаем время когда создался этот объект в string
-	std::string
-	getTimeStrStarted() const;
+	std::string	getTimeStrStarted() const;
+	
 // Получаем время когда этого (time_t of_this) в string
-	static std::string
-	getTimeStrOfTimeT(time_t of_this);
+	static std::string	getTimeStrOfTimeT(time_t of_this);
+	
 // Обновляем базовое время
 	void
 	updateBaseTime();

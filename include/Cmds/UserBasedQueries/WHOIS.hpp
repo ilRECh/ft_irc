@@ -16,10 +16,23 @@ public:
         //code
     }
 };/*
+
+		WHOIS
+		Синтаксис:
+
+		WHOIS [<сервер>] <имена пользователей>
+		Возвращает информацию о пользователях,
+		определённых в разделенном запятыми списке 
+		<имена пользователей>.
+		[51] Если определен параметр <сервер>, команда передается ему для обработки.
+
+		Определена в RFC 1459
+
+
         Parameters: [<server>] <nickmask>[,<nickmask>[,...]]
 
-        This message is used to query information about particular user.  The
-        server will answer this message with several numeric messages
+        Это сообщение используется для запроса информации о конкретном пользователе.
+		The server will answer this message with several numeric messages
         indicating different statuses of each user which matches the nickmask
         (if you are entitled to see them).  If no wildcard is present in the
         <nickmask>, any information about that nick which you are allowed to

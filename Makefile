@@ -1,7 +1,7 @@
 NAME		= ircserv
 
 CXX			= clang++
-CPPFLAGS	= -Wall -Wextra -Werror -g $(addprefix -I, $(INCLUDES)) -std=c++98 -pedantic
+CPPFLAGS	= -Wall -Wextra -Werror -g $(addprefix -I, $(INCLUDES)) -std=c++98 -pedantic -fno-limit-debug-info
 SRC=./srcs/
 CMDS=./srcs/cmds/
 INCLUDES= ./include ./include/cmds/
