@@ -62,6 +62,10 @@ string const & User::getName( void ) const {
 	return _Name;
 }
 
+string const & User::getNickName( void ) const {
+	return _NickName;
+}
+
 void User::setPassword(std::string const & Password) {
 	_Password = Password;
 }

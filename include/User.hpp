@@ -38,6 +38,7 @@ public:
 	void inviteToChannel(Channel const & channel);
 	void setName(string const & name);
 	string const & getName( void ) const;
+	string const & getNickName( void ) const;
 	void setPassword(std::string const & Password);
 	std::string const & getPassword() const;
 	void setAddrUser(struct sockaddr_in & _SaddrUser);

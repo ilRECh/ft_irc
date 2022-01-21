@@ -163,3 +163,7 @@ void	Channel::removeAdmin(User const & who, User const & whom){
 		throw std::runtime_error(whom.getName() + "isn't member of Admins, of this channel");
 	_Admins.erase(it);
 }
+
+std::string const & Channel::getNameChannel() const{
+	return _NameChannel;
+}

@@ -228,3 +228,37 @@ void Server::serverLog(User *That)
 {
     std::cout << That->getName() << ": "<< That->_Msg;
 }
+
+
+User *Server::getUserByNickName(std::string const & NickName){
+	vector<User *>::iterator first, last;
+	first = _Users.begin();
+	last = _Users.end();
+
+	for (;first != last; ++first)
+		if ((*first)->getNickName() == NickName)
+			return *first;
+	return NULL;
+}
+
+User *Server::getUserByName(std::string const & Name){
+	vector<User *>::iterator first, last;
+	first = _Users.begin();
+	last = _Users.end();
+
+	for (;first != last; ++first)
+		if ((*first)->getName() == Name)
+			return *first;
+	return NULL;
+}
+
+Channel *Server::getChannelByName(std::string const & NameChannel){
+	vector<Channel *>::iterator first, last;
+
+	first = _Channels.begin();
+	last = _Channels.end();
+	for(;first != last; ++first)
+		if ((*first)->getNameChannel() == NameChannel)
+			return *first;
+	return NULL;
+}

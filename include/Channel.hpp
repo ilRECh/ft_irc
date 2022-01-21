@@ -44,4 +44,5 @@ public:
 	bool	checkOwnerPermist	(User const & whom) const;
 	void	setLevelPrivate		(User const & who, eChannelPrivateLevel const ePrivateLevel);
 	void	setNameChannel		(User const & who, string const & newNameChannel);
+	std::string const & getNameChannel() const;
 };
