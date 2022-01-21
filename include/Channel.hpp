@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Mandatory.hpp"
-#include "Server.hpp"
-#include "User.hpp"
+#include "ft.hpp"
+#include "AUser.hpp"
 
 using std::string;
 using std::vector;
@@ -15,9 +14,9 @@ enum eChannelPrivateLevel {
 };
 
 class User;
+class Server;
 
-class Channel
-{
+class Channel : public AUser {
 private:
 	//! typePrivateLevel
 	//* CHANNEL_PRIVATE могут приглашать только админы;
@@ -25,12 +24,12 @@ private:
 	//* CHANNEL_PUBLIC могут все добавляться;
 	eChannelPrivateLevel			_ePrivateLevel;
 	//*				имя канала
-	string			_NameChannel;
 	//*				Список админов
 	vector<User const *>	_Admins;
 	vector<User const *>	_Users;
 	void	addAdmin(User const & whom);
 	void	addUser(User const & whom);
+	using AUser::setName;
 public:
 	Channel(string const & nameChannel, User const & userAdmin);
 	Channel(string const & nameChannel, User const & userAdmin, eChannelPrivateLevel const ePrivateLevel);
@@ -43,6 +42,5 @@ public:
 	bool	checkAdminPermist	(User const & whom) const;
 	bool	checkOwnerPermist	(User const & whom) const;
 	void	setLevelPrivate		(User const & who, eChannelPrivateLevel const ePrivateLevel);
-	void	setNameChannel		(User const & who, string const & newNameChannel);
-	std::string const & getNameChannel() const;
+	void	setName(User const & who, string const & newNameChannel);
 };

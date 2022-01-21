@@ -1,4 +1,6 @@
 #include "Server.hpp"
+#include "User.hpp"
+#include "Channel.hpp"
 
 Server::Server(std::vector<std::string> &argv)
         : _Commands(),
@@ -111,7 +113,7 @@ void Server::run()
             // Left for testing, remove if Release
             std::cout << "<<<<<<< " << inet_ntoa(AddrUser.sin_addr)
                       << '\n';
-            User *NewUser = new User("Name", UserFd, AddrUser, Socklen);
+            User *NewUser = new User("Name", UserFd);
             _Users.push_back(NewUser);
         } else if (UserFd < 0 && errno != EAGAIN) {
             throw std::runtime_error("Fatal. Accepting the " + ft::to_string(UserFd) + " failed.\n" + strerror(errno));
@@ -258,7 +260,7 @@ Channel *Server::getChannelByName(std::string const & NameChannel){
 	first = _Channels.begin();
 	last = _Channels.end();
 	for(;first != last; ++first)
-		if ((*first)->getNameChannel() == NameChannel)
+		if ((*first)->getName() == NameChannel)
 			return *first;
 	return NULL;
 }

@@ -1,4 +1,4 @@
-#include "../../Commands.hpp"
+#include "../../ACommand.hpp"
 #include <set>
 
 class PRIVMSG : public ACommand {

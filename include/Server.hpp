@@ -1,16 +1,18 @@
 #pragma once
 
-#include "Mandatory.hpp"
-#include "Commands.hpp"
-#include "User.hpp"
+#include "ft.hpp"
 #include "Replies.hpp"
-#include "Channel.hpp"
+
+// Commands
+class ACommand;
+#include "ConnectionRegistration/PASS.hpp"
 
 using std::vector;
 using std::string;
 
 class User;
 class ACommand;
+class Channel;
 
 class Server {
 private:

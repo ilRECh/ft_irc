@@ -1,31 +1,23 @@
-#include "Mandatory.hpp"
+#include "ft.hpp"
 #include "Channel.hpp"
+#include "User.hpp"
 
 //! 	enum ePrivateLevel
 //* 	0 == CHANNEL_PRIVATE,
 //* 	1 == CHANNEL_PROTECTED,
 //* 	2 == CHANNEL_PUBLIC
-Channel::Channel(string const & nameChannel, User const & userAdmin, eChannelPrivateLevel const ePrivateLevel){
-	string::const_iterator beg = nameChannel.begin();
-	string::const_iterator end = nameChannel.end();
-
-	while(beg != end)
-		if (!std::isalnum(*(beg++)))
-			throw std::runtime_error("Name channel " + nameChannel + " is not valid, use A-Z, a-z, 0-9");
+Channel::Channel(
+	string const & nameChannel, User const & userAdmin,
+	eChannelPrivateLevel const ePrivateLevel)
+	:	AUser(nameChannel) {
 	_ePrivateLevel = ePrivateLevel;
-	_NameChannel = nameChannel;
 	addAdmin(userAdmin);
 }
 
-Channel::Channel(string const & nameChannel, User const & userAdmin){
-	string::const_iterator beg = nameChannel.begin();
-	string::const_iterator end = nameChannel.end();
-
-	while(beg != end)
-		if (!std::isalnum(*(beg++)))
-			throw std::runtime_error("Name channel " + nameChannel + " is not valid, use A-Z, a-z, 0-9");
-	_ePrivateLevel = CHANNEL_PUBLIC;
-	_NameChannel = nameChannel;
+Channel::Channel(
+	string const & nameChannel,
+	User const & userAdmin)
+	:	AUser(nameChannel) {
 	addAdmin(userAdmin);
 }
 
@@ -36,7 +28,7 @@ void	Channel::setLevelPrivate(User const & who, eChannelPrivateLevel const ePriv
 		throw std::runtime_error(who.getName() + " is not Admin\n" + who.getName() + " cannot change private level");
 	_ePrivateLevel = ePrivateLevel;
 }
-void	Channel::setNameChannel(User const & who, string const & newNameChannel){
+void	Channel::setName(User const & who, string const & newNameChannel){
 	string::const_iterator beg = newNameChannel.begin();
 	string::const_iterator end = newNameChannel.end();
 
@@ -45,7 +37,7 @@ void	Channel::setNameChannel(User const & who, string const & newNameChannel){
 	while(beg != end)
 		if (!std::isalnum(*(beg++)))
 			throw std::runtime_error("Name channel " + newNameChannel + " is not valid, use A-Z, a-z, 0-9");
-	_NameChannel = newNameChannel;
+	_Name = newNameChannel;
 }
 
 bool Channel::checkAdminPermist(User const & whom) const{
@@ -162,8 +154,4 @@ void	Channel::removeAdmin(User const & who, User const & whom){
 	if (it == _Admins.end())
 		throw std::runtime_error(whom.getName() + "isn't member of Admins, of this channel");
 	_Admins.erase(it);
-}
-
-std::string const & Channel::getNameChannel() const{
-	return _NameChannel;
 }
