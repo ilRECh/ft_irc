@@ -4,7 +4,6 @@
 #include "Replies.hpp"
 
 // Commands
-class ACommand;
 #include "ConnectionRegistration/PASS.hpp"
 
 using std::vector;
@@ -26,8 +25,8 @@ private:
 	string	ip;
 	string	port;
     bool	_LoopListen;
-	std::vector<User *> _Users;
-	std::vector<Channel *> _Channels;
+	std::list<User *> _Users;
+	std::list<Channel *> _Channels;
 	addrinfo *servinfo;
     // struct sockaddr_in _Saddr;
     socklen_t _Socklen;
@@ -42,13 +41,10 @@ public:
 	Server(std::vector<std::string>& argv);
 	~Server();
 	void run();
-	// static std::vector<std::string> parseCmd(std::string Cmd);
 
 	int processCmd(User *That);
 	std::pair<std::string, std::string> parseCmd(std::string &Cmd);
-	// std::vector<std::string> parseCmd(std::string &Cmd);
 	int proceedCmd(std::pair<std::string, std::string> Cmd, User *User);
-	// int proceedCmd(std::vector<std::string> Cmd, User *User);
 	std::string timeStamp() { return "A long time ago"; }
 
     std::string recvReader(int fd);

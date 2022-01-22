@@ -2,7 +2,7 @@
 #include "Replies.hpp"
 
 status reply(
-        int const Rplcode,
+        int Rplcode,
         int const UserSocketFd,
         std::string const & To,
         std::vector<std::string> const & MsgTokens,
@@ -10,10 +10,10 @@ status reply(
     std::vector<std::string>::const_iterator CurToken = MsgTokens.begin();
     std::string msg = "(" + From + " " + ft::to_string(Rplcode) + " " + To + ") ";
     switch (Rplcode) {
-        case ERR_NOSUCHNICK:
+        case 0:
             msg += *CurToken++ + " :No such nick/channel\n";
             break ;
-        case ERR_NOSUCHSERVER:
+        case 1:
             msg += *CurToken++ + " :No such server\n";
             break ;
         case ERR_NOSUCHCHANNEL:

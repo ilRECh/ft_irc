@@ -17,20 +17,21 @@ protected:
     ACommand(
         std::string Name,
         Server const *Server)
-        :   _User(NULL),
+        :   _Initiator(NULL),
             _Name(Name),
             _Server(Server) {}
-    User *_User;
+    User *_Initiator;
     std::string _Argument;
 public:
     virtual ~ACommand() {} 
     std::string const _Name;
     Server const *_Server;
     void setArgument(std::string const & Argument) {
-            _Argument = Argument;
-        }
-    void setUser(User *User) {
-            _User = User;
-        }
+        _Argument = Argument;
+    }
+    bool setInitiator(User *User) {
+        _Initiator = User;
+        return true;
+    }
     virtual int run() = 0;
 };

@@ -209,7 +209,7 @@ int Server::proceedCmd(std::pair<std::string, std::string> Cmd, User *User) {
             command != _Commands.end(); ++command) {
         if (Cmd.first == (*command)->_Name) {
             (*command)->setArgument(Cmd.second);
-            (*command)->setUser(User);
+            (*command)->setInitiator(User);
             return (*command)->run();
         }
     }
@@ -233,7 +233,7 @@ void Server::serverLog(User *That)
 
 
 User *Server::getUserByNickName(std::string const & NickName){
-	vector<User *>::iterator first, last;
+	std::list<User *>::iterator first, last;
 	first = _Users.begin();
 	last = _Users.end();
 
@@ -244,7 +244,7 @@ User *Server::getUserByNickName(std::string const & NickName){
 }
 
 User *Server::getUserByName(std::string const & Name){
-	vector<User *>::iterator first, last;
+	std::list<User *>::iterator first, last;
 	first = _Users.begin();
 	last = _Users.end();
 
@@ -255,7 +255,7 @@ User *Server::getUserByName(std::string const & Name){
 }
 
 Channel *Server::getChannelByName(std::string const & NameChannel){
-	vector<Channel *>::iterator first, last;
+	std::list<Channel *>::iterator first, last;
 
 	first = _Channels.begin();
 	last = _Channels.end();

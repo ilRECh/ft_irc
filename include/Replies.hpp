@@ -4,27 +4,30 @@
 /*                               Error Replies.                               */
 /* -------------------------------------------------------------------------- */
 
-#define	ERR_NOSUCHNICK		401 /*
+#define	ERR_NOSUCHNICK(NickName) "(401) " + NickName + " :No such nick/channel"
+/*
 "<nickname> :No such nick/channel"
 
 - Used to indicate the nickname parameter supplied to a
 command is currently unused.
 */
 
-#define	ERR_NOSUCHSERVER		402 /*
-"<server name> :No such server"
+#define	ERR_NOSUCHSERVER(ServerName) "(402) " + ServerName + " :No such server" 
+/*"<server name> :No such server"
 
 - Used to indicate the server name given currently
 doesn`t exist.
 */
 
-#define	ERR_NOSUCHCHANNEL		403 /*
+#define	ERR_NOSUCHCHANNEL(ChannelName) "(403) " + ChannelName + " :No such channel" 
+/*
 "<channel name> :No such channel"
 
 - Used to indicate the given channel name is invalid.
 */
 
-#define	ERR_CANNOTSENDTOCHAN		404 /*
+#define	ERR_CANNOTSENDTOCHAN(ChannelName) "(404) " + ChannelName + " :Cannot send to channel" 
+/*
 "<channel name> :Cannot send to channel"
 
 - Sent to a user who is either (a) not on a channel
