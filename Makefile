@@ -7,7 +7,7 @@ CMDS=./srcs/cmds/
 INCLUDES= ./include ./include/Cmds/
 
 FILES		= main \
-			$(addprefix $(SRC), Channel Server User Password Utility Replies TimeStamp)
+			$(addprefix $(SRC), Channel Server User Password Utility TimeStamp)
 
 FILES_CPP	= $(addsuffix .cpp,	$(FILES))
 FILES_HPP	= $(wildcard **/**.hpp)

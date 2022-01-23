@@ -551,14 +551,16 @@ The "comments" field may contain any comments about
 the version or further version details.
 */
 
-#define	RPL_WHOREPLY(Channel, User, Host, Server, Nick, Hopcount, RealName) \
-"(352) " + Channel + " " + User + " " + Host + " " + Server + " " + Nick + " \n " + H|G + "[*][@|+] :" + Hopcount + " " + RealName + ""
+#define	RPL_WHOREPLY(Channel, User, Host, Server, Nick, H_or_G, optionalAsterisk, optional_At_or_Plus, Hopcount, RealName) \
+"(352) " + Channel + " " + User + " " + Host + " " + Server + " " + Nick \
++ "\n" + H_or_G + optionalAsterisk + optional_At_or_Plus + " :" + Hopcount + " " + RealName
 /*
 "<channel> <user> <host> <server> <nick> \
 <H|G>[*][@|+] :<hopcount> <real name>"
 */
 
-#define	RPL_ENDOFWHO		315 /*
+#define	RPL_ENDOFWHO(Name) "(315) " + Name + " :End of /WHO list"
+/*
 "<name> :End of /WHO list"
 
 - The RPL_WHOREPLY and RPL_ENDOFWHO pair are used
@@ -574,7 +576,8 @@ the item.
 "<channel> :[[@|+]<nick> [[@|+]<nick> [...]]]"
 */
 
-#define	RPL_ENDOFNAMES		366 /*
+#define	RPL_ENDOFNAMES(Channel) "(366) " + Channel + " :End of /NAMES list"
+/*
 "<channel> :End of /NAMES list"
 
 - To reply to a NAMES message, a reply pair consisting
@@ -588,11 +591,13 @@ RPL_NAMEREPLY messages with a RPL_ENDOFNAMES to mark
 the end.
 */
 
-#define	RPL_LINKS		364 /*
+#define	RPL_LINKS(Mask, Server, Hopcount, ServerInfo) "(364) " + Mask + " " + Server + " :" + Hopcount + " " + ServerInfo
+/*
 "<mask> <server> :<hopcount> <server info>"
 */
 
-#define	RPL_ENDOFLINKS		365 /*
+#define	RPL_ENDOFLINKS(Mask) "(365) " + Mask + " :End of /LINKS list"
+/*
 "<mask> :End of /LINKS list"
 
 - In replying to the LINKS message, a server must send
@@ -600,11 +605,13 @@ replies back using the RPL_LINKS numeric and mark the
 end of the list using an RPL_ENDOFLINKS reply.
 */
 
-#define	RPL_BANLIST		367 /*
+#define	RPL_BANLIST(Channel, Banid) "(367) " + Channel + " " + Banid
+/*
 "<channel> <banid>"
 */
 
-#define	RPL_ENDOFBANLIST		368 /*
+#define	RPL_ENDOFBANLIST(Channel) "(368) " + Channel + " :End of channel ban list"
+/*
 "<channel> :End of channel ban list"
 
 - When listing the active 'bans' for a given channel,
@@ -615,11 +622,13 @@ banids have been listed (or if none present) a
 RPL_ENDOFBANLIST must be sent.
 */
 
-#define	RPL_INFO		371 /*
+#define	RPL_INFO(String) "(371) :" + String
+/*
 ":<string>"
 */
 
-#define	RPL_ENDOFINFO		374 /*
+#define	RPL_ENDOFINFO "(374) :End of /INFO list"
+/*
 ":End of /INFO list"
 
 - A server responding to an INFO message is required to
@@ -628,15 +637,18 @@ with a RPL_ENDOFINFO reply to indicate the end of the
 replies.
 */
 
-#define	RPL_MOTDSTART		375 /*
+#define	RPL_MOTDSTART(Server) "(375) :- " + Server + " Message of the day - "
+/*
 ":- <server> Message of the day - "
 */
 
-#define	RPL_MOTD		372 /*
+#define	RPL_MOTD(Text) "(372) :- " + Text
+/*
 ":- <text>"
 */
 
-#define	RPL_ENDOFMOTD		376 /*
+#define	RPL_ENDOFMOTD "(376) :End of /MOTD command"
+/*
 ":End of /MOTD command"
 
 - When responding to the MOTD message and the MOTD file
@@ -647,7 +659,8 @@ by a RPL_MOTDSTART (before the RPL_MOTDs) and an
 RPL_ENDOFMOTD (after).
 */
 
-#define	RPL_YOUREOPER		381 /*
+#define	RPL_YOUREOPER "(381) :You are now an IRC operator"
+/*
 ":You are now an IRC operator"
 
 - RPL_YOUREOPER is sent back to a client which has
@@ -655,7 +668,8 @@ just successfully issued an OPER message and gained
 operator status.
 */
 
-#define	RPL_REHASHING		382 /*
+#define	RPL_REHASHING(ConfigFile) "(382) " + ConfigFile + " :Rehashing"
+/*
 "<config file> :Rehashing"
 
 - If the REHASH option is used and an operator sends
@@ -663,7 +677,8 @@ a REHASH message, an RPL_REHASHING is sent back to
 the operator.
 */
 
-#define	RPL_TIME		391 /*
+#define	RPL_TIME(Server, ServerLocalTime) "(391) " + Server + " :" + ServerLocalTime
+/*
 "<server> :<string showing server`s local time>"
 
 - When replying to the TIME message, a server must send
@@ -673,19 +688,23 @@ time there.  There is no further requirement for the
 time string.
 */
 
-#define	RPL_USERSSTART		392 /*
+#define	RPL_USERSSTART "(392) :UserID   Terminal  Host"
+/*
 ":UserID   Terminal  Host"
 */
 
-#define	RPL_USERS		393 /*
+#define	RPL_USERS "(393) :%-8s %-9s %-8s"
+/*
 ":%-8s %-9s %-8s"
 */
 
-#define	RPL_ENDOFUSERS		394 /*
+#define	RPL_ENDOFUSERS "(394) :End of users"
+/*
 ":End of users"
 */
 
-#define	RPL_NOUSERS		395 /*
+#define	RPL_NOUSERS "(395) :Nobody logged in"
+/*
 ":Nobody logged in"
 
 - If the USERS message is handled by a server, the
@@ -696,41 +715,52 @@ or a single RPL_NOUSER.  Following this is
 RPL_ENDOFUSERS.
 */
 
-#define	RPL_TRACELINK		200 /*
+#define	RPL_TRACELINK(VersionDebugLevel, Destination, NextServer) \
+"(200) Link " + VersionDebugLevel + " " + Destination + "\n" + NextServer
+/*
 "Link <version & debug level> <destination> \
 <next server>"
 */
 
-#define	RPL_TRACECONNECTING		201 /*
+#define	RPL_TRACECONNECTING(Class, Server) "(201) Try. " + Class + " " + Server
+/*
 "Try. <class> <server>"
 */
 
-#define	RPL_TRACEHANDSHAKE		202 /*
+#define	RPL_TRACEHANDSHAKE(Class, Server) "(202) H.S. " + Class + " " + Server
+/*
 "H.S. <class> <server>"
 */
 
-#define	RPL_TRACEUNKNOWN		203 /*
+#define	RPL_TRACEUNKNOWN(Class, Ip) "(203) ???? " + Class + not Ip.empty() ?  " " + Ip : ""
+/*
 "???? <class> [<client IP address in dot form>]"
 */
 
-#define	RPL_TRACEOPERATOR		204 /*
+#define	RPL_TRACEOPERATOR(Class, Nick) "(204) Oper " + Class + " " + Nick
+/*
 "Oper <class> <nick>"
 */
 
-#define	RPL_TRACEUSER		205 /*
+#define	RPL_TRACEUSER(Class, Nick) "(205) User " + Class + " " + Nick
+/*
 "User <class> <nick>"
 */
 
-#define	RPL_TRACESERVER		206 /*
+#define	RPL_TRACESERVER(Class, Int1, Int2, Server, NickUser, Host_or_server)\
+"(206) ""Serv " + Class + " " + Int1 + "S " + Int2 + "C " + Server + "\n" + NickUser + "@" + Host_or_Server 
+/*
 "Serv <class> <int>S <int>C <server> \
 <nick!user|*!*>@<host|server>"
 */
 
-#define	RPL_TRACENEWTYPE		208 /*
+#define	RPL_TRACENEWTYPE(Newtype, ClientName) "(208) " + Newtype + " 0 " + ClientName
+/*
 "<newtype> 0 <client name>"
 */
 
-#define	RPL_TRACELOG		261 /*
+#define	RPL_TRACELOG(Logfile, DebugLevel) "(261) File " + Logfile + " " + DebugLevel
+/*
 "File <logfile> <debug level>"
 
 - The RPL_TRACE* are all returned by the server in
@@ -755,82 +785,104 @@ which does not fit in the other categories but is
 being displayed anyway.
 */
 
-#define	RPL_STATSLINKINFO		211 /*
+#define	RPL_STATSLINKINFO(Linkname, Sendq, SentMessages, SentBytes, ReceivedMessages, ReceivedBytes, TimeOpen)\
+"(211) " + Linkname + " " + Sendq + " " + SentMessages + " \n " + SentBytes + " " + ReceivedMessages\
+ + " \n " + ReceivedBytes + " " + TimeOpen
+/*
 "<linkname> <sendq> <sent messages> \
 <sent bytes> <received messages> \
 <received bytes> <time open>"
 */
 
-#define	RPL_STATSCOMMANDS		212 /*
+#define	RPL_STATSCOMMANDS(Command, Count) "(212) " + Command + " " + Count
+/*
 "<command> <count>"
 */
 
-#define	RPL_STATSCLINE		213 /*
+#define	RPL_STATSCLINE(Host, Name, Port, Class) "(213) C " + Host + " * " + Name + " " + Port + " " + Class
+/*
 "C <host> * <name> <port> <class>"
 */
 
-#define	RPL_STATSNLINE		214 /*
+#define	RPL_STATSNLINE(Host, Name, Port, Class) "(214) N " + Host + " * " + Name + " " + Port + " " + Class
+/*
 "N <host> * <name> <port> <class>"
 */
 
-#define	RPL_STATSILINE		215 /*
+#define	RPL_STATSILINE(Host1, Host2, Port, Class) "(215) I " + Host1 + " * " + Host2 + " " + Port + " " + Class
+/*
 "I <host> * <host> <port> <class>"
 */
 
-#define	RPL_STATSKLINE		216 /*
+#define	RPL_STATSKLINE(Host, Username, Port, Class) "(216) K " + Host + " * " + Username + " " + Port + " " + Class
+/*
 "K <host> * <username> <port> <class>"
 */
 
-#define	RPL_STATSYLINE		218 /*
+#define	RPL_STATSYLINE(Class, PingFrequency, ConnectFrequency, MaxSendq)\
+"(218) Y " + Class + " " + PingFrequency + " \n " + ConnectFrequency + " " + MaxSendq
+/*
 "Y <class> <ping frequency> <connect \
 frequency> <max sendq>"
 */
 
-#define	RPL_ENDOFSTATS		219 /*
+#define	RPL_ENDOFSTATS(StatsLetter) "(219) " + StatsLetter + " :End of /STATS report"
+/*
 "<stats letter> :End of /STATS report"
 */
 
-#define	RPL_STATSLLINE		241 /*
+#define	RPL_STATSLLINE(Hostmask, Servername, Maxdepth) "(241) L " + Hostmask + " * " + Servername + " " + Maxdepth
+/*
 "L <hostmask> * <servername> <maxdepth>"
 */
 
-#define	RPL_STATSUPTIME		242 /*
+#define	RPL_STATSUPTIME "(242) :Server Up %d days %d:%02d:%02d"
+/*
 ":Server Up %d days %d:%02d:%02d"
 */
 
-#define	RPL_STATSOLINE		243 /*
+#define	RPL_STATSOLINE(Hostmask, Name) "(243) O " + Hostmask + " * " + Name
+/*
 "O <hostmask> * <name>"
 */
 
-#define	RPL_STATSHLINE		244 /*
+#define	RPL_STATSHLINE(Hostmask, Servername) "(244) H " + Hostmask + " * " + Servername
+/*
 "H <hostmask> * <servername>"
 */
 
-#define	RPL_UMODEIS		221 /*
+#define	RPL_UMODEIS(UserModeString) "(221) " + UserModeString
+/*
 "<user mode string>"
 
 - To answer a query about a client`s own mode,
 RPL_UMODEIS is sent back.
 */
 
-#define	RPL_LUSERCLIENT		251 /*
+#define	RPL_LUSERCLIENT(Integer1, Integer2, Integer3)\
+"(251) :There are " + Integer1 + " users and " + Integer2 + " \n invisible on " + Integer3 + " servers"
+/*
 ":There are <integer> users and <integer> \
 invisible on <integer> servers"
 */
 
-#define	RPL_LUSEROP		252 /*
+#define	RPL_LUSEROP(Integer) "(252) " + Integer + " :operator(s) online"
+/*
 "<integer> :operator(s) online"
 */
 
-#define	RPL_LUSERUNKNOWN		253 /*
+#define	RPL_LUSERUNKNOWN(Integer) "(253) " + Integer + " :unknown connection(s)"
+/*
 "<integer> :unknown connection(s)"
 */
 
-#define	RPL_LUSERCHANNELS		254 /*
+#define	RPL_LUSERCHANNELS(Integer) "(254) " + Integer + " :channels formed"
+/*
 "<integer> :channels formed"
 */
 
-#define	RPL_LUSERME		255 /*
+#define	RPL_LUSERME(Integer1, Integer2) "(255) :I have " + Integer1 + " clients and " + Integer2 + " \n servers"
+/*
 ":I have <integer> clients and <integer> \
 servers"
 
@@ -844,19 +896,23 @@ replies are only sent back if a non-zero count
 is found for them.
 */
 
-#define	RPL_ADMINME		256 /*
+#define	RPL_ADMINME(Server) "(256) " + Server + " :Administrative info"
+/*
 "<server> :Administrative info"
 */
 
-#define	RPL_ADMINLOC1		257 /*
+#define	RPL_ADMINLOC1(AdminInfo) "(257) :" + AdminInfo
+/*
 ":<admin info>"
 */
 
-#define	RPL_ADMINLOC2		258 /*
+#define	RPL_ADMINLOC2(AdminInfo) "(258) :" + AdminInfo
+/*
 ":<admin info>"
 */
 
-#define	RPL_ADMINEMAIL		259 /*
+#define	RPL_ADMINEMAIL(AdminInfo) "(259) :" + AdminInfo
+/*
 ":<admin info>"
 
 - When replying to an ADMIN message, a server
