@@ -6,7 +6,7 @@ private:
     TIME(TIME const &that);
     TIME& operator=(TIME const &that);
 public:
-    TIME(Server &Server) : Acommand("TIME", Server) {}
+    TIME(Server &Server) : ACommand("TIME", Server) {}
     virtual ~TIME() {}
     virtual int run(){
         if (_Argument.empty()) {

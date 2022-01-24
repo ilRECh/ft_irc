@@ -9,6 +9,7 @@ using std::string;
 using std::vector;
 
 class Channel;
+class TimeStamp;
 
 class User : public AUser {
 private:
@@ -20,16 +21,20 @@ private:
 	vector<Channel const *> _Channels;
 	std::string _NickName;
 	std::string _RealName;
-	bool _IsRegistered;
+	std::pair<bool, TimeStamp> Registration;
+	struct {
+		bool IsRegistered;
+		TimeStamp Time;
+	} _Registration;
+	TimeStamp _LastResponse;
     std::string _ReplyMessage;
 public:
-	User(std::string const Name, int const Fd);
+	User(int const Fd);
 	virtual ~User() {}
 	
 	bool operator!=(const User& that) const;
 	bool operator==(const User& that) const;
 
-	std::string _Msg;
 	int const _Fd;
 
 	// NickName
@@ -50,8 +55,13 @@ public:
 	std::vector<Channel const *> const &getChannels() const;
 
 	//	* get Registered
-	bool getRegistered() const;
-	void registeredIs(bool const Condition);
+	bool isRegistered() const;
+	void setRegistered(bool const Condition);
+	bool unregisteredShouldDie() const;
+
+	// Last Activity
+	bool inactiveShouldDie() const;
+	void updateActivity();
 
 	// ReplyMessage
 	status setReplyMessage(std::string const & Msg);

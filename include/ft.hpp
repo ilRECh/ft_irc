@@ -19,7 +19,7 @@
 #include <set>
 #include "TimeStamp.hpp"
 
-#define SIZE 256
+#define SIZE 512
 #define HOST_PORTNETWORK_PASSWORDNETWORK_PORT_PASSWORD 4
 #define PORT_PASSWORD 3
 #define PASSWORD_NETWORK 2

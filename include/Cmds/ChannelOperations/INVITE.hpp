@@ -6,7 +6,7 @@ private:
     INVITE(INVITE const &that);
     INVITE& operator=(INVITE const &that);
 public:
-    INVITE(Server &Server) : Acommand("INVITE", Server) {}
+    INVITE(Server &Server) : ACommand("INVITE", Server) {}
     virtual ~INVITE() {}
     virtual int run(){
         if (_Argument.empty()) {

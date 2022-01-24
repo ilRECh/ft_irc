@@ -15,7 +15,7 @@ private:
     WHO(WHO const &that);
     WHO& operator=(WHO const &that);
 public:
-    WHO(Server &Server) : Acommand("WHO", Server) {}
+    WHO(Server &Server) : ACommand("WHO", Server) {}
     virtual ~WHO() {}
     virtual int run(){
         if (_Argument.empty()) {
@@ -47,7 +47,7 @@ public:
 		return false;
 	}
 public:
-	WHO(Server const *Server) : Acommand("WHO", Server) {}
+	WHO(Server const *Server) : ACommand("WHO", Server) {}
 	virtual ~WHO() {}
 	virtual int run(std::string name = std::string()){
 		std::vector<User const *> const & _Users = _Server->getUsers();

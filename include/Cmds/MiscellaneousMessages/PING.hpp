@@ -6,7 +6,7 @@ private:
     PING(PING const &that);
     PING& operator=(PING const &that);
 public:
-    PING(Server &Server) : Acommand("PING", Server) {}
+    PING(Server &Server) : ACommand("PING", Server) {}
     virtual ~PING() {}
     virtual int run(){
         if (_Argument.empty()) {

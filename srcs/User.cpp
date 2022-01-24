@@ -2,8 +2,8 @@
 #include "Server.hpp"
 #include "Channel.hpp"
 
-User::User(string const Name, int const Fd)
-	:	AUser(Name),
+User::User(int const Fd)
+	:	AUser(""),
 		_Fd(Fd) {
 }
 
@@ -27,8 +27,37 @@ string const & User::getNickName( void ) const {
 	return _NickName;
 }
 
-void User::registeredIs(bool const Condition) {
-	_IsRegistered = Condition;
+// Registration
+void User::setRegistered(bool const Condition) {
+	_Registration.IsRegistered = Condition;
+}
+
+bool User::isRegistered() const {
+	return _Registration.IsRegistered;
+}
+
+bool User::unregisteredShouldDie() const {
+	if (_Registration.Time.hasTimePassed(10)) {
+		std::cout << _Name << " is unregistered. Died." << '\n';
+		return true;
+	}
+	return false;
+}
+
+// Last activity
+bool User::inactiveShouldDie() const {
+	if (_LastResponse.hasTimePassed(60)) {
+		std::cout << _Name << " is inactive. Died." << '\n';
+		return true;
+	}
+	else if (_LastResponse.hasTimePassed(30)) {
+		//PING
+	}
+	return false;
+}
+
+void User::updateActivity() {
+	_LastResponse.updateBaseTime();
 }
 
 //	* get|set mode
@@ -44,10 +73,6 @@ void	User::unsetMode(char c){
 
 TimeStamp const & User::getTime() const{
 	return _time;
-}
-
-bool User::getRegistered() const {
-	return _IsRegistered;
 }
 
 void User::setChannel(Channel const * channel){

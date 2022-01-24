@@ -6,7 +6,7 @@ private:
     SQUIT(SQUIT const &that);
     SQUIT& operator=(SQUIT const &that);
 public:
-    SQUIT(Server &Server) : Acommand("SQUIT", Server) {}
+    SQUIT(Server &Server) : ACommand("SQUIT", Server) {}
     virtual ~SQUIT() {}
     virtual int run(){
         if (_Argument.empty()) {

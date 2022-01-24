@@ -6,7 +6,7 @@ private:
     REHASH(REHASH const &that);
     REHASH& operator=(REHASH const &that);
 public:
-    REHASH(Server &Server) : Acommand("REHASH", Server) {}
+    REHASH(Server &Server) : ACommand("REHASH", Server) {}
     virtual ~REHASH() {}
     virtual int run(){
         if (_Argument.empty()) {

@@ -6,7 +6,7 @@ private:
     NICK(NICK const &that);
     NICK& operator=(NICK const &that);
 public:
-    NICK(Server &Server) : Acommand("NICK", Server) {}
+    NICK(Server &Server) : ACommand("NICK", Server) {}
     virtual ~NICK() {}
     virtual int run(){
         std::string Nick = ft::split(_Argument, " ")[0];

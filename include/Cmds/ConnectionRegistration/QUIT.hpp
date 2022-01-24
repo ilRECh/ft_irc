@@ -6,7 +6,7 @@ private:
     QUIT(QUIT const &that);
     QUIT& operator=(QUIT const &that);
 public:
-    QUIT(Server &Server) : Acommand("QUIT", Server) {}
+    QUIT(Server &Server) : ACommand("QUIT", Server) {}
     virtual ~QUIT() {}
     virtual int run(){
         if (_Argument.empty()) {

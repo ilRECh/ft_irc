@@ -6,7 +6,7 @@ private:
     NAMES(NAMES const &that);
     NAMES& operator=(NAMES const &that);
 public:
-    NAMES(Server &Server) : Acommand("NAMES", Server) {}
+    NAMES(Server &Server) : ACommand("NAMES", Server) {}
     virtual ~NAMES() {}
     virtual int run(){
         if (_Argument.empty()) {

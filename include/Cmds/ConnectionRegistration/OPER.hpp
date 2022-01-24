@@ -6,7 +6,7 @@ private:
     OPER(OPER const &that);
     OPER& operator=(OPER const &that);
 public:
-    OPER(Server &Server) : Acommand("OPER", Server) {}
+    OPER(Server &Server) : ACommand("OPER", Server) {}
     virtual ~OPER() {}
     virtual int run(){
         if (_Argument.empty()) {

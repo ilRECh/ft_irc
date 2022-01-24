@@ -6,7 +6,7 @@ private:
     ERROR(ERROR const &that);
     ERROR& operator=(ERROR const &that);
 public:
-    ERROR(Server &Server) : Acommand("ERROR", Server) {}
+    ERROR(Server &Server) : ACommand("ERROR", Server) {}
     virtual ~ERROR() {}
     virtual int run(){
         if (_Argument.empty()) {

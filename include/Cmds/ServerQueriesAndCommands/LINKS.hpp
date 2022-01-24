@@ -6,7 +6,7 @@ private:
     LINKS(LINKS const &that);
     LINKS& operator=(LINKS const &that);
 public:
-    LINKS(Server &Server) : Acommand("LINKS", Server) {}
+    LINKS(Server &Server) : ACommand("LINKS", Server) {}
     virtual ~LINKS() {}
     virtual int run(){
         if (_Argument.empty()) {

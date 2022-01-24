@@ -6,7 +6,7 @@ private:
     MODE(MODE const &that);
     MODE& operator=(MODE const &that);
 public:
-    MODE(Server &Server) : Acommand("MODE", Server) {}
+    MODE(Server &Server) : ACommand("MODE", Server) {}
     virtual ~MODE() {}
     virtual int run(){
         if (_Argument.empty()) {

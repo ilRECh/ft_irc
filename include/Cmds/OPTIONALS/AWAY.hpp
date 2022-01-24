@@ -6,7 +6,7 @@ private:
     AWAY(AWAY const &that);
     AWAY& operator=(AWAY const &that);
 public:
-    AWAY(Server &Server) : Acommand("AWAY", Server) {}
+    AWAY(Server &Server) : ACommand("AWAY", Server) {}
     virtual ~AWAY() {}
     virtual int run(){
         if (_Argument.empty()) {

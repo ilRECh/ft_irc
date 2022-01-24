@@ -6,7 +6,7 @@ private:
     ADMIN(ADMIN const &that);
     ADMIN& operator=(ADMIN const &that);
 public:
-    ADMIN(Server &Server) : Acommand("ADMIN", Server) {}
+    ADMIN(Server &Server) : ACommand("ADMIN", Server) {}
     virtual ~ADMIN() {}
     virtual int run(){
         if (_Argument.empty()) {

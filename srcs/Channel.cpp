@@ -8,7 +8,8 @@
 //* 	1 == CHANNEL_PROTECTED,
 //* 	2 == CHANNEL_PUBLIC
 Channel::Channel(
-	string const & nameChannel, User const & userAdmin,
+	string const & nameChannel,
+	User const & userAdmin,
 	eChannelPrivateLevel const ePrivateLevel)
 	:	AUser(nameChannel) {
 	_ePrivateLevel = ePrivateLevel;
@@ -37,10 +38,7 @@ void	Channel::setName(User & who, string const & newNameChannel) {
 		who.setReplyMessage(ERR_CHANOPRIVSNEEDED(_Name));
 		return ;
 	}
-	if (setName(newNameChannel)) {
-		who.setReplyMessage(ERR_ERRONEUSNICKNAME(newNameChannel));
-		return ;
-	}
+	setName(newNameChannel);
 }
 
 bool Channel::isAdmin(User const & whom) const {

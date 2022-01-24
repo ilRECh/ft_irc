@@ -6,7 +6,7 @@ private:
     WHOWAS(WHOWAS const &that);
     WHOWAS& operator=(WHOWAS const &that);
 public:
-    WHOWAS(Server &Server) : Acommand("WHOWAS", Server) {}
+    WHOWAS(Server &Server) : ACommand("WHOWAS", Server) {}
     virtual ~WHOWAS() {}
     virtual int run(){
         if (_Argument.empty()) {

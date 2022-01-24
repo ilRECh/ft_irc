@@ -6,7 +6,7 @@ private:
     USER(USER const &that);
     USER& operator=(USER const &that);
 public:
-    USER(Server &Server) : Acommand("USER", Server) {}
+    USER(Server & Server) : ACommand("USER", Server) {}
     virtual ~USER() {}
     virtual int run(){
         if (_Argument.empty()) {

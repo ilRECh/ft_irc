@@ -6,7 +6,7 @@ private:
     VERSION(VERSION const &that);
     VERSION& operator=(VERSION const &that);
 public:
-    VERSION(Server &Server) : Acommand("VERSION", Server) {}
+    VERSION(Server &Server) : ACommand("VERSION", Server) {}
     virtual ~VERSION() {}
     virtual int run(){
         if (_Argument.empty()) {

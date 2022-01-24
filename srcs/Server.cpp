@@ -64,7 +64,7 @@ Server::Server(string const &ip, string const &port)
         throw std::runtime_error(string("bind: ") + strerror(errno));
     if (listen(_Sockfd, 1)) // *! Возможно второй аргумент придется увеличить
         throw std::runtime_error(string("listen: ") + strerror(errno));
-    FD_ZERO(&fds);
+    FD_ZERO(&_Fds_set);
     maxFd = 0;
 }
 
@@ -87,96 +87,106 @@ Server::~Server(void)
 
 void Server::run()
 {
-    timeval tm = {5, 0};
-    int retSelect = 0;
+    timeval tm = {0, 10000};
 
     std::cout << "Waiting for a connection..." << '\n';
     while (_LoopListen)
     {
         int const UserFd = accept(_Sockfd, servinfo->ai_addr, &_Socklen);
-        if (UserFd >= 0)
-        {
-            if (UserFd > maxFd)
-            {
+        if (UserFd >= 0) {
+            if (UserFd > maxFd) {
                 maxFd = UserFd;
             }
             fcntl(UserFd, F_SETFD, fcntl(UserFd, F_GETFD) | O_NONBLOCK);
-            FD_SET(UserFd, &fds);
+            FD_SET(UserFd, &_Fds_set);
             send(UserFd, "=> Server connected!\n", 22, 0);
-            sockaddr_in AddrUser;// = {0, 0, {0}, {0}};
+            sockaddr_in AddrUser = {0, 0, 0, {0}, {0}};
             socklen_t Socklen = sizeof(AddrUser);
-            //* Выяняем кто подключился
-            std::cout << "status: "
-                      << getpeername(UserFd, (sockaddr *) &AddrUser, &Socklen)
-                      << '\n';
-            // Left for testing, remove if Release
-            std::cout << "<<<<<<< " << inet_ntoa(AddrUser.sin_addr)
-                      << '\n';
-            _Users.push_back(new User("Name", UserFd));
+            std::cout << "status: " << getpeername(UserFd, (sockaddr *) &AddrUser, &Socklen) << '\n'; //* Выяняем кто подключился
+            std::cout << "<<<<<<< " << inet_ntoa(AddrUser.sin_addr) << '\n'; // Left for testing, remove if Release
+            _Users.push_back(new User(UserFd));
         } else if (UserFd < 0 && errno != EAGAIN) {
             throw std::runtime_error("Fatal. Accepting the " + ft::to_string(UserFd) + " failed.\n" + strerror(errno));
         }
-        retSelect = 1;
+        int retSelect = 1;
+		fd_set fdsCopy = _Fds_set;
         while (retSelect && maxFd)
         {
-            fd_set fdsCopy = fds;
             retSelect = select(maxFd + 1, &fdsCopy, NULL, NULL, &tm);
-            if (retSelect > 0)
-            {
+            if (retSelect > 0) {
                 readerClient(fdsCopy);
-            } else if (retSelect < 0)
-            {
+            } else if (retSelect < 0) {
                 throw std::runtime_error("Error: Select");
             }
         }
+		for (std::vector<User *>::iterator User = _Users.begin(); User != _Users.end(); ++User) {
+			std::string ReplyMessage = (*User)->getReplyMessage();
+			if (not ReplyMessage.empty()) {
+				send((*User)->_Fd, ReplyMessage.c_str(), ReplyMessage.length(), 0);
+			} else {
+				if ((*User)->unregisteredShouldDie() || (*User)->inactiveShouldDie()) {
+					send((*User)->_Fd, "\0", 1, 0);
+					FD_CLR((*User)->_Fd, &_Fds_set);
+            		if ((User = _Users.erase(User)) == _Users.end()) {
+						break ;
+					}
+				}
+			}
+		}
     }
 }
 
-void Server::readerClient(fd_set fdsCpy)
+void Server::readerClient(fd_set & fdsCpy)
 {
     for (std::vector<User *>::iterator it = _Users.begin();
          it != _Users.end(); ++it)
     {
         if (FD_ISSET((*it)->_Fd, &fdsCpy) > 0)
         {
-            (*it)->_Msg = recvReader((*it)->_Fd);
-            processCmd(*it);
-            serverLog(*it);
+			FD_CLR((*it)->_Fd, &fdsCpy);
+			char Buffer[SIZE] = { 0 };
+			ssize_t ReadByte = 0;
+			ReadByte = recv((*it)->_Fd, Buffer, SIZE, 0);
+			if (ReadByte < 0 && errno != EAGAIN) {
+				throw std::runtime_error(std::string("recv: ") + strerror(errno));
+			} else if (ReadByte == 0) {
+				FD_CLR((*it)->_Fd, &_Fds_set);
+				return ;
+			}
+			std::string ReceivedMessage(Buffer);
+            processCmd(*it, ReceivedMessage);
+            serverLog(*it, ReceivedMessage);
         }
     }
 }
 
-std::string Server::recvReader(int Fd)
+void Server::processCmd(User *User, std::string const & ReceivedMessage)
 {
-    char Buffer[SIZE];
-    ssize_t ReadByte = 0;
-    std::string ReturnValue;
-
-    memset(Buffer, 0, SIZE);
-    ReadByte = recv(Fd, Buffer, SIZE, 0);
-    if (ReadByte < 0 && errno != EAGAIN)
-    {
-        throw std::runtime_error(std::string("recv: ") + strerror(errno));
-    }
-    ReturnValue += Buffer;
-    return (ReturnValue);
-}
-
-int Server::processCmd(User *User)
-{
-    std::vector<std::string> Cmds = ft::splitByCmds(User->_Msg, "\r\n");
+    std::vector<std::string> Cmds = ft::splitByCmds(ReceivedMessage, "\r\n");
 
     for (std::vector<std::string>::iterator it = Cmds.begin();
             it != Cmds.end(); ++it) {
         std::pair<std::string, std::string> Cmd = parseCmd(*it);
         proceedCmd(Cmd, User);
     }
-    return 0;
+}
+
+void Server::proceedCmd(std::pair<std::string, std::string> Cmd, User *User) {
+	for (std::vector<ACommand *>::iterator command = _Commands.begin();
+			command != _Commands.end(); ++command) {
+		if (Cmd.first == (*command)->_Name) {
+			std::cout << (*command)->_Name << std::endl;
+			(*command)->setArgument(Cmd.second);
+			(*command)->setInitiator(User);
+			(*command)->run();
+			return ;
+		}
+	}
+	User->setReplyMessage(ERR_UNKNOWNCOMMAND(Cmd.first));
 }
 
 std::pair<std::string, std::string> Server::parseCmd(std::string &Cmd)
 {
-    // std::vector<std::string> Value = ft::split(Cmd, " \t\n");
     if (Cmd.end()[-1] == '\n') {
         Cmd.erase(Cmd.end()-1);
     }
@@ -198,27 +208,12 @@ std::pair<std::string, std::string> Server::parseCmd(std::string &Cmd)
     return Value;
 }
 
-void Server::proceedCmd(std::pair<std::string, std::string> Cmd, User *User) {
-    for (std::vector<ACommand *>::iterator command = _Commands.begin();
-            command != _Commands.end(); ++command) {
-        std::cout << (*command)->_Name << std::endl; 
-		if (Cmd.first == (*command)->_Name) {
-            (*command)->setArgument(Cmd.second);
-            (*command)->setInitiator(User);
-            (*command)->run();
-            return ;
-        }
-    }
-    User->setReplyMessage(ERR_UNKNOWNCOMMAND(Cmd.first));
-}
-
 void Server::sendMsg(User *From, User *To)
 {
     std::string ReturnValue;
 
-    ReturnValue += timeStamp() + " " + From->getName() + " " + From->_Msg;
+    ReturnValue += timeStamp() + " " + From->getName() + " " + From->getReplyMessage();
     send(To->_Fd , ReturnValue.c_str(), ReturnValue.size(), 0);
-    From->_Msg.clear();
 }
 
 void Server::sendMsg(User *To) {
@@ -226,18 +221,16 @@ void Server::sendMsg(User *To) {
 
     ReturnValue += timeStamp() + " " + To->getName() + " " + To->getReplyMessage();
     send(To->_Fd , ReturnValue.c_str(), ReturnValue.size(), 0);
-    To->_Msg.clear();
 }
 
-void Server::serverLog(User *That)
+void Server::serverLog(User *That, std::string const & ReceivedMessage)
 {
-    std::cout << That->getName() << ": "<< That->_Msg;
+    std::cout << That->getName() << ": "<< ReceivedMessage;
 }
 
 std::vector<User *> const &Server::getUsers(){
 	return _Users;
 }
-
 
 User *Server::getUserByNickName(std::string const & NickName){
 	std::vector<User *>::iterator first, last;
@@ -275,7 +268,7 @@ Channel *Server::getChannelByName(std::string const & NameChannel){
 void Server::removeUserByNickName(std::string const & NickName) {
     for (std::vector<User *>::iterator i = _Users.begin(); i != _Users.end(); ++i) {
         if ((*i)->getNickName() == NickName) {
-            close((*i)->_Fd);
+            FD_CLR((*i)->_Fd, &_Fds_set);
             _Users.erase(i);
         }
     }

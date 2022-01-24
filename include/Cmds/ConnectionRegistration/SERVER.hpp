@@ -6,7 +6,7 @@ private:
     SERVER(SERVER const &that);
     SERVER& operator=(SERVER const &that);
 public:
-    SERVER(Server &Server) : Acommand("SERVER", Server) {}
+    SERVER(Server &Server) : ACommand("SERVER", Server) {}
     virtual ~SERVER() {}
     virtual int run(){
         if (_Argument.empty()) {

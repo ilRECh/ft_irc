@@ -6,7 +6,7 @@ private:
     CONNECT(CONNECT const &that);
     CONNECT& operator=(CONNECT const &that);
 public:
-    CONNECT(Server &Server) : Acommand("CONNECT", Server) {}
+    CONNECT(Server &Server) : ACommand("CONNECT", Server) {}
     virtual ~CONNECT() {}
     virtual int run(){
         if (_Argument.empty()) {

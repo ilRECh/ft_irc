@@ -6,7 +6,7 @@ private:
     ISON(ISON const &that);
     ISON& operator=(ISON const &that);
 public:
-    ISON(Server &Server) : Acommand("ISON", Server) {}
+    ISON(Server &Server) : ACommand("ISON", Server) {}
     virtual ~ISON() {}
     virtual int run(){
         if (_Argument.empty()) {

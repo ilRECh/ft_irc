@@ -6,7 +6,7 @@ private:
     KICK(KICK const &that);
     KICK& operator=(KICK const &that);
 public:
-    KICK(Server &Server) : Acommand("KICK", Server) {}
+    KICK(Server &Server) : ACommand("KICK", Server) {}
     virtual ~KICK() {}
     virtual int run(){
         if (_Argument.empty()) {

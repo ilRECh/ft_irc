@@ -6,7 +6,7 @@ private:
     LIST(LIST const &that);
     LIST& operator=(LIST const &that);
 public:
-    LIST(Server &Server) : Acommand("LIST", Server) {}
+    LIST(Server &Server) : ACommand("LIST", Server) {}
     virtual ~LIST() {}
     virtual int run(){
         if (_Argument.empty()) {

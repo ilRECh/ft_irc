@@ -6,7 +6,7 @@ private:
     JOIN(JOIN const &that);
     JOIN& operator=(JOIN const &that);
 public:
-    JOIN(Server &Server) : Acommand("JOIN", Server) {}
+    JOIN(Server &Server) : ACommand("JOIN", Server) {}
     virtual ~JOIN() {}
     virtual int run(){
         if (_Argument.empty()) {

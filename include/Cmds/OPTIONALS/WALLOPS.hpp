@@ -6,7 +6,7 @@ private:
     SomeCmds(SomeCmds const &that);
     SomeCmds& operator=(SomeCmds const &that);
 public:
-    SomeCmds(Server &Server) : Acommand("SomeCmds", Server) {}
+    SomeCmds(Server &Server) : ACommand("SomeCmds", Server) {}
     virtual ~SomeCmds() {}
     virtual int run(){
         if (_Argument.empty()) {

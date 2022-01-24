@@ -6,7 +6,7 @@ private:
     SUMMON(SUMMON const &that);
     SUMMON& operator=(SUMMON const &that);
 public:
-    SUMMON(Server &Server) : Acommand("SUMMON", Server) {}
+    SUMMON(Server &Server) : ACommand("SUMMON", Server) {}
     virtual ~SUMMON() {}
     virtual int run(){
         if (_Argument.empty()) {

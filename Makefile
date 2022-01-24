@@ -4,7 +4,16 @@ CXX			= clang++
 CPPFLAGS	= -Wall -Wextra -Werror -g $(addprefix -I, $(INCLUDES)) -std=c++98 -pedantic -fno-limit-debug-info
 SRC=./srcs/
 CMDS=./srcs/cmds/
-INCLUDES= ./include ./include/Cmds/
+INCLUDES=	./include\
+			./include/Cmds/\
+			include/Cmds/ChannelOperations\
+			include/Cmds/ConnectionRegistration\
+			include/Cmds/MiscellaneousMessages\
+			include/Cmds/OPTIONALS\
+			include/Cmds/SendingMessages\
+			include/Cmds/ServerQueriesAndCommands\
+			include/Cmds/UserBasedQueries
+
 
 FILES		= main \
 			$(addprefix $(SRC), Channel Server User Password Utility TimeStamp)

@@ -15,13 +15,8 @@ public:
         setName(Name); 
     }
     virtual ~AUser() {} ;
-    virtual bool setName(std::string const & Name) {
-        for (size_t i = 0; i < Name.length(); ++i) {
-            if (!std::isalnum(Name[i]))
-                return true;
-        }
+    virtual void setName(std::string const & Name) {
         _Name = Name;
-        return false;
     }
     std::string const & getName( void ) const {
         return _Name;

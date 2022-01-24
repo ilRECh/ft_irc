@@ -7,7 +7,7 @@ private:
     PRIVMSG(PRIVMSG const &that);
     PRIVMSG& operator=(PRIVMSG const &that);
 public:
-    PRIVMSG(Server &Server) : Acommand("PRIVMSG", Server) {}
+    PRIVMSG(Server &Server) : ACommand("PRIVMSG", Server) {}
     virtual ~PRIVMSG() {}
     virtual int run(){
         std::string targets = ft::SplitOneTimes(_Argument, ":");

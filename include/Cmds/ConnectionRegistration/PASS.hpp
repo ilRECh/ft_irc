@@ -11,7 +11,7 @@ public:
     virtual int run() {
         if (_Argument.empty()) {
             return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-        } else if (_Initiator->getRegistered() == true) {
+        } else if (_Initiator->isRegistered() == true) {
             return _Initiator->setReplyMessage(ERR_ALREADYREGISTRED);
         }
         _Initiator->setPassword(_Argument);

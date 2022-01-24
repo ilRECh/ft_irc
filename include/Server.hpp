@@ -4,7 +4,7 @@
 #include "Replies.hpp"
 
 // Commands
-#include "ConnectionRegistration/PASS.hpp"
+#include "PASS.hpp"
 
 using std::vector;
 using std::string;
@@ -32,23 +32,16 @@ private:
 	addrinfo *servinfo;
 	socklen_t _Socklen;
 
-	fd_set	fds;
+	fd_set	_Fds_set;
 	int		maxFd;
 
-	void readerClient(fd_set);
-public:
-	Server(string const & ip, string const & port);
-	Server(std::vector<std::string>& argv);
-	~Server();
-	void run();
-
-	int processCmd(User *That);
+	void readerClient(fd_set & fdsCpy);
+	void processCmd(User *User, std::string const & ReceivedMessage);
 	std::pair<std::string, std::string> parseCmd(std::string &Cmd);
 	void proceedCmd(std::pair<std::string, std::string> Cmd, User *User);
 	std::string timeStamp() { return "A long time ago"; }
 
-    std::string recvReader(int fd);
-    void serverLog(User *that);
+    void serverLog(User *that, std::string const & ReceivedMessage);
     void sendMsg(User *From, User *To);
 	void sendMsg(User *To);
 
@@ -58,4 +51,10 @@ public:
 	User *getUserByName(std::string const & NickName);
 	Channel *getChannelByName(std::string const & NameChannel);
 	void removeUserByNickName(std::string const & NickName);
+
+public:
+	Server(string const & ip, string const & port);
+	Server(std::vector<std::string>& argv);
+	~Server();
+	void run();
 };

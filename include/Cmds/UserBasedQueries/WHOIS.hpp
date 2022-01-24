@@ -6,7 +6,7 @@ private:
     WHOIS(WHOIS const &that);
     WHOIS& operator=(WHOIS const &that);
 public:
-    WHOIS(Server &Server) : Acommand("WHOIS", Server) {}
+    WHOIS(Server &Server) : ACommand("WHOIS", Server) {}
     virtual ~WHOIS() {}
     virtual int run(){
         if (_Argument.empty()) {

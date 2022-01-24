@@ -6,7 +6,7 @@ private:
     PONG(PONG const &that);
     PONG& operator=(PONG const &that);
 public:
-    PONG(Server &Server) : Acommand("PONG", Server) {}
+    PONG(Server &Server) : ACommand("PONG", Server) {}
     virtual ~PONG() {}
     virtual int run(){
         if (_Argument.empty()) {

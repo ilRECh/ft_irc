@@ -6,7 +6,7 @@ private:
     TOPIC(TOPIC const &that);
     TOPIC& operator=(TOPIC const &that);
 public:
-    TOPIC(Server &Server) : Acommand("TOPIC", Server) {}
+    TOPIC(Server &Server) : ACommand("TOPIC", Server) {}
     virtual ~TOPIC() {}
     virtual int run(){
         if (_Argument.empty()) {

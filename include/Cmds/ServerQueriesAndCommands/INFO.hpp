@@ -6,7 +6,7 @@ private:
     INFO(INFO const &that);
     INFO& operator=(INFO const &that);
 public:
-    INFO(Server &Server) : Acommand("INFO", Server) {}
+    INFO(Server &Server) : ACommand("INFO", Server) {}
     virtual ~INFO() {}
     virtual int run(){
         if (_Argument.empty()) {

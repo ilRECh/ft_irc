@@ -6,7 +6,7 @@ private:
     STATS(STATS const &that);
     STATS& operator=(STATS const &that);
 public:
-    STATS(Server &Server) : Acommand("STATS", Server) {}
+    STATS(Server &Server) : ACommand("STATS", Server) {}
     virtual ~STATS() {}
     virtual int run(){
         if (_Argument.empty()) {

@@ -6,7 +6,7 @@ private:
     PART(PART const &that);
     PART& operator=(PART const &that);
 public:
-    PART(Server &Server) : Acommand("PART", Server) {}
+    PART(Server &Server) : ACommand("PART", Server) {}
     virtual ~PART() {}
     virtual int run(){
         if (_Argument.empty()) {
