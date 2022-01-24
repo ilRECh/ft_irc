@@ -2,6 +2,11 @@
 #include "User.hpp"
 #include "Channel.hpp"
 
+// Commands
+#include "PASS.hpp"
+#include "NICK.hpp"
+#include "USER.hpp"
+
 Server::Server(std::vector<std::string> &argv)
         : _Commands(),
           ip(0),
@@ -37,6 +42,8 @@ Server::Server(string const &ip, string const &port)
           _LoopListen(true)
 {
     _Commands.push_back(new PASS(*this));
+    _Commands.push_back(new NICK(*this));
+    _Commands.push_back(new USER(*this));
     addrinfo hints;
 
     memset(&hints, 0, sizeof hints);
@@ -100,7 +107,11 @@ void Server::run()
             fcntl(UserFd, F_SETFD, fcntl(UserFd, F_GETFD) | O_NONBLOCK);
             FD_SET(UserFd, &_Fds_set);
             send(UserFd, "=> Server connected!\n", 22, 0);
+#ifdef __linux__
+            sockaddr_in AddrUser = {0, 0, {0}, {0}};
+#elif __APPLE__
             sockaddr_in AddrUser = {0, 0, 0, {0}, {0}};
+#endif
             socklen_t Socklen = sizeof(AddrUser);
             std::cout << "status: " << getpeername(UserFd, (sockaddr *) &AddrUser, &Socklen) << '\n'; //* Выяняем кто подключился
             std::cout << "<<<<<<< " << inet_ntoa(AddrUser.sin_addr) << '\n'; // Left for testing, remove if Release
@@ -121,11 +132,13 @@ void Server::run()
         }
 		for (std::vector<User *>::iterator User = _Users.begin(); User != _Users.end(); ++User) {
 			std::string ReplyMessage = (*User)->getReplyMessage();
+            if ((*User)->isReadyForPing()) {
+                //PING(*User);
+            }
 			if (not ReplyMessage.empty()) {
 				send((*User)->_Fd, ReplyMessage.c_str(), ReplyMessage.length(), 0);
 			} else {
 				if ((*User)->unregisteredShouldDie() || (*User)->inactiveShouldDie()) {
-					send((*User)->_Fd, "\0", 1, 0);
 					FD_CLR((*User)->_Fd, &_Fds_set);
             		if ((User = _Users.erase(User)) == _Users.end()) {
 						break ;

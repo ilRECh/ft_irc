@@ -9,25 +9,31 @@ public:
     NICK(Server &Server) : ACommand("NICK", Server) {}
     virtual ~NICK() {}
     virtual int run(){
-        std::string Nick = ft::split(_Argument, " ")[0];
+        std::vector<std::string> Tokens = ft::split(_Argument, " \b\t\n\v\f\r");
+        std::string Nick;
+        if (not Tokens.empty()) {
+            Nick = Tokens[0];
+        }
         if (Nick.empty()) {
             return _Initiator->setReplyMessage(ERR_NONICKNAMEGIVEN);
         }
-        if (_Server.getUserByName(Nick) not_eq _Initiator) {
+        User *UserWithSameNick = _Server.getUserByNickName(Nick);
+        if (UserWithSameNick and (UserWithSameNick not_eq _Initiator)) {
             return _Initiator->setReplyMessage(ERR_NICKNAMEINUSE(Nick));
         }
-        std::string SpecialCharacters = "`|^_-{}[]\\";
         if (Nick[0] == '-' or std::isdigit(Nick[0])) {
             ErroneusNickNameGiven:
             return _Initiator->setReplyMessage(ERR_ERRONEUSNICKNAME(Nick));
         }
+        std::string SpecialCharacters = "`|^_-{}[]\\";
         for (size_t i = 1; i < Nick.length(); ++i) {
             if (not std::isalnum(Nick[i])
-                || SpecialCharacters.find(Nick[i]) == SpecialCharacters.npos) {
+                && SpecialCharacters.find(Nick[i]) == SpecialCharacters.npos) {
                 goto ErroneusNickNameGiven;
             }
         }
         _Initiator->setNickName(Nick);
+        return 0;
     }
 };/*
    Parameters: <nickname> [ <hopcount> ]

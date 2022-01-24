@@ -37,7 +37,7 @@ bool User::isRegistered() const {
 }
 
 bool User::unregisteredShouldDie() const {
-	if (_Registration.Time.hasTimePassed(10)) {
+	if (_Registration.Time.hasTimePassed(30)) {
 		std::cout << _Name << " is unregistered. Died." << '\n';
 		return true;
 	}
@@ -50,14 +50,18 @@ bool User::inactiveShouldDie() const {
 		std::cout << _Name << " is inactive. Died." << '\n';
 		return true;
 	}
-	else if (_LastResponse.hasTimePassed(30)) {
-		//PING
-	}
 	return false;
 }
 
 void User::updateActivity() {
 	_LastResponse.updateBaseTime();
+}
+
+bool User::isReadyForPing() const {
+	if (_LastResponse.hasTimePassed(30) and not _LastResponse.hasTimePassed(60)) {
+		return true;
+	}
+	return false;
 }
 
 //	* get|set mode

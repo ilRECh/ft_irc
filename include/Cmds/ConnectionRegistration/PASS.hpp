@@ -9,6 +9,12 @@ public:
     PASS(Server & Server) : ACommand("PASS", Server) {}
     virtual ~PASS() {}
     virtual int run() {
+        std::vector<std::string> Tokens = ft::split(_Argument, " \b\t\n\v\f\r");
+        if (not Tokens.empty()) {
+            _Argument = Tokens[0];
+        } else {
+            _Argument = "";
+        }
         if (_Argument.empty()) {
             return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
         } else if (_Initiator->isRegistered() == true) {

@@ -3,9 +3,6 @@
 #include "ft.hpp"
 #include "Replies.hpp"
 
-// Commands
-#include "PASS.hpp"
-
 using std::vector;
 using std::string;
 
@@ -47,14 +44,15 @@ private:
 
 	std::vector<User *> const &getUsers();
 
-	User *getUserByNickName(std::string const & NickName);
-	User *getUserByName(std::string const & NickName);
-	Channel *getChannelByName(std::string const & NameChannel);
-	void removeUserByNickName(std::string const & NickName);
 
+	void removeUserByNickName(std::string const & NickName);
 public:
 	Server(string const & ip, string const & port);
 	Server(std::vector<std::string>& argv);
 	~Server();
+
+	User *getUserByNickName(std::string const & NickName);
+	User *getUserByName(std::string const & NickName);
+	Channel *getChannelByName(std::string const & NameChannel);
 	void run();
 };

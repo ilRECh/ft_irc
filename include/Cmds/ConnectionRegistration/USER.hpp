@@ -13,6 +13,7 @@ public:
             return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
         }
         //code
+        return 0;
     }
 };/*
    Parameters: <username> <hostname> <servername> <realname>

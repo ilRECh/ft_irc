@@ -24,12 +24,13 @@ FILES_OBJ	= $(addsuffix .o,	$(FILES))
 
 .PHONY		: all client clean fclean re
 
+$(NAME)		: $(FILES_OBJ)
+	$(CXX) $(CPPFLAGS) $^ -o $@
+
 all			: $(NAME)
 
 $(FILES_OBJ): $(FILES_HPP)
 
-$(NAME)		: $(FILES_OBJ)
-	$(CXX) $(CPPFLAGS) $^ -o $@
 
 client		:
 	$(CXX) $(CPPFLAGS) client.cpp -o client

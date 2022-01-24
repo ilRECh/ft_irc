@@ -61,6 +61,7 @@ public:
 
 	// Last Activity
 	bool inactiveShouldDie() const;
+	bool isReadyForPing() const;
 	void updateActivity();
 
 	// ReplyMessage
