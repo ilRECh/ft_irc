@@ -6,12 +6,11 @@ private:
     INVITE(INVITE const &that);
     INVITE& operator=(INVITE const &that);
 public:
-    INVITE(Server &Server):   ACommand("INVITE", Server) {}
+    INVITE(Server &Server) : Acommand("INVITE", Server) {}
     virtual ~INVITE() {}
     virtual int run(){
         if (_Argument.empty()) {
-            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            return ;
+            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
         }
         //code
     }

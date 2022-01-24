@@ -15,12 +15,12 @@ private:
     WHO(WHO const &that);
     WHO& operator=(WHO const &that);
 public:
-    WHO(Server &Server):   ACommand("WHO", Server) {}
+    WHO(Server &Server) : Acommand("WHO", Server) {}
     virtual ~WHO() {}
     virtual int run(){
         if (_Argument.empty()) {
-            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            return ;
+            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            
         }
         //code
     }
@@ -47,7 +47,7 @@ public:
 		return false;
 	}
 public:
-	WHO(Server const *Server):   ACommand("WHO", Server) {}
+	WHO(Server const *Server) : Acommand("WHO", Server) {}
 	virtual ~WHO() {}
 	virtual int run(std::string name = std::string()){
 		std::vector<User const *> const & _Users = _Server->getUsers();

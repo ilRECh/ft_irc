@@ -6,12 +6,12 @@ private:
     WHOIS(WHOIS const &that);
     WHOIS& operator=(WHOIS const &that);
 public:
-    WHOIS(Server &Server):   ACommand("WHOIS", Server) {}
+    WHOIS(Server &Server) : Acommand("WHOIS", Server) {}
     virtual ~WHOIS() {}
     virtual int run(){
         if (_Argument.empty()) {
-            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            return ;
+            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            
         }
         //code
     }

@@ -2,7 +2,7 @@
 #include "Server.hpp"
 #include "Channel.hpp"
 
-User::User(string const & Name, int const Fd)
+User::User(string const Name, int const Fd)
 	:	AUser(Name),
 		_Fd(Fd) {
 }
@@ -50,7 +50,6 @@ bool User::getRegistered() const {
 	return _IsRegistered;
 }
 
-<<<<<<< HEAD
 void User::setChannel(Channel const * channel){
 	std::vector<Channel *>::iterator first, last;
 
@@ -58,17 +57,17 @@ void User::setChannel(Channel const * channel){
 		_Channels.push_back(channel);
 }
 
-std::vector<Channel const *> const &
-User::getChannels() const{
+std::vector<Channel const *> const & User::getChannels() const {
 	return _Channels;
-=======
-void User::setReplyMessage(std::string const & Msg) {
+}
+
+status User::setReplyMessage(std::string const & Msg) {
 	_ReplyMessage += Msg + "\r\n";
+	return 0;
 }
 
 std::string const User::getReplyMessage() {
 	std::string ret(_ReplyMessage);
 	_ReplyMessage.clear();
 	return ret;
->>>>>>> Ildar
 }

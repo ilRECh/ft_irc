@@ -6,12 +6,12 @@ private:
     KILL(KILL const &that);
     KILL& operator=(KILL const &that);
 public:
-    KILL(Server &Server):   ACommand("KILL", Server) {}
+    KILL(Server &Server) : Acommand("KILL", Server) {}
     virtual ~KILL() {}
     virtual int run(){
         if (_Argument.empty()) {
-            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            return ;
+            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            
         }
         //code
     }

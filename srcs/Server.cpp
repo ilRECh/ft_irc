@@ -112,7 +112,7 @@ void Server::run()
             // Left for testing, remove if Release
             std::cout << "<<<<<<< " << inet_ntoa(AddrUser.sin_addr)
                       << '\n';
-            _Users.push_back(new User("Name", UserFd, AddrUser, Socklen));
+            _Users.push_back(new User("Name", UserFd));
         } else if (UserFd < 0 && errno != EAGAIN) {
             throw std::runtime_error("Fatal. Accepting the " + ft::to_string(UserFd) + " failed.\n" + strerror(errno));
         }

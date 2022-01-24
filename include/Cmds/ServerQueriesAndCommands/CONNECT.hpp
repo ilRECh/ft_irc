@@ -6,12 +6,12 @@ private:
     CONNECT(CONNECT const &that);
     CONNECT& operator=(CONNECT const &that);
 public:
-    CONNECT(Server &Server):   ACommand("CONNECT", Server) {}
+    CONNECT(Server &Server) : Acommand("CONNECT", Server) {}
     virtual ~CONNECT() {}
     virtual int run(){
         if (_Argument.empty()) {
-            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            return ;
+            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            
         }
         //code
     }

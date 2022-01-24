@@ -6,12 +6,12 @@ private:
     LINKS(LINKS const &that);
     LINKS& operator=(LINKS const &that);
 public:
-    LINKS(Server &Server):   ACommand("LINKS", Server) {}
+    LINKS(Server &Server) : Acommand("LINKS", Server) {}
     virtual ~LINKS() {}
     virtual int run(){
         if (_Argument.empty()) {
-            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            return ;
+            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            
         }
         //code
     }

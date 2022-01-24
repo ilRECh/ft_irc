@@ -23,7 +23,7 @@ private:
 	bool _IsRegistered;
     std::string _ReplyMessage;
 public:
-	User(std::string const & Name, int const Fd);
+	User(std::string const Name, int const Fd);
 	virtual ~User() {}
 	
 	bool operator!=(const User& that) const;
@@ -35,10 +35,6 @@ public:
 	// NickName
 	void setNickName(std::string const & NickName);
 	string const & getNickName( void ) const;
-
-	// Password
-	void setPassword(std::string const & Password);
-	std::string const & getPassword() const;
 
 	//	* get|set mode
 	bool	getModeIsExist(char) const;
@@ -58,6 +54,6 @@ public:
 	void registeredIs(bool const Condition);
 
 	// ReplyMessage
-	void setReplyMessage(std::string const & Msg);
+	status setReplyMessage(std::string const & Msg);
 	std::string const getReplyMessage();
 };

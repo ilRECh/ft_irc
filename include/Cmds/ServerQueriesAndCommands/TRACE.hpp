@@ -6,12 +6,12 @@ private:
     TRACE(TRACE const &that);
     TRACE& operator=(TRACE const &that);
 public:
-    TRACE(Server &Server):   ACommand("TRACE", Server) {}
+    TRACE(Server &Server) : Acommand("TRACE", Server) {}
     virtual ~TRACE() {}
     virtual int run(){
         if (_Argument.empty()) {
-            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            return ;
+            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            
         }
         //code
     }

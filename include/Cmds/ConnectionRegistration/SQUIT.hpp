@@ -6,12 +6,11 @@ private:
     SQUIT(SQUIT const &that);
     SQUIT& operator=(SQUIT const &that);
 public:
-    SQUIT(Server &Server):   ACommand("SQUIT", Server) {}
+    SQUIT(Server &Server) : Acommand("SQUIT", Server) {}
     virtual ~SQUIT() {}
     virtual int run(){
         if (_Argument.empty()) {
-            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            return ;
+            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
         }
         //code
     }

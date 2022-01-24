@@ -6,12 +6,11 @@ private:
     SERVER(SERVER const &that);
     SERVER& operator=(SERVER const &that);
 public:
-    SERVER(Server &Server):   ACommand("SERVER", Server) {}
+    SERVER(Server &Server) : Acommand("SERVER", Server) {}
     virtual ~SERVER() {}
     virtual int run(){
         if (_Argument.empty()) {
-            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            return ;
+            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
         }
         //code
     }

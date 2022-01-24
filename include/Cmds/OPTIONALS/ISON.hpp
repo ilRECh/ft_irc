@@ -6,12 +6,12 @@ private:
     ISON(ISON const &that);
     ISON& operator=(ISON const &that);
 public:
-    ISON(Server &Server):   ACommand("ISON", Server) {}
+    ISON(Server &Server) : Acommand("ISON", Server) {}
     virtual ~ISON() {}
     virtual int run(){
         if (_Argument.empty()) {
-            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            return ;
+            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            
         }
 
         for (std::vector<User *>::iterator it = _Users.begin();

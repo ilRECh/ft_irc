@@ -6,12 +6,12 @@ private:
     REHASH(REHASH const &that);
     REHASH& operator=(REHASH const &that);
 public:
-    REHASH(Server &Server):   ACommand("REHASH", Server) {}
+    REHASH(Server &Server) : Acommand("REHASH", Server) {}
     virtual ~REHASH() {}
     virtual int run(){
         if (_Argument.empty()) {
-            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            return ;
+            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            
         }
         //code
     }

@@ -29,6 +29,9 @@ private:
 	std::vector<Channel *> _Channels;
     int _Sockfd;
 
+	addrinfo *servinfo;
+	socklen_t _Socklen;
+
 	fd_set	fds;
 	int		maxFd;
 

@@ -6,12 +6,12 @@ private:
     NOTICE(NOTICE const &that);
     NOTICE& operator=(NOTICE const &that);
 public:
-    NOTICE(Server &Server):   ACommand("NOTICE", Server) {}
+    NOTICE(Server &Server) : Acommand("NOTICE", Server) {}
     virtual ~NOTICE() {}
     virtual int run(){
         if (_Argument.empty()) {
-            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            return ;
+            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            
         }
         //code
     }

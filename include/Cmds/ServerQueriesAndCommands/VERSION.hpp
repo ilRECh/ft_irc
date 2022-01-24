@@ -6,12 +6,12 @@ private:
     VERSION(VERSION const &that);
     VERSION& operator=(VERSION const &that);
 public:
-    VERSION(Server &Server):   ACommand("VERSION", Server) {}
+    VERSION(Server &Server) : Acommand("VERSION", Server) {}
     virtual ~VERSION() {}
     virtual int run(){
         if (_Argument.empty()) {
-            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            return ;
+            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            
         }
         //code
     }

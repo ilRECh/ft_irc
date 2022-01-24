@@ -6,12 +6,12 @@ private:
     RESTART(RESTART const &that);
     RESTART& operator=(RESTART const &that);
 public:
-    RESTART(Server &Server):   ACommand("RESTART", Server) {}
+    RESTART(Server &Server) : Acommand("RESTART", Server) {}
     virtual ~RESTART() {}
     virtual int run(){
         if (_Argument.empty()) {
-            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            return ;
+            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            
         }
         //code
     }

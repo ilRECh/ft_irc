@@ -8,13 +8,11 @@ private:
 public:
     PASS(Server & Server) : ACommand("PASS", Server) {}
     virtual ~PASS() {}
-    virtual int run(){
+    virtual int run() {
         if (_Argument.empty()) {
-            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            return ;
+            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
         } else if (_Initiator->getRegistered() == true) {
-            _Initiator->setReplyMessage(ERR_ALREADYREGISTRED);
-            return ;
+            return _Initiator->setReplyMessage(ERR_ALREADYREGISTRED);
         }
         _Initiator->setPassword(_Argument);
         return 0;

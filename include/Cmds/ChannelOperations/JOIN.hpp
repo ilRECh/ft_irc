@@ -6,12 +6,12 @@ private:
     JOIN(JOIN const &that);
     JOIN& operator=(JOIN const &that);
 public:
-    JOIN(Server &Server):   ACommand("JOIN", Server) {}
+    JOIN(Server &Server) : Acommand("JOIN", Server) {}
     virtual ~JOIN() {}
     virtual int run(){
         if (_Argument.empty()) {
-            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            return ;
+            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            
         }
         //code
     }

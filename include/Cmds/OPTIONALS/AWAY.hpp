@@ -6,12 +6,12 @@ private:
     AWAY(AWAY const &that);
     AWAY& operator=(AWAY const &that);
 public:
-    AWAY(Server &Server):   ACommand("AWAY", Server) {}
+    AWAY(Server &Server) : Acommand("AWAY", Server) {}
     virtual ~AWAY() {}
     virtual int run(){
         if (_Argument.empty()) {
-            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            return ;
+            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            
         }
         //code
     }

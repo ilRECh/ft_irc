@@ -6,12 +6,12 @@ private:
     TIME(TIME const &that);
     TIME& operator=(TIME const &that);
 public:
-    TIME(Server &Server):   ACommand("TIME", Server) {}
+    TIME(Server &Server) : Acommand("TIME", Server) {}
     virtual ~TIME() {}
     virtual int run(){
         if (_Argument.empty()) {
-            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            return ;
+            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            
         }
         //code
     }

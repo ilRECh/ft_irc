@@ -6,12 +6,12 @@ private:
     NAMES(NAMES const &that);
     NAMES& operator=(NAMES const &that);
 public:
-    NAMES(Server &Server):   ACommand("NAMES", Server) {}
+    NAMES(Server &Server) : Acommand("NAMES", Server) {}
     virtual ~NAMES() {}
     virtual int run(){
         if (_Argument.empty()) {
-            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            return ;
+            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            
         }
         //code
     }

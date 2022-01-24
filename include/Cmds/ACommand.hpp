@@ -18,13 +18,13 @@ protected:
         std::string const Name,
         Server & Server)
         :   _Initiator(NULL),
-            _Name(Name),
-            _Server(Server) {}
+            _Server(Server),
+            _Name(Name) {}
     User *_Initiator;
     std::string _Argument;
     Server & _Server;
 public:
-    std::string const & _Name;
+    std::string const _Name;
     virtual ~ACommand() {} 
     void setArgument(std::string const & Argument) {
         _Argument = Argument;

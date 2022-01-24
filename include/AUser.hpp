@@ -11,7 +11,7 @@ protected:
     std::string _Name;
     std::string _Password;
 public:
-    AUser(std::string const & Name) { 
+    AUser(std::string const Name) { 
         setName(Name); 
     }
     virtual ~AUser() {} ;

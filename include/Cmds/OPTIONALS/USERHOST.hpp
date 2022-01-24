@@ -6,12 +6,12 @@ private:
     SomeCmds(SomeCmds const &that);
     SomeCmds& operator=(SomeCmds const &that);
 public:
-    SomeCmds(Server &Server):   ACommand("SomeCmds", Server) {}
+    SomeCmds(Server &Server) : Acommand("SomeCmds", Server) {}
     virtual ~SomeCmds() {}
     virtual int run(){
         if (_Argument.empty()) {
-            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            return ;
+            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            
         }
         //code
     }

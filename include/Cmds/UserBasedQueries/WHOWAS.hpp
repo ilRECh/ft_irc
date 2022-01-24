@@ -6,12 +6,12 @@ private:
     WHOWAS(WHOWAS const &that);
     WHOWAS& operator=(WHOWAS const &that);
 public:
-    WHOWAS(Server &Server):   ACommand("WHOWAS", Server) {}
+    WHOWAS(Server &Server) : Acommand("WHOWAS", Server) {}
     virtual ~WHOWAS() {}
     virtual int run(){
         if (_Argument.empty()) {
-            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            return ;
+            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            
         }
         //code
     }

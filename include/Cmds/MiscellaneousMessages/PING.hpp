@@ -6,12 +6,12 @@ private:
     PING(PING const &that);
     PING& operator=(PING const &that);
 public:
-    PING(Server &Server):   ACommand("PING", Server) {}
+    PING(Server &Server) : Acommand("PING", Server) {}
     virtual ~PING() {}
     virtual int run(){
         if (_Argument.empty()) {
-            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            return ;
+            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            
         }
         //code
     }

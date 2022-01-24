@@ -6,12 +6,12 @@ private:
     KICK(KICK const &that);
     KICK& operator=(KICK const &that);
 public:
-    KICK(Server &Server):   ACommand("KICK", Server) {}
+    KICK(Server &Server) : Acommand("KICK", Server) {}
     virtual ~KICK() {}
     virtual int run(){
         if (_Argument.empty()) {
-            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            return ;
+            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            
         }
         //code
     }

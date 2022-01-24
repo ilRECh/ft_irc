@@ -6,12 +6,12 @@ private:
     STATS(STATS const &that);
     STATS& operator=(STATS const &that);
 public:
-    STATS(Server &Server):   ACommand("STATS", Server) {}
+    STATS(Server &Server) : Acommand("STATS", Server) {}
     virtual ~STATS() {}
     virtual int run(){
         if (_Argument.empty()) {
-            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            return ;
+            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            
         }
         //code
     }

@@ -6,12 +6,12 @@ private:
     INFO(INFO const &that);
     INFO& operator=(INFO const &that);
 public:
-    INFO(Server &Server):   ACommand("INFO", Server) {}
+    INFO(Server &Server) : Acommand("INFO", Server) {}
     virtual ~INFO() {}
     virtual int run(){
         if (_Argument.empty()) {
-            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            return ;
+            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            
         }
         //code
     }

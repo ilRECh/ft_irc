@@ -6,23 +6,20 @@ private:
     NICK(NICK const &that);
     NICK& operator=(NICK const &that);
 public:
-    NICK(Server &Server):   ACommand("NICK", Server) {}
+    NICK(Server &Server) : Acommand("NICK", Server) {}
     virtual ~NICK() {}
     virtual int run(){
         std::string Nick = ft::split(_Argument, " ")[0];
         if (Nick.empty()) {
-            _Initiator->setReplyMessage(ERR_NONICKNAMEGIVEN);
-            return ;
+            return _Initiator->setReplyMessage(ERR_NONICKNAMEGIVEN);
         }
         if (_Server.getUserByName(Nick) not_eq _Initiator) {
-            _Initiator->setReplyMessage(ERR_NICKNAMEINUSE(Nick));
-            return ;
+            return _Initiator->setReplyMessage(ERR_NICKNAMEINUSE(Nick));
         }
         std::string SpecialCharacters = "`|^_-{}[]\\";
         if (Nick[0] == '-' or std::isdigit(Nick[0])) {
             ErroneusNickNameGiven:
-            _Initiator->setReplyMessage(ERR_ERRONEUSNICKNAME(Nick));
-            return ;
+            return _Initiator->setReplyMessage(ERR_ERRONEUSNICKNAME(Nick));
         }
         for (size_t i = 1; i < Nick.length(); ++i) {
             if (not std::isalnum(Nick[i])

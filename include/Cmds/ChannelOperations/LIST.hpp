@@ -6,12 +6,12 @@ private:
     LIST(LIST const &that);
     LIST& operator=(LIST const &that);
 public:
-    LIST(Server &Server):   ACommand("LIST", Server) {}
+    LIST(Server &Server) : Acommand("LIST", Server) {}
     virtual ~LIST() {}
     virtual int run(){
         if (_Argument.empty()) {
-            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            return ;
+            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            
         }
         //code
     }

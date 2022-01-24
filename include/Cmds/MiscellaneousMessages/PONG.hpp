@@ -6,12 +6,12 @@ private:
     PONG(PONG const &that);
     PONG& operator=(PONG const &that);
 public:
-    PONG(Server &Server):   ACommand("PONG", Server) {}
+    PONG(Server &Server) : Acommand("PONG", Server) {}
     virtual ~PONG() {}
     virtual int run(){
         if (_Argument.empty()) {
-            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            return ;
+            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            
         }
         //code
     }
