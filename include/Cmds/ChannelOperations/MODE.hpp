@@ -1,4 +1,4 @@
-#include "Commands.hpp"
+#include "ACommand.hpp"
 
 class MODE : public ACommand {
 private:
@@ -6,12 +6,12 @@ private:
     MODE(MODE const &that);
     MODE& operator=(MODE const &that);
 public:
-    MODE(Server const *Server):   ACommand("MODE", Server) {}
+    MODE(Server &Server):   ACommand("MODE", Server) {}
     virtual ~MODE() {}
     virtual int run(){
         if (_Argument.empty()) {
-            std::string arr[] = { _Name };
-            return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
+            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            return ;
         }
         //code
     }

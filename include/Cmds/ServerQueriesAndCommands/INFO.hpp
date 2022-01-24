@@ -1,4 +1,4 @@
-#include "Commands.hpp"
+#include "ACommand.hpp"
 
 class INFO : public ACommand {
 private:
@@ -6,12 +6,12 @@ private:
     INFO(INFO const &that);
     INFO& operator=(INFO const &that);
 public:
-    INFO(Server const *Server):   ACommand("INFO", Server) {}
+    INFO(Server &Server):   ACommand("INFO", Server) {}
     virtual ~INFO() {}
     virtual int run(){
         if (_Argument.empty()) {
-            std::string arr[] = { _Name };
-            return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
+            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            return ;
         }
         //code
     }

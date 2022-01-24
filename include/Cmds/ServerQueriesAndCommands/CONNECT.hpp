@@ -1,4 +1,4 @@
-#include "Commands.hpp"
+#include "ACommand.hpp"
 
 class CONNECT : public ACommand {
 private:
@@ -6,12 +6,12 @@ private:
     CONNECT(CONNECT const &that);
     CONNECT& operator=(CONNECT const &that);
 public:
-    CONNECT(Server const *Server):   ACommand("CONNECT", Server) {}
+    CONNECT(Server &Server):   ACommand("CONNECT", Server) {}
     virtual ~CONNECT() {}
     virtual int run(){
         if (_Argument.empty()) {
-            std::string arr[] = { _Name };
-            return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
+            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            return ;
         }
         //code
     }

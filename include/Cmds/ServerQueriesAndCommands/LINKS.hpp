@@ -1,4 +1,4 @@
-#include "Commands.hpp"
+#include "ACommand.hpp"
 
 class LINKS : public ACommand {
 private:
@@ -6,12 +6,12 @@ private:
     LINKS(LINKS const &that);
     LINKS& operator=(LINKS const &that);
 public:
-    LINKS(Server const *Server):   ACommand("LINKS", Server) {}
+    LINKS(Server &Server):   ACommand("LINKS", Server) {}
     virtual ~LINKS() {}
     virtual int run(){
         if (_Argument.empty()) {
-            std::string arr[] = { _Name };
-            return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
+            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            return ;
         }
         //code
     }

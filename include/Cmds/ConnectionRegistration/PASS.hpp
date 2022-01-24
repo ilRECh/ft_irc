@@ -1,4 +1,4 @@
-#include "Commands.hpp"
+#include "ACommand.hpp"
 
 class PASS : public ACommand {
 private:
@@ -6,14 +6,18 @@ private:
     PASS(PASS const &that);
     PASS& operator=(PASS const &that);
 public:
-    PASS(Server const *Server):   ACommand("PASS", Server) {}
+    PASS(Server & Server) : ACommand("PASS", Server) {}
     virtual ~PASS() {}
     virtual int run(){
         if (_Argument.empty()) {
-            std::string arr[] = { _Name };
-            return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
+            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            return ;
+        } else if (_Initiator->getRegistered() == true) {
+            _Initiator->setReplyMessage(ERR_ALREADYREGISTRED);
+            return ;
         }
-        //code
+        _Initiator->setPassword(_Argument);
+        return 0;
     }
 };/*
    Parameters: <password>

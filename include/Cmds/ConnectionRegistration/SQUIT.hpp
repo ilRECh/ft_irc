@@ -1,4 +1,4 @@
-#include "Commands.hpp"
+#include "ACommand.hpp"
 
 class SQUIT : public ACommand {
 private:
@@ -6,12 +6,12 @@ private:
     SQUIT(SQUIT const &that);
     SQUIT& operator=(SQUIT const &that);
 public:
-    SQUIT(Server const *Server):   ACommand("SQUIT", Server) {}
+    SQUIT(Server &Server):   ACommand("SQUIT", Server) {}
     virtual ~SQUIT() {}
     virtual int run(){
         if (_Argument.empty()) {
-            std::string arr[] = { _Name };
-            return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
+            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            return ;
         }
         //code
     }

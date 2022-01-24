@@ -1,4 +1,4 @@
-#include "Commands.hpp"
+#include "ACommand.hpp"
 
 class REHASH : public ACommand {
 private:
@@ -6,12 +6,12 @@ private:
     REHASH(REHASH const &that);
     REHASH& operator=(REHASH const &that);
 public:
-    REHASH(Server const *Server):   ACommand("REHASH", Server) {}
+    REHASH(Server &Server):   ACommand("REHASH", Server) {}
     virtual ~REHASH() {}
     virtual int run(){
         if (_Argument.empty()) {
-            std::string arr[] = { _Name };
-            return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
+            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            return ;
         }
         //code
     }

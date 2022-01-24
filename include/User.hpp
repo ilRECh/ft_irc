@@ -1,49 +1,44 @@
 #pragma once
 
-#include "Mandatory.hpp"
-#include "Server.hpp"
-#include "Password.hpp"
-#include "Channel.hpp"
+#include "ft.hpp"
+#include "AUser.hpp"
+
+// #include "Password.hpp"
 
 using std::string;
 using std::vector;
 
 class Channel;
 
-class User {//: public Password {
+class User : public AUser {
 private:
 	TimeStamp _time;
 	std::set<char> _mode_set;
 	std::string _Password;
+	User(User& that);
+	User& operator=(User& that);
 	vector<Channel const *> _Channels;
-	std::string _Name;
 	std::string _NickName;
 	std::string _RealName;
 	bool _IsRegistered;
+    std::string _ReplyMessage;
 public:
-	User(
-		std::string const & Name,
-		//Channel const & BaseChannel, // Do we need it on acception?
-		int const Fd,
-		sockaddr_in AddrUser,
-		socklen_t const Socklen);
-	User(User& that);
-	~User();
-	User& operator=(User& that);
+	User(std::string const & Name, int const Fd);
+	virtual ~User() {}
+	
 	bool operator!=(const User& that) const;
 	bool operator==(const User& that) const;
 
 	std::string _Msg;
 	int const _Fd;
-	sockaddr_in const _AddrUser;
-	socklen_t const _Socklen;
-	void inviteToChannel(Channel const & channel);
-	void setName(string const & name);
-	string const & getName( void ) const;
+
+	// NickName
+	void setNickName(std::string const & NickName);
 	string const & getNickName( void ) const;
+
+	// Password
 	void setPassword(std::string const & Password);
 	std::string const & getPassword() const;
-	void registeredIs(bool const Condition);
 
 	//	* get|set mode
 	bool	getModeIsExist(char) const;
@@ -52,17 +47,17 @@ public:
 	
 	// * get time
 	TimeStamp const & getTime() const;
-	
-	//	* get|set addrUser
-	sockaddr_in const getAddrUser() const;
-	void setAddrUser(struct sockaddr_in & _SaddrUser);
-	//void setSocklen(socklen_t & Socklen);
-	//socklen_t const getSocklen() const;
 
 	//	* get|set Channels
+	void inviteToChannel(Channel const & channel);
 	void setChannel(Channel const * Channel);
 	std::vector<Channel const *> const &getChannels() const;
 
 	//	* get Registered
 	bool getRegistered() const;
+	void registeredIs(bool const Condition);
+
+	// ReplyMessage
+	void setReplyMessage(std::string const & Msg);
+	std::string const getReplyMessage();
 };

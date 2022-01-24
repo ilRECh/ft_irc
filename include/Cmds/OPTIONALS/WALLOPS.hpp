@@ -1,4 +1,4 @@
-#include "Commands.hpp"
+#include "ACommand.hpp"
 
 class SomeCmds : public ACommand {
 private:
@@ -6,12 +6,12 @@ private:
     SomeCmds(SomeCmds const &that);
     SomeCmds& operator=(SomeCmds const &that);
 public:
-    SomeCmds(Server const *Server):   ACommand("SomeCmds", Server) {}
+    SomeCmds(Server &Server):   ACommand("SomeCmds", Server) {}
     virtual ~SomeCmds() {}
     virtual int run(){
         if (_Argument.empty()) {
-            std::string arr[] = { _Name };
-            return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
+            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            return ;
         }
         //code
     }

@@ -1,4 +1,4 @@
-#include "Commands.hpp"
+#include "ACommand.hpp"
 
 class KILL : public ACommand {
 private:
@@ -6,12 +6,12 @@ private:
     KILL(KILL const &that);
     KILL& operator=(KILL const &that);
 public:
-    KILL(Server const *Server):   ACommand("KILL", Server) {}
+    KILL(Server &Server):   ACommand("KILL", Server) {}
     virtual ~KILL() {}
     virtual int run(){
         if (_Argument.empty()) {
-            std::string arr[] = { _Name };
-            return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
+            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            return ;
         }
         //code
     }

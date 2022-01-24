@@ -1,4 +1,4 @@
-#include "Commands.hpp"
+#include "ACommand.hpp"
 
 class PING : public ACommand {
 private:
@@ -6,12 +6,12 @@ private:
     PING(PING const &that);
     PING& operator=(PING const &that);
 public:
-    PING(Server const *Server):   ACommand("PING", Server) {}
+    PING(Server &Server):   ACommand("PING", Server) {}
     virtual ~PING() {}
     virtual int run(){
         if (_Argument.empty()) {
-            std::string arr[] = { _Name };
-            return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
+            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            return ;
         }
         //code
     }

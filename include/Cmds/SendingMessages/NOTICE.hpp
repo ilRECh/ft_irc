@@ -1,4 +1,4 @@
-#include "Commands.hpp"
+#include "ACommand.hpp"
 
 class NOTICE : public ACommand {
 private:
@@ -6,12 +6,12 @@ private:
     NOTICE(NOTICE const &that);
     NOTICE& operator=(NOTICE const &that);
 public:
-    NOTICE(Server const *Server):   ACommand("NOTICE", Server) {}
+    NOTICE(Server &Server):   ACommand("NOTICE", Server) {}
     virtual ~NOTICE() {}
     virtual int run(){
         if (_Argument.empty()) {
-            std::string arr[] = { _Name };
-            return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
+            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            return ;
         }
         //code
     }

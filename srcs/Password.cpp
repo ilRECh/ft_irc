@@ -1,4 +1,4 @@
-#include "Mandatory.hpp"
+#include "ft.hpp"
 #include "Password.hpp"
 
 // * mode: true for encrypt, false for decrypt

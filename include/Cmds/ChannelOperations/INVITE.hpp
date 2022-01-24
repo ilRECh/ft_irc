@@ -1,4 +1,4 @@
-#include "Commands.hpp"
+#include "ACommand.hpp"
 
 class INVITE : public ACommand {
 private:
@@ -6,12 +6,12 @@ private:
     INVITE(INVITE const &that);
     INVITE& operator=(INVITE const &that);
 public:
-    INVITE(Server const *Server):   ACommand("INVITE", Server) {}
+    INVITE(Server &Server):   ACommand("INVITE", Server) {}
     virtual ~INVITE() {}
     virtual int run(){
         if (_Argument.empty()) {
-            std::string arr[] = { _Name };
-            return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
+            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            return ;
         }
         //code
     }

@@ -1,4 +1,4 @@
-#include "Commands.hpp"
+#include "ACommand.hpp"
 
 class LIST : public ACommand {
 private:
@@ -6,12 +6,12 @@ private:
     LIST(LIST const &that);
     LIST& operator=(LIST const &that);
 public:
-    LIST(Server const *Server):   ACommand("LIST", Server) {}
+    LIST(Server &Server):   ACommand("LIST", Server) {}
     virtual ~LIST() {}
     virtual int run(){
         if (_Argument.empty()) {
-            std::string arr[] = { _Name };
-            return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
+            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            return ;
         }
         //code
     }

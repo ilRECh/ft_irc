@@ -1,4 +1,4 @@
-#include "Commands.hpp"
+#include "ACommand.hpp"
 
 class VERSION : public ACommand {
 private:
@@ -6,12 +6,12 @@ private:
     VERSION(VERSION const &that);
     VERSION& operator=(VERSION const &that);
 public:
-    VERSION(Server const *Server):   ACommand("VERSION", Server) {}
+    VERSION(Server &Server):   ACommand("VERSION", Server) {}
     virtual ~VERSION() {}
     virtual int run(){
         if (_Argument.empty()) {
-            std::string arr[] = { _Name };
-            return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
+            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            return ;
         }
         //code
     }

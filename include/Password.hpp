@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Mandatory.hpp"
+#include "ft.hpp"
 
 using std::string;
 using std::srand;
