@@ -15,17 +15,17 @@ private:
     ACommand();
 protected:
     ACommand(
-        std::string Name,
-        Server const *Server)
+        std::string const Name,
+        Server & Server)
         :   _Initiator(NULL),
             _Name(Name),
             _Server(Server) {}
     User *_Initiator;
     std::string _Argument;
+    Server & _Server;
 public:
+    std::string const & _Name;
     virtual ~ACommand() {} 
-    std::string const _Name;
-    Server const *_Server;
     void setArgument(std::string const & Argument) {
         _Argument = Argument;
     }

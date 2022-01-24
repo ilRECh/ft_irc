@@ -6,12 +6,12 @@ private:
     JOIN(JOIN const &that);
     JOIN& operator=(JOIN const &that);
 public:
-    JOIN(Server const *Server):   ACommand("JOIN", Server) {}
+    JOIN(Server &Server):   ACommand("JOIN", Server) {}
     virtual ~JOIN() {}
     virtual int run(){
         if (_Argument.empty()) {
-            std::string arr[] = { _Name };
-            return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
+            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            return ;
         }
         //code
     }

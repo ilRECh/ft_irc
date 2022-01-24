@@ -6,12 +6,12 @@ private:
     TRACE(TRACE const &that);
     TRACE& operator=(TRACE const &that);
 public:
-    TRACE(Server const *Server):   ACommand("TRACE", Server) {}
+    TRACE(Server &Server):   ACommand("TRACE", Server) {}
     virtual ~TRACE() {}
     virtual int run(){
         if (_Argument.empty()) {
-            std::string arr[] = { _Name };
-            return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
+            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            return ;
         }
         //code
     }

@@ -6,12 +6,12 @@ private:
     ERROR(ERROR const &that);
     ERROR& operator=(ERROR const &that);
 public:
-    ERROR(Server const *Server):   ACommand("ERROR", Server) {}
+    ERROR(Server &Server):   ACommand("ERROR", Server) {}
     virtual ~ERROR() {}
     virtual int run(){
         if (_Argument.empty()) {
-            std::string arr[] = { _Name };
-            return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
+            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            return ;
         }
         //code
     }

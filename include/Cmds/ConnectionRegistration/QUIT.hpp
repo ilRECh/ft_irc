@@ -6,14 +6,15 @@ private:
     QUIT(QUIT const &that);
     QUIT& operator=(QUIT const &that);
 public:
-    QUIT(Server const *Server):   ACommand("QUIT", Server) {}
+    QUIT(Server &Server):   ACommand("QUIT", Server) {}
     virtual ~QUIT() {}
     virtual int run(){
         if (_Argument.empty()) {
-            std::string arr[] = { _Name };
-            return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
+            _Argument = _Initiator->getNickName();
         }
-        //code
+        _Initiator->setReplyMessage(_Argument);
+        _Server.sendMsg(_Initiator);
+        _Server.removeUserByNickName(_Initiator->getNickName());
     }
 };/*
    Parameters: [<Quit message>]

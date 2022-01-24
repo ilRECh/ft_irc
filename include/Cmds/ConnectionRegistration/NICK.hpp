@@ -6,14 +6,31 @@ private:
     NICK(NICK const &that);
     NICK& operator=(NICK const &that);
 public:
-    NICK(Server const *Server):   ACommand("NICK", Server) {}
+    NICK(Server &Server):   ACommand("NICK", Server) {}
     virtual ~NICK() {}
     virtual int run(){
-        if (_Argument.empty()) {
-            std::string arr[] = { _Name };
-            return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
+        std::string Nick = ft::split(_Argument, " ")[0];
+        if (Nick.empty()) {
+            _Initiator->setReplyMessage(ERR_NONICKNAMEGIVEN);
+            return ;
         }
-        //code
+        if (_Server.getUserByName(Nick) not_eq _Initiator) {
+            _Initiator->setReplyMessage(ERR_NICKNAMEINUSE(Nick));
+            return ;
+        }
+        std::string SpecialCharacters = "`|^_-{}[]\\";
+        if (Nick[0] == '-' or std::isdigit(Nick[0])) {
+            ErroneusNickNameGiven:
+            _Initiator->setReplyMessage(ERR_ERRONEUSNICKNAME(Nick));
+            return ;
+        }
+        for (size_t i = 1; i < Nick.length(); ++i) {
+            if (not std::isalnum(Nick[i])
+                || SpecialCharacters.find(Nick[i]) == SpecialCharacters.npos) {
+                goto ErroneusNickNameGiven;
+            }
+        }
+        _Initiator->setNickName(Nick);
     }
 };/*
    Parameters: <nickname> [ <hopcount> ]

@@ -6,12 +6,12 @@ private:
     TOPIC(TOPIC const &that);
     TOPIC& operator=(TOPIC const &that);
 public:
-    TOPIC(Server const *Server):   ACommand("TOPIC", Server) {}
+    TOPIC(Server &Server):   ACommand("TOPIC", Server) {}
     virtual ~TOPIC() {}
     virtual int run(){
         if (_Argument.empty()) {
-            std::string arr[] = { _Name };
-            return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
+            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            return ;
         }
         //code
     }

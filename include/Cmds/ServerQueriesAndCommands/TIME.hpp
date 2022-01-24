@@ -6,12 +6,12 @@ private:
     TIME(TIME const &that);
     TIME& operator=(TIME const &that);
 public:
-    TIME(Server const *Server):   ACommand("TIME", Server) {}
+    TIME(Server &Server):   ACommand("TIME", Server) {}
     virtual ~TIME() {}
     virtual int run(){
         if (_Argument.empty()) {
-            std::string arr[] = { _Name };
-            return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
+            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            return ;
         }
         //code
     }

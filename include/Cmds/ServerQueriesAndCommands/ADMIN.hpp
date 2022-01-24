@@ -6,12 +6,12 @@ private:
     ADMIN(ADMIN const &that);
     ADMIN& operator=(ADMIN const &that);
 public:
-    ADMIN(Server const *Server):   ACommand("ADMIN", Server) {}
+    ADMIN(Server &Server):   ACommand("ADMIN", Server) {}
     virtual ~ADMIN() {}
     virtual int run(){
         if (_Argument.empty()) {
-            std::string arr[] = { _Name };
-            return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
+            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            return ;
         }
         //code
     }

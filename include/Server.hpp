@@ -25,11 +25,8 @@ private:
 	string	ip;
 	string	port;
     bool	_LoopListen;
-	std::list<User *> _Users;
-	std::list<Channel *> _Channels;
-	addrinfo *servinfo;
-    // struct sockaddr_in _Saddr;
-    socklen_t _Socklen;
+	std::vector<User *> _Users;
+	std::vector<Channel *> _Channels;
     int _Sockfd;
 
 	fd_set	fds;
@@ -44,14 +41,16 @@ public:
 
 	int processCmd(User *That);
 	std::pair<std::string, std::string> parseCmd(std::string &Cmd);
-	int proceedCmd(std::pair<std::string, std::string> Cmd, User *User);
+	void proceedCmd(std::pair<std::string, std::string> Cmd, User *User);
 	std::string timeStamp() { return "A long time ago"; }
 
     std::string recvReader(int fd);
     void serverLog(User *that);
     void sendMsg(User *From, User *To);
+	void sendMsg(User *To);
 
 	User *getUserByNickName(std::string const & NickName);
 	User *getUserByName(std::string const & NickName);
 	Channel *getChannelByName(std::string const & NameChannel);
+	void removeUserByNickName(std::string const & NickName);
 };

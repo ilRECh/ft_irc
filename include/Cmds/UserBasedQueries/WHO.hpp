@@ -6,12 +6,12 @@ private:
     WHO(WHO const &that);
     WHO& operator=(WHO const &that);
 public:
-    WHO(Server const *Server):   ACommand("WHO", Server) {}
+    WHO(Server &Server):   ACommand("WHO", Server) {}
     virtual ~WHO() {}
     virtual int run(){
         if (_Argument.empty()) {
-            std::string arr[] = { _Name };
-            return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
+            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            return ;
         }
         //code
     }

@@ -6,16 +6,17 @@ private:
     PASS(PASS const &that);
     PASS& operator=(PASS const &that);
 public:
-    PASS(Server const *Server) : ACommand("PASS", Server) {}
+    PASS(Server & Server) : ACommand("PASS", Server) {}
     virtual ~PASS() {}
     virtual int run(){
         if (_Argument.empty()) {
-            std::string arr[] = { _Name };
-            return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
-        } else if (_User->getRegistered() == true) {
-            return reply(ERR_ALREADYREGISTRED, _User->_Fd, _User->getName());
+            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            return ;
+        } else if (_Initiator->getRegistered() == true) {
+            _Initiator->setReplyMessage(ERR_ALREADYREGISTRED);
+            return ;
         }
-        _User->setPassword(_Argument);
+        _Initiator->setPassword(_Argument);
         return 0;
     }
 };/*

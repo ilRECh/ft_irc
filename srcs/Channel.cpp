@@ -1,5 +1,6 @@
 #include "ft.hpp"
 #include "Channel.hpp"
+#include "Replies.hpp"
 #include "User.hpp"
 
 //! 	enum ePrivateLevel
@@ -23,24 +24,26 @@ Channel::Channel(
 
 Channel::~Channel(){}
 
-void	Channel::setLevelPrivate(User const & who, eChannelPrivateLevel const ePrivateLevel){
-	if (!checkAdminPermist(who))
-		throw std::runtime_error(who.getName() + " is not Admin\n" + who.getName() + " cannot change private level");
+void	Channel::setLevelPrivate(User & who, eChannelPrivateLevel const ePrivateLevel){
+	if (not isAdmin(who)) {
+		who.setReplyMessage(ERR_CHANOPRIVSNEEDED(_Name));
+		return ;
+	}
 	_ePrivateLevel = ePrivateLevel;
 }
-void	Channel::setName(User const & who, string const & newNameChannel){
-	string::const_iterator beg = newNameChannel.begin();
-	string::const_iterator end = newNameChannel.end();
 
-	if (!checkAdminPermist(who))
-		throw std::runtime_error(who.getName() + " is not Admin\n" + who.getName() + " cannot change name channel");
-	while(beg != end)
-		if (!std::isalnum(*(beg++)))
-			throw std::runtime_error("Name channel " + newNameChannel + " is not valid, use A-Z, a-z, 0-9");
-	_Name = newNameChannel;
+void	Channel::setName(User & who, string const & newNameChannel) {
+	if (not isAdmin(who)) {
+		who.setReplyMessage(ERR_CHANOPRIVSNEEDED(_Name));
+		return ;
+	}
+	if (setName(newNameChannel)) {
+		who.setReplyMessage(ERR_ERRONEUSNICKNAME(newNameChannel));
+		return ;
+	}
 }
 
-bool Channel::checkAdminPermist(User const & whom) const{
+bool Channel::isAdmin(User const & whom) const {
 	vector<User const *>::const_iterator beg = _Admins.begin();
 	vector<User const *>::const_iterator end = _Admins.end();
 
@@ -50,7 +53,7 @@ bool Channel::checkAdminPermist(User const & whom) const{
 	return false;
 }
 
-bool Channel::checkOwnerPermist(User const & whom) const{
+bool Channel::isOwner(User const & whom) const {
 	vector<User const *>::const_iterator beg = _Users.begin();
 	vector<User const *>::const_iterator end = _Users.end();
 
@@ -62,21 +65,14 @@ bool Channel::checkOwnerPermist(User const & whom) const{
 
 const vector<User const *>& Channel::getAdmins(){ return _Admins;}
 
-void	Channel::addUser(User const & who, User const & whom){
-	vector<User const *>::iterator it;
-	bool	isAdmin;
-	bool	isPrivateOwner;
-
-	isAdmin = checkAdminPermist(who);
-	isPrivateOwner = checkOwnerPermist(who) | isAdmin;
-
-	if (_ePrivateLevel == CHANNEL_PRIVATE)
-		if (!isAdmin)
-			throw std::runtime_error(who.getName() + " is not Admin\n" + who.getName() + " cannot add new User");
-	if (_ePrivateLevel == CHANNEL_PROTECTED)
-		if (!isPrivateOwner)
-			throw std::runtime_error(who.getName() + " is not Owner or Admin\n" + who.getName() + " cannot add new User");
-	it = find(_Users.begin(), _Users.end(), &whom);
+void	Channel::addUser(User & who, User & whom){
+	if (_ePrivateLevel == CHANNEL_PRIVATE || _ePrivateLevel == CHANNEL_PROTECTED) {
+		if (not isAdmin(who) && not isOwner(who)) {
+			who.setReplyMessage(ERR_CHANOPRIVSNEEDED(_Name));
+			return ;
+		}
+	}
+	vector<User const *>::iterator it = find(_Users.begin(), _Users.end(), &whom);
 	if (it == _Users.end())
 		_Users.push_back(&whom);
 }
@@ -89,37 +85,32 @@ void	Channel::addUser(User const & whom){
 		_Users.push_back(&whom);
 }
 
-void	Channel::removeUser(User const & who, User const & whom){
-	vector<User const *>::iterator it;
-	bool	isPrivateOwner;
-	bool	isAdmin;
-
-	isAdmin = checkAdminPermist(who);
-	isPrivateOwner = checkOwnerPermist(who) | isAdmin;
-
-	if (who != whom){
-		if (_ePrivateLevel == CHANNEL_PRIVATE)
-			if (!isAdmin)
-				throw std::runtime_error(who.getName() + " is not Admin\n" + who.getName() + " cannot delete User");
-		if (_ePrivateLevel == CHANNEL_PROTECTED)
-			if (!isPrivateOwner)
-				throw std::runtime_error(who.getName() + " is not Owner or Admin\n" + who.getName() + " cannot delete User");
+void	Channel::removeUser(User & who, User & whom){
+	if (_ePrivateLevel == CHANNEL_PRIVATE || _ePrivateLevel == CHANNEL_PROTECTED) {
+		if (not isAdmin(who) && not isOwner(who)) {
+			who.setReplyMessage(ERR_CHANOPRIVSNEEDED(_Name));
+			return ;
+		}
 	}
-	it = find(_Admins.begin(), _Admins.end(), &whom);
+	vector<User const *>::iterator it = find(_Admins.begin(), _Admins.end(), &whom);
 	if (it != _Admins.end())
 		removeAdmin(who, whom);
 	it = find(_Users.begin(), _Users.end(), &whom);
-	if (it == _Users.end())
-		throw std::runtime_error(whom.getName() + "isn't member of this channel");
+	if (it == _Users.end()) {
+		who.setReplyMessage(ERR_NOSUCHNICK(whom.getNickName()));
+		return ;
+	}
 	_Users.erase(it);
 }
 
-void	Channel::addAdmin(User const & who, User const & whom){
+void	Channel::addAdmin(User & who, User & whom){
 	vector<User const *>::iterator beg = _Admins.begin();
 	vector<User const *>::iterator end = _Admins.end();
 
-	if (!checkAdminPermist(who))
-		throw std::runtime_error(who.getName() + " is not Admin\n" + who.getName() + " cannot add new Admin");
+	if (not isAdmin(who)) {
+		who.setReplyMessage(ERR_CHANOPRIVSNEEDED(_Name));
+		return ;
+	}
 	while(beg != end)
 		if (**beg == whom)
 			return ;
@@ -137,21 +128,23 @@ void	Channel::addAdmin(User const & whom){
 	_Admins.push_back(&whom);
 }
 
-void	Channel::removeAdmin(User const & who, User const & whom){
-	vector<User const *>::iterator it;
+void	Channel::removeAdmin(User & who, User & whom){
 
-	if (!checkAdminPermist(who))
-		throw std::runtime_error(who.getName() + " is not Admin\n" + who.getName() + " cannot add new Admin");
-	if (_Admins.size() == 1){
-		if (_Users.size() > 0)
-			throw std::runtime_error(
-				"A group with users cannot be without an admin, \
-				assign a new Admin, or delete all users to delete \
-				the group");
-		delete this;
+	if (not isAdmin(who)) {
+		who.setReplyMessage(ERR_CHANOPRIVSNEEDED(_Name));
+		return ;
 	}
-	it = find(_Admins.begin(), _Admins.end(), &whom);
-	if (it == _Admins.end())
-		throw std::runtime_error(whom.getName() + "isn't member of Admins, of this channel");
+	if (_Admins.size() == 1){
+		if (_Users.size() > 0) {
+			who.setReplyMessage(ft::to_string(__LINE__) + " in Channel is need to set appropriate message");
+			return ;
+		}
+		delete this; //Is it appropriate here?
+	}
+	vector<User const *>::iterator it = find(_Admins.begin(), _Admins.end(), &whom);
+	if (it == _Admins.end()) {
+		who.setReplyMessage(ERR_NOSUCHNICK(whom.getNickName()));
+		return ;
+	}
 	_Admins.erase(it);
 }

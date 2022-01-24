@@ -6,12 +6,12 @@ private:
     OPER(OPER const &that);
     OPER& operator=(OPER const &that);
 public:
-    OPER(Server const *Server):   ACommand("OPER", Server) {}
+    OPER(Server &Server):   ACommand("OPER", Server) {}
     virtual ~OPER() {}
     virtual int run(){
         if (_Argument.empty()) {
-            std::string arr[] = { _Name };
-            return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
+            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            return ;
         }
         //code
     }

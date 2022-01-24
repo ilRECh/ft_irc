@@ -6,12 +6,12 @@ private:
     SUMMON(SUMMON const &that);
     SUMMON& operator=(SUMMON const &that);
 public:
-    SUMMON(Server const *Server):   ACommand("SUMMON", Server) {}
+    SUMMON(Server &Server):   ACommand("SUMMON", Server) {}
     virtual ~SUMMON() {}
     virtual int run(){
         if (_Argument.empty()) {
-            std::string arr[] = { _Name };
-            return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
+            _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            return ;
         }
         //code
     }

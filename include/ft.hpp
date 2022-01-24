@@ -50,16 +50,3 @@ namespace ft {
         return ss.str();
     }
 } // namespace ft
-
-status reply(
-    int const Rplcode,
-    int const UserSocketFd,
-    std::string const & To,
-    std::vector<std::string> const & MsgTokens = std::vector<std::string>(),
-    std::string const & From = "Server");
-
-status reply(
-    int const UserSocketFd,
-    std::string const & To,
-    std::vector<std::string> const & MsgTokens = std::vector<std::string>(),
-    std::string const & From = "Server");

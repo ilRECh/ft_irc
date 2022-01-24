@@ -8,7 +8,7 @@ Server::Server(std::vector<std::string> &argv)
           port(0),
           _LoopListen(true)
 {
-    _Commands.push_back(new PASS(this));
+    _Commands.push_back(new PASS(*this));
     std::vector<std::string>::reverse_iterator r_it = argv.rbegin();
     _Password = *r_it--;
     _Port = *r_it--;
@@ -36,7 +36,7 @@ Server::Server(string const &ip, string const &port)
           port(port),
           _LoopListen(true)
 {
-    _Commands.push_back(new PASS(this));
+    _Commands.push_back(new PASS(*this));
     addrinfo hints;
 
     memset(&hints, 0, sizeof hints);
@@ -197,34 +197,38 @@ std::pair<std::string, std::string> Server::parseCmd(std::string &Cmd)
     }
     std::pair<std::string, std::string> Value(pair_First, pair_Second);
     std::cout << '|' << Value.first << '|' << Value.second << '|' << '\n';
-    // for (std::vector<std::string>::iterator it = Value.begin();
-    //         it != Value.end(); ++it) {
-    //     std::cout << '|' << *it << '|' << '\n';
-    // }
     return Value;
 }
 
-int Server::proceedCmd(std::pair<std::string, std::string> Cmd, User *User) {
+void Server::proceedCmd(std::pair<std::string, std::string> Cmd, User *User) {
     for (std::vector<ACommand *>::iterator command = _Commands.begin();
             command != _Commands.end(); ++command) {
         if (Cmd.first == (*command)->_Name) {
             (*command)->setArgument(Cmd.second);
             (*command)->setInitiator(User);
-            return (*command)->run();
+            (*command)->run();
+            return ;
         }
     }
-    std::string arr[] = { Cmd.first };
-    return reply(ERR_UNKNOWNCOMMAND, User->_Fd, User->getName(), L(arr));
+    User->setReplyMessage(ERR_UNKNOWNCOMMAND(Cmd.first));
 }
 
-// void Server::sendMsg(User *From, User *To)
-// {
-//     std::string ReturnValue;
+void Server::sendMsg(User *From, User *To)
+{
+    std::string ReturnValue;
 
-//     ReturnValue += timeStamp() + " " + From->getName() + " " + From->_Msg;
-//     send(To->_Fd , ReturnValue.c_str(), ReturnValue.size(), 0);
-//     From->_Msg.clear();
-// }
+    ReturnValue += timeStamp() + " " + From->getName() + " " + From->_Msg;
+    send(To->_Fd , ReturnValue.c_str(), ReturnValue.size(), 0);
+    From->_Msg.clear();
+}
+
+void Server::sendMsg(User *To) {
+    std::string ReturnValue;
+
+    ReturnValue += timeStamp() + " " + To->getName() + " " + To->getReplyMessage();
+    send(To->_Fd , ReturnValue.c_str(), ReturnValue.size(), 0);
+    To->_Msg.clear();
+}
 
 void Server::serverLog(User *That)
 {
@@ -233,7 +237,7 @@ void Server::serverLog(User *That)
 
 
 User *Server::getUserByNickName(std::string const & NickName){
-	std::list<User *>::iterator first, last;
+	std::vector<User *>::iterator first, last;
 	first = _Users.begin();
 	last = _Users.end();
 
@@ -244,7 +248,7 @@ User *Server::getUserByNickName(std::string const & NickName){
 }
 
 User *Server::getUserByName(std::string const & Name){
-	std::list<User *>::iterator first, last;
+	std::vector<User *>::iterator first, last;
 	first = _Users.begin();
 	last = _Users.end();
 
@@ -255,7 +259,7 @@ User *Server::getUserByName(std::string const & Name){
 }
 
 Channel *Server::getChannelByName(std::string const & NameChannel){
-	std::list<Channel *>::iterator first, last;
+	std::vector<Channel *>::iterator first, last;
 
 	first = _Channels.begin();
 	last = _Channels.end();
@@ -263,4 +267,13 @@ Channel *Server::getChannelByName(std::string const & NameChannel){
 		if ((*first)->getName() == NameChannel)
 			return *first;
 	return NULL;
+}
+
+void Server::removeUserByNickName(std::string const & NickName) {
+    for (std::vector<User *>::iterator i = _Users.begin(); i != _Users.end(); ++i) {
+        if ((*i)->getNickName() == NickName) {
+            close((*i)->_Fd);
+            _Users.erase(i);
+        }
+    }
 }
