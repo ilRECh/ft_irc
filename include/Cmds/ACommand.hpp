@@ -3,7 +3,6 @@
 #include "ft.hpp"
 #include "Server.hpp"
 #include "Client.hpp"
-
 #include "Replies.hpp"
 
 class Server;
@@ -22,13 +21,18 @@ protected:
             _Server(Server),
             _Name(Name) {}
     Client *_Initiator;
+    std::vector<std::string> _Arguments;
     std::string _Argument;
     Server & _Server;
+    void setArguments(std::string const & Argument) {
+        _Arguments = ft::split(Argument, " \b\t\n\v\f\r");
+    }
 public:
     std::string const _Name;
-    virtual ~ACommand() {} 
+    virtual ~ACommand() {}
     void setArgument(std::string const & Argument) {
         _Argument = Argument;
+        setArguments(Argument);
     }
     bool setInitiator(Client *User) {
         _Initiator = User;

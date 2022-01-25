@@ -10,11 +10,7 @@ public:
     PING(Server &Server) : ACommand("PING", Server) {}
     virtual ~PING() {}
     virtual int run(){
-        if (_Argument.empty()) {
-            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            
-        }
-        //code
+        return 0;//_Initiator->updateReplyMessage("PING " + _Initiator->getNickName());
     }
 };/*
         Parameters: <server1> [<server2>]

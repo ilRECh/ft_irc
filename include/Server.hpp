@@ -45,12 +45,12 @@ private:
 	std::vector<Client *> const &getUsers();
 
 
-	void removeUserByNickName(std::string const & NickName);
 public:
 	Server(string const & ip, string const & port);
 	Server(std::vector<std::string>& argv);
 	~Server();
 
+	void removeUserByNickName(std::string const & NickName);
 	Client *getUserByNickName(std::string const & NickName);
 	Client *getUserByName(std::string const & NickName);
 	Channel *getChannelByName(std::string const & NameChannel);

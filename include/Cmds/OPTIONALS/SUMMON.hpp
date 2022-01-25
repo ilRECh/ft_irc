@@ -10,8 +10,8 @@ public:
     SUMMON(Server &Server) : ACommand("SUMMON", Server) {}
     virtual ~SUMMON() {}
     virtual int run(){
-        if (_Argument.empty()) {
-            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+        if (_Arguments.empty()) {
+            return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
             
         }
         //code

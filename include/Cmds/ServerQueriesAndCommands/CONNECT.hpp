@@ -10,8 +10,8 @@ public:
     CONNECT(Server &Server) : ACommand("CONNECT", Server) {}
     virtual ~CONNECT() {}
     virtual int run(){
-        if (_Argument.empty()) {
-            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+        if (_Arguments.empty()) {
+            return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
             
         }
         //code

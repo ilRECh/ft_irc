@@ -10,10 +10,19 @@ public:
     USER(Server & Server) : ACommand("USER", Server) {}
     virtual ~USER() {}
     virtual int run(){
-        if (_Argument.empty()) {
-            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+        if (_Initiator->isRegistered()) {
+            return _Initiator->updateReplyMessage(ERR_ALREADYREGISTRED);
+        } else if (_Initiator->getPassword().empty() or
+            _Initiator->getNickName().empty()) {
+            return 0;
+        } else if (_Arguments.size() < 4 or _Arguments[3][0] != ':') {
+            return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
         }
-        //code
+        _Initiator->setName(_Arguments[0]);
+        _Initiator->setHostName(_Arguments[1]);
+        _Initiator->setServerName(_Arguments[2]);
+        _Initiator->setRealName(ft::split(_Argument, ":")[1]);
+        _Initiator->setRegistered(true);
         return 0;
     }
 };/*

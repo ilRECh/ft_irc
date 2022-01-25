@@ -10,8 +10,8 @@ public:
     JOIN(Server &Server) : ACommand("JOIN", Server) {}
     virtual ~JOIN() {}
     virtual int run(){
-        if (_Argument.empty()) {
-            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+        if (_Arguments.empty()) {
+            return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
             
         }
         //code

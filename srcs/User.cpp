@@ -1,12 +1,10 @@
 #include "Client.hpp"
-
 #include "Server.hpp"
 #include "Channel.hpp"
 
 Client::Client(int const Fd)
 	:	AUser(""),
-		_Fd(Fd) {
-}
+		_Fd(Fd) {}
 
 bool Client::operator==(const Client& that) const {
 	return _Name == that._Name;
@@ -20,13 +18,18 @@ void Client::inviteToChannel(Channel const & channel) {
 	_Channels.push_back(&channel);
 }
 
-void Client::setNickName(std::string const & NickName) {
-	_NickName = NickName;
-}
+// Names get|set
+void Client::setNickName(std::string const & NickName) { _NickName = NickName; }
+string const & Client::getNickName() const { return _NickName; }
 
-string const & Client::getNickName( void ) const {
-	return _NickName;
-}
+void Client::setRealName(std::string const & RealName) { _RealName = RealName; }
+string const & Client::getRealName() const { return _RealName; }
+
+void Client::setHostName(std::string const & HostName) { _HostName = HostName; }
+string const & Client::getHostName() const { return _HostName; }
+
+void Client::setServerName(std::string const & ServerName) { _ServerName = ServerName; }
+string const & Client::getServerName() const { return _ServerName; }
 
 // Registration
 void Client::setRegistered(bool const Condition) {
@@ -38,8 +41,8 @@ bool Client::isRegistered() const {
 }
 
 bool Client::unregisteredShouldDie() const {
-	if (_Registration.Time.hasTimePassed(30)) {
-		std::cout << _Name << " is unregistered. Died." << '\n';
+	if (not _Registration.IsRegistered
+		and _Registration.Time.hasTimePassed(MAY_BE_UNREGISTERED_seconds)) {
 		return true;
 	}
 	return false;
@@ -47,8 +50,7 @@ bool Client::unregisteredShouldDie() const {
 
 // Last activity
 bool Client::inactiveShouldDie() const {
-	if (_LastResponse.hasTimePassed(60)) {
-		std::cout << _Name << " is inactive. Died." << '\n';
+	if (_LastResponse.hasTimePassed(MAY_BE_INACTIVE_seconds)) {
 		return true;
 	}
 	return false;
@@ -59,7 +61,8 @@ void Client::updateActivity() {
 }
 
 bool Client::isReadyForPing() const {
-	if (_LastResponse.hasTimePassed(30) and not _LastResponse.hasTimePassed(60)) {
+	if (_LastResponse.hasTimePassed(MAY_BE_INACTIVE_seconds / 2)
+		and not _LastResponse.hasTimePassed(MAY_BE_INACTIVE_seconds)) {
 		return true;
 	}
 	return false;
@@ -91,7 +94,7 @@ std::vector<Channel const *> const & Client::getChannels() const {
 	return _Channels;
 }
 
-status Client::setReplyMessage(std::string const & Msg) {
+status Client::updateReplyMessage(std::string const & Msg) {
 	_ReplyMessage += Msg + "\r\n";
 	return 0;
 }

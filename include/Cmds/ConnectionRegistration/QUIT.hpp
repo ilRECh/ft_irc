@@ -10,10 +10,9 @@ public:
     QUIT(Server &Server) : ACommand("QUIT", Server) {}
     virtual ~QUIT() {}
     virtual int run(){
-        if (_Argument.empty()) {
-            _Argument = _Initiator->getNickName();
-        }
-        _Initiator->setReplyMessage(_Argument);
+        std::string Reply = _Arguments.empty() ? _Initiator->getNickName() :
+            _Arguments[0];
+        _Initiator->updateReplyMessage(Reply);
         _Server.sendMsg(_Initiator);
         _Server.removeUserByNickName(_Initiator->getNickName());
     }

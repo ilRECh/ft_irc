@@ -10,21 +10,21 @@ public:
     NICK(Server &Server) : ACommand("NICK", Server) {}
     virtual ~NICK() {}
     virtual int run(){
-        std::vector<std::string> Tokens = ft::split(_Argument, " \b\t\n\v\f\r");
         std::string Nick;
-        if (not Tokens.empty()) {
-            Nick = Tokens[0];
-        }
-        if (Nick.empty()) {
-            return _Initiator->setReplyMessage(ERR_NONICKNAMEGIVEN);
+        if (not _Arguments.empty()) {
+            Nick = _Arguments[0];
+        } else {
+            return _Initiator->updateReplyMessage(ERR_NONICKNAMEGIVEN);
         }
         Client *UserWithSameNick = _Server.getUserByNickName(Nick);
         if (UserWithSameNick and (UserWithSameNick not_eq _Initiator)) {
-            return _Initiator->setReplyMessage(ERR_NICKNAMEINUSE(Nick));
+            return _Initiator->updateReplyMessage(ERR_NICKCOLLISION(Nick));
+        } else if (UserWithSameNick and (UserWithSameNick == _Initiator)) {
+            return _Initiator->updateReplyMessage(ERR_NICKNAMEINUSE(Nick));
         }
         if (Nick[0] == '-' or std::isdigit(Nick[0])) {
             ErroneusNickNameGiven:
-            return _Initiator->setReplyMessage(ERR_ERRONEUSNICKNAME(Nick));
+            return _Initiator->updateReplyMessage(ERR_ERRONEUSNICKNAME(Nick));
         }
         std::string SpecialCharacters = "`|^_-{}[]\\";
         for (size_t i = 1; i < Nick.length(); ++i) {
