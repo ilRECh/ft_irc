@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Mandatory.hpp"
-#include "Server.hpp"
-#include "User.hpp"
+#include "ft.hpp"
+#include "AUser.hpp"
 
 using std::string;
 using std::vector;
@@ -14,10 +13,10 @@ enum eChannelPrivateLevel {
 	CHANNEL_PUBLIC
 };
 
-class User;
+class Client;
+class Server;
 
-class Channel
-{
+class Channel : public AUser {
 private:
 	//! typePrivateLevel
 	//* CHANNEL_PRIVATE могут приглашать только админы;
@@ -25,23 +24,23 @@ private:
 	//* CHANNEL_PUBLIC могут все добавляться;
 	eChannelPrivateLevel			_ePrivateLevel;
 	//*				имя канала
-	string			_NameChannel;
 	//*				Список админов
-	vector<User const *>	_Admins;
-	vector<User const *>	_Users;
-	void	addAdmin(User const & whom);
-	void	addUser(User const & whom);
+	vector<Client const *>	_Admins;
+	vector<Client const *>	_Users;
+	void	addAdmin(Client const & whom);
+	void	addUser(Client const & whom);
+	using AUser::setName;
 public:
-	Channel(string const & nameChannel, User const & userAdmin);
-	Channel(string const & nameChannel, User const & userAdmin, eChannelPrivateLevel const ePrivateLevel);
+	Channel(string const & nameChannel, Client const & userAdmin);
+	Channel(string const & nameChannel, Client const & userAdmin, eChannelPrivateLevel const ePrivateLevel);
 	~Channel();
-	void	addAdmin		(User const & who, User const & whom);
-	void	addUser			(User const & who, User const & whom);
-	void	removeUser		(User const & who, User const & whom);
-	void	removeAdmin		(User const & who, User const & whom);
-	const	vector<User const *>& getAdmins();
-	bool	checkAdminPermist	(User const & whom) const;
-	bool	checkOwnerPermist	(User const & whom) const;
-	void	setLevelPrivate		(User const & who, eChannelPrivateLevel const ePrivateLevel);
-	void	setNameChannel		(User const & who, string const & newNameChannel);
+	void	addAdmin		(Client & who, Client & whom);
+	void	addUser			(Client & who, Client & whom);
+	void	removeUser		(Client & who, Client & whom);
+	void	removeAdmin		(Client & who, Client & whom);
+	const	vector<Client const *>& getAdmins();
+	bool	isAdmin (Client const & whom) const;
+	bool	isOwner (Client const & whom) const;
+	void	setLevelPrivate	(Client & who, eChannelPrivateLevel const ePrivateLevel);
+	void	setName(Client & who, string const & newNameChannel);
 };

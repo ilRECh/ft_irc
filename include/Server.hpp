@@ -1,15 +1,14 @@
 #pragma once
 
-#include "Mandatory.hpp"
-#include "Server.hpp"
-#include "Commands.hpp"
-#include "User.hpp"
+#include "ft.hpp"
 #include "Replies.hpp"
 
 using std::vector;
 using std::string;
 
-class User;
+class Client;
+class ACommand;
+class Channel;
 
 class Server {
 private:
@@ -23,28 +22,37 @@ private:
 	string	ip;
 	string	port;
     bool	_LoopListen;
-	std::vector<User *> _Users;
-	addrinfo *servinfo;
-    // struct sockaddr_in _Saddr;
-    socklen_t _Socklen;
+	std::vector<Client *> _Users;
+	std::vector<Channel *> _Channels;
     int _Sockfd;
 
-	fd_set	fds;
+	addrinfo *servinfo;
+	socklen_t _Socklen;
+
+	fd_set	_Fds_set;
 	int		maxFd;
 
-	void readerClient(fd_set);
+	void readerClient(fd_set & fdsCpy);
+	void processCmd(Client *User, std::string const & ReceivedMessage);
+	std::pair<std::string, std::string> parseCmd(std::string &Cmd);
+	void proceedCmd(std::pair<std::string, std::string> Cmd, Client *User);
+	std::string timeStamp() { return "A long time ago"; }
+
+    void serverLog(Client *that, std::string const & ReceivedMessage);
+    void sendMsg(Client *From, Client *To);
+	void sendMsg(Client *To);
+
+	std::vector<Client *> const &getUsers();
+
+
 public:
 	Server(string const & ip, string const & port);
 	Server(std::vector<std::string>& argv);
 	~Server();
+
+	void removeUserByNickName(std::string const & NickName);
+	Client *getUserByNickName(std::string const & NickName);
+	Client *getUserByName(std::string const & NickName);
+	Channel *getChannelByName(std::string const & NameChannel);
 	void run();
-	// static std::vector<std::string> parseCmd(std::string Cmd);
-
-	int processCmd(User *That);
-	int parseCmd(std::string &Cmd, User *That);
-	std::string timeStamp() { return "A long time ago"; }
-
-    std::string recvReader(int fd);
-    void serverLog(User *that);
-    void sendMsg(User *From, User *To);
 };

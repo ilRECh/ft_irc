@@ -1,38 +1,57 @@
-NAME		= ircserv
+TARGET		:= ircserv
+CXX			:= clang++
+CXXFLAGS	:= -pedantic-errors -Wall -Wextra -Werror -std=c++98 -pedantic
+LDFLAGS		:= -L/usr/lib -lstdc++ -lm
+BUILD		:= ./build
+OBJ_DIR		:= $(BUILD)/objects
+APP_DIR		:= $(BUILD)/apps
+INC_DIRS	:= $(shell find ./include -type d)
+INCLUDE		:= $(addprefix -I,$(INC_DIRS))
+SRC			:=                      \
+	$(wildcard srcs/*.cpp) \
+	$(wildcard srcs/cmds/*.cpp)
 
-CXX			= clang++
-CPPFLAGS	= -Wall -Wextra -Werror -g $(addprefix -I, $(INCLUDES)) -std=c++98 -pedantic
-SRC=./srcs/
-CMDS=./srcs/cmds/
-INCLUDES=./include ./include/cmds/
+OBJECTS		:= $(SRC:%.cpp=$(OBJ_DIR)/%.o)
+DEPENDENCIES \
+			:= $(OBJECTS:.o=.d)
 
-FILES		= main \
-			$(addprefix $(SRC), Channel Server User Password Utility Replies) \
-			$(addprefix $(CMDS), ACommand)
+.PHONY: all build clean fclean debug release info re
 
-FILES_CPP	= $(addsuffix .cpp,	$(FILES))
-FILES_HPP	= $(wildcard **/**.hpp)
-FILES_OBJ	= $(addsuffix .o,	$(FILES))
+all: build $(APP_DIR)/$(TARGET)
 
-.PHONY		: all client clean fclean re
+$(OBJ_DIR)/%.o: %.cpp
+	@mkdir -p $(@D)
+	@$(CXX) $(CXXFLAGS) $(INCLUDE) -c $< -MMD -o $@
+	@echo $(CXX) $(CXXFLAGS) $@
 
-all			: $(NAME)
+$(APP_DIR)/$(TARGET): $(OBJECTS)
+	@mkdir -p $(@D)
+	@$(CXX) $(CXXFLAGS) -o $(APP_DIR)/$(TARGET) $^ $(LDFLAGS)
+	@echo $(CXX) $(CXXFLAGS) $@
 
-$(FILES_OBJ): $(FILES_HPP)
+-include $(DEPENDENCIES)
 
-$(NAME)		: $(FILES_OBJ)
-	$(CXX) $(CPPFLAGS) $^ -o $@
+build:
+	@mkdir -p $(APP_DIR)
+	@mkdir -p $(OBJ_DIR)
 
-client		:
-	$(CXX) $(CPPFLAGS) client.cpp -o client
+debug: CXXFLAGS += -g -fno-limit-debug-info
+debug: fclean all
 
-# %.o		: %.cpp $(FILES_HPP)
-# 	$(CXX) $(CPPFLAGS) $< -c -o $@
+release: CXXFLAGS += -O2
+release: fclean all
 
-clean		:
-	$(RM) $(FILES_OBJ)
+clean:
+	-@rm -rvf $(OBJ_DIR)/*
 
-fclean		: clean
-	$(RM) $(NAME)
+fclean: clean
+	-@rm -rvf $(APP_DIR)/*
 
-re			: fclean all
+info:
+	@echo "[*] Application dir: ${APP_DIR}     \n"
+	@echo "[*] Object dir:      ${OBJ_DIR}     \n"
+	@echo "[*] Sources:         ${SRC}         \n"
+	@echo "[*] Objects:         ${OBJECTS}     \n"
+	@echo "[*] Dependencies:    ${DEPENDENCIES}\n"
+
+re			: clean all

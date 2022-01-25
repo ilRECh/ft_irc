@@ -16,8 +16,10 @@
 #include <sys/time.h>
 #include <netdb.h>
 #include <ctime>
+#include <set>
+#include "TimeStamp.hpp"
 
-#define SIZE 256
+#define SIZE 512
 #define HOST_PORTNETWORK_PASSWORDNETWORK_PORT_PASSWORD 4
 #define PORT_PASSWORD 3
 #define PASSWORD_NETWORK 2
@@ -27,8 +29,19 @@
 typedef int status;
 
 namespace ft {
-    std::vector<std::string> split(std::string const& tosplit, std::string const& delimiters);
-    
+    std::vector<std::string> split(
+        std::string const& tosplit,
+        std::string const& delimiters);
+    std::vector<std::string> splitByCmds(
+        std::string const& tosplit,
+        std::string const& DelimiterWord);
+    std::string assemble(
+        std::vector<std::string>::iterator Start,
+        std::vector<std::string>::iterator Stop);
+    void deleteSpaces(std::string &string);
+    std::string SplitOneTimes(std:: string &str, std::string delimiter);
+
+
     template <typename T>
     std::string to_string(T to_convert) {
         std::stringstream ss;
@@ -36,11 +49,3 @@ namespace ft {
         return ss.str();
     }
 } // namespace ft
-
-status reply(
-    int const Rplcode,
-    int const UserSocketFd,
-    std::string const & From,
-    std::string const & To,
-    std::vector<std::string> const & MsgTokens =
-        std::vector<std::string>());
