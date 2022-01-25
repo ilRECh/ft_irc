@@ -2,11 +2,12 @@
 
 #include "ft.hpp"
 #include "Server.hpp"
-#include "User.hpp"
+#include "Client.hpp"
+
 #include "Replies.hpp"
 
 class Server;
-class User;
+class Client;
 
 class ACommand {
 private:
@@ -20,7 +21,7 @@ protected:
         :   _Initiator(NULL),
             _Server(Server),
             _Name(Name) {}
-    User *_Initiator;
+    Client *_Initiator;
     std::string _Argument;
     Server & _Server;
 public:
@@ -29,7 +30,7 @@ public:
     void setArgument(std::string const & Argument) {
         _Argument = Argument;
     }
-    bool setInitiator(User *User) {
+    bool setInitiator(Client *User) {
         _Initiator = User;
         return true;
     }

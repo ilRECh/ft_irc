@@ -1,3 +1,4 @@
+#pragma once
 #include "ACommand.hpp"
 
 class NICK : public ACommand {
@@ -17,7 +18,7 @@ public:
         if (Nick.empty()) {
             return _Initiator->setReplyMessage(ERR_NONICKNAMEGIVEN);
         }
-        User *UserWithSameNick = _Server.getUserByNickName(Nick);
+        Client *UserWithSameNick = _Server.getUserByNickName(Nick);
         if (UserWithSameNick and (UserWithSameNick not_eq _Initiator)) {
             return _Initiator->setReplyMessage(ERR_NICKNAMEINUSE(Nick));
         }

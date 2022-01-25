@@ -1,42 +1,43 @@
-#include "User.hpp"
+#include "Client.hpp"
+
 #include "Server.hpp"
 #include "Channel.hpp"
 
-User::User(int const Fd)
+Client::Client(int const Fd)
 	:	AUser(""),
 		_Fd(Fd) {
 }
 
-bool User::operator==(const User& that) const {
+bool Client::operator==(const Client& that) const {
 	return _Name == that._Name;
 }
 
-bool User::operator!=(const User& that) const {
+bool Client::operator!=(const Client& that) const {
 	return _Name != that._Name;
 }
 
-void User::inviteToChannel(Channel const & channel) {
+void Client::inviteToChannel(Channel const & channel) {
 	_Channels.push_back(&channel);
 }
 
-void User::setNickName(std::string const & NickName) {
+void Client::setNickName(std::string const & NickName) {
 	_NickName = NickName;
 }
 
-string const & User::getNickName( void ) const {
+string const & Client::getNickName( void ) const {
 	return _NickName;
 }
 
 // Registration
-void User::setRegistered(bool const Condition) {
+void Client::setRegistered(bool const Condition) {
 	_Registration.IsRegistered = Condition;
 }
 
-bool User::isRegistered() const {
+bool Client::isRegistered() const {
 	return _Registration.IsRegistered;
 }
 
-bool User::unregisteredShouldDie() const {
+bool Client::unregisteredShouldDie() const {
 	if (_Registration.Time.hasTimePassed(30)) {
 		std::cout << _Name << " is unregistered. Died." << '\n';
 		return true;
@@ -45,7 +46,7 @@ bool User::unregisteredShouldDie() const {
 }
 
 // Last activity
-bool User::inactiveShouldDie() const {
+bool Client::inactiveShouldDie() const {
 	if (_LastResponse.hasTimePassed(60)) {
 		std::cout << _Name << " is inactive. Died." << '\n';
 		return true;
@@ -53,11 +54,11 @@ bool User::inactiveShouldDie() const {
 	return false;
 }
 
-void User::updateActivity() {
+void Client::updateActivity() {
 	_LastResponse.updateBaseTime();
 }
 
-bool User::isReadyForPing() const {
+bool Client::isReadyForPing() const {
 	if (_LastResponse.hasTimePassed(30) and not _LastResponse.hasTimePassed(60)) {
 		return true;
 	}
@@ -65,37 +66,37 @@ bool User::isReadyForPing() const {
 }
 
 //	* get|set mode
-bool User::getModeIsExist(char c) const {
+bool Client::getModeIsExist(char c) const {
 	return _mode_set.find(c) != _mode_set.end();
 }
-void	User::setMode(char c){
+void	Client::setMode(char c){
 	_mode_set.insert(c);
 }
-void	User::unsetMode(char c){
+void	Client::unsetMode(char c){
 	_mode_set.erase(c);
 }
 
-TimeStamp const & User::getTime() const{
+TimeStamp const & Client::getTime() const{
 	return _time;
 }
 
-void User::setChannel(Channel const * channel){
+void Client::setChannel(Channel const * channel){
 	std::vector<Channel *>::iterator first, last;
 
 	if (std::find(_Channels.begin(), _Channels.end(), channel) != _Channels.end())
 		_Channels.push_back(channel);
 }
 
-std::vector<Channel const *> const & User::getChannels() const {
+std::vector<Channel const *> const & Client::getChannels() const {
 	return _Channels;
 }
 
-status User::setReplyMessage(std::string const & Msg) {
+status Client::setReplyMessage(std::string const & Msg) {
 	_ReplyMessage += Msg + "\r\n";
 	return 0;
 }
 
-std::string const User::getReplyMessage() {
+std::string const Client::getReplyMessage() {
 	std::string ret(_ReplyMessage);
 	_ReplyMessage.clear();
 	return ret;

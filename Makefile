@@ -1,47 +1,57 @@
-NAME		= ircserv
+TARGET		:= ircserv
+CXX			:= clang++
+CXXFLAGS	:= -pedantic-errors -Wall -Wextra -Werror -std=c++98 -pedantic
+LDFLAGS		:= -L/usr/lib -lstdc++ -lm
+BUILD		:= ./build
+OBJ_DIR		:= $(BUILD)/objects
+APP_DIR		:= $(BUILD)/apps
+INC_DIRS	:= $(shell find ./include -type d)
+INCLUDE		:= $(addprefix -I,$(INC_DIRS))
+SRC			:=                      \
+	$(wildcard srcs/*.cpp) \
+	$(wildcard srcs/cmds/*.cpp)
 
-CXX			= clang++
-CPPFLAGS	= -Wall -Wextra -Werror -g $(addprefix -I, $(INCLUDES)) -std=c++98 -pedantic -fno-limit-debug-info
-SRC=./srcs/
-CMDS=./srcs/cmds/
-INCLUDES=	./include\
-			./include/Cmds/\
-			include/Cmds/ChannelOperations\
-			include/Cmds/ConnectionRegistration\
-			include/Cmds/MiscellaneousMessages\
-			include/Cmds/OPTIONALS\
-			include/Cmds/SendingMessages\
-			include/Cmds/ServerQueriesAndCommands\
-			include/Cmds/UserBasedQueries
+OBJECTS		:= $(SRC:%.cpp=$(OBJ_DIR)/%.o)
+DEPENDENCIES \
+			:= $(OBJECTS:.o=.d)
 
+.PHONY: all build clean fclean debug release info re
 
-FILES		= main \
-			$(addprefix $(SRC), Channel Server User Password Utility TimeStamp)
+all: build $(APP_DIR)/$(TARGET)
 
-FILES_CPP	= $(addsuffix .cpp,	$(FILES))
-FILES_HPP	= $(wildcard **/**.hpp)
-FILES_OBJ	= $(addsuffix .o,	$(FILES))
+$(OBJ_DIR)/%.o: %.cpp
+	@mkdir -p $(@D)
+	@$(CXX) $(CXXFLAGS) $(INCLUDE) -c $< -MMD -o $@
+	@echo $(CXX) $(CXXFLAGS) $@
 
-.PHONY		: all client clean fclean re
+$(APP_DIR)/$(TARGET): $(OBJECTS)
+	@mkdir -p $(@D)
+	@$(CXX) $(CXXFLAGS) -o $(APP_DIR)/$(TARGET) $^ $(LDFLAGS)
+	@echo $(CXX) $(CXXFLAGS) $@
 
-$(NAME)		: $(FILES_OBJ)
-	$(CXX) $(CPPFLAGS) $^ -o $@
+-include $(DEPENDENCIES)
 
-all			: $(NAME)
+build:
+	@mkdir -p $(APP_DIR)
+	@mkdir -p $(OBJ_DIR)
 
-$(FILES_OBJ): $(FILES_HPP)
+debug: CXXFLAGS += -g -fno-limit-debug-info
+debug: fclean all
 
+release: CXXFLAGS += -O2
+release: fclean all
 
-client		:
-	$(CXX) $(CPPFLAGS) client.cpp -o client
+clean:
+	-@rm -rvf $(OBJ_DIR)/*
 
-# %.o		: %.cpp $(FILES_HPP)
-# 	$(CXX) $(CPPFLAGS) $< -c -o $@
+fclean: clean
+	-@rm -rvf $(APP_DIR)/*
 
-clean		:
-	$(RM) $(FILES_OBJ)
+info:
+	@echo "[*] Application dir: ${APP_DIR}     \n"
+	@echo "[*] Object dir:      ${OBJ_DIR}     \n"
+	@echo "[*] Sources:         ${SRC}         \n"
+	@echo "[*] Objects:         ${OBJECTS}     \n"
+	@echo "[*] Dependencies:    ${DEPENDENCIES}\n"
 
-fclean		: clean
-	$(RM) $(NAME)
-
-re			: fclean all
+re			: clean all

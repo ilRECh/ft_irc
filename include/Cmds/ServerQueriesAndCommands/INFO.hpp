@@ -1,3 +1,4 @@
+#pragma once
 #include "ACommand.hpp"
 
 class INFO : public ACommand {

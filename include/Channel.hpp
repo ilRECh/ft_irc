@@ -13,7 +13,7 @@ enum eChannelPrivateLevel {
 	CHANNEL_PUBLIC
 };
 
-class User;
+class Client;
 class Server;
 
 class Channel : public AUser {
@@ -25,22 +25,22 @@ private:
 	eChannelPrivateLevel			_ePrivateLevel;
 	//*				имя канала
 	//*				Список админов
-	vector<User const *>	_Admins;
-	vector<User const *>	_Users;
-	void	addAdmin(User const & whom);
-	void	addUser(User const & whom);
+	vector<Client const *>	_Admins;
+	vector<Client const *>	_Users;
+	void	addAdmin(Client const & whom);
+	void	addUser(Client const & whom);
 	using AUser::setName;
 public:
-	Channel(string const & nameChannel, User const & userAdmin);
-	Channel(string const & nameChannel, User const & userAdmin, eChannelPrivateLevel const ePrivateLevel);
+	Channel(string const & nameChannel, Client const & userAdmin);
+	Channel(string const & nameChannel, Client const & userAdmin, eChannelPrivateLevel const ePrivateLevel);
 	~Channel();
-	void	addAdmin		(User & who, User & whom);
-	void	addUser			(User & who, User & whom);
-	void	removeUser		(User & who, User & whom);
-	void	removeAdmin		(User & who, User & whom);
-	const	vector<User const *>& getAdmins();
-	bool	isAdmin (User const & whom) const;
-	bool	isOwner (User const & whom) const;
-	void	setLevelPrivate	(User & who, eChannelPrivateLevel const ePrivateLevel);
-	void	setName(User & who, string const & newNameChannel);
+	void	addAdmin		(Client & who, Client & whom);
+	void	addUser			(Client & who, Client & whom);
+	void	removeUser		(Client & who, Client & whom);
+	void	removeAdmin		(Client & who, Client & whom);
+	const	vector<Client const *>& getAdmins();
+	bool	isAdmin (Client const & whom) const;
+	bool	isOwner (Client const & whom) const;
+	void	setLevelPrivate	(Client & who, eChannelPrivateLevel const ePrivateLevel);
+	void	setName(Client & who, string const & newNameChannel);
 };

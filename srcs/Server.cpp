@@ -1,5 +1,6 @@
 #include "Server.hpp"
-#include "User.hpp"
+#include "Client.hpp"
+
 #include "Channel.hpp"
 
 // Commands
@@ -79,7 +80,7 @@ Server::~Server(void)
 {
     freeaddrinfo(servinfo);
     close(_Sockfd);
-    for (std::vector<User *>::iterator it = _Users.begin();
+    for (std::vector<Client *>::iterator it = _Users.begin();
          it != _Users.end(); ++it)
     {
         close((*it)->_Fd);
@@ -115,7 +116,7 @@ void Server::run()
             socklen_t Socklen = sizeof(AddrUser);
             std::cout << "status: " << getpeername(UserFd, (sockaddr *) &AddrUser, &Socklen) << '\n'; //* Выяняем кто подключился
             std::cout << "<<<<<<< " << inet_ntoa(AddrUser.sin_addr) << '\n'; // Left for testing, remove if Release
-            _Users.push_back(new User(UserFd));
+            _Users.push_back(new Client(UserFd));
         } else if (UserFd < 0 && errno != EAGAIN) {
             throw std::runtime_error("Fatal. Accepting the " + ft::to_string(UserFd) + " failed.\n" + strerror(errno));
         }
@@ -130,7 +131,7 @@ void Server::run()
                 throw std::runtime_error("Error: Select");
             }
         }
-		for (std::vector<User *>::iterator User = _Users.begin(); User != _Users.end(); ++User) {
+		for (std::vector<Client *>::iterator User = _Users.begin(); User != _Users.end(); ++User) {
 			std::string ReplyMessage = (*User)->getReplyMessage();
             if ((*User)->isReadyForPing()) {
                 //PING(*User);
@@ -151,7 +152,7 @@ void Server::run()
 
 void Server::readerClient(fd_set & fdsCpy)
 {
-    for (std::vector<User *>::iterator it = _Users.begin();
+    for (std::vector<Client *>::iterator it = _Users.begin();
          it != _Users.end(); ++it)
     {
         if (FD_ISSET((*it)->_Fd, &fdsCpy) > 0)
@@ -173,7 +174,7 @@ void Server::readerClient(fd_set & fdsCpy)
     }
 }
 
-void Server::processCmd(User *User, std::string const & ReceivedMessage)
+void Server::processCmd(Client *User, std::string const & ReceivedMessage)
 {
     std::vector<std::string> Cmds = ft::splitByCmds(ReceivedMessage, "\r\n");
 
@@ -184,7 +185,7 @@ void Server::processCmd(User *User, std::string const & ReceivedMessage)
     }
 }
 
-void Server::proceedCmd(std::pair<std::string, std::string> Cmd, User *User) {
+void Server::proceedCmd(std::pair<std::string, std::string> Cmd, Client *User) {
 	for (std::vector<ACommand *>::iterator command = _Commands.begin();
 			command != _Commands.end(); ++command) {
 		if (Cmd.first == (*command)->_Name) {
@@ -221,7 +222,7 @@ std::pair<std::string, std::string> Server::parseCmd(std::string &Cmd)
     return Value;
 }
 
-void Server::sendMsg(User *From, User *To)
+void Server::sendMsg(Client *From, Client *To)
 {
     std::string ReturnValue;
 
@@ -229,24 +230,24 @@ void Server::sendMsg(User *From, User *To)
     send(To->_Fd , ReturnValue.c_str(), ReturnValue.size(), 0);
 }
 
-void Server::sendMsg(User *To) {
+void Server::sendMsg(Client *To) {
     std::string ReturnValue;
 
     ReturnValue += timeStamp() + " " + To->getName() + " " + To->getReplyMessage();
     send(To->_Fd , ReturnValue.c_str(), ReturnValue.size(), 0);
 }
 
-void Server::serverLog(User *That, std::string const & ReceivedMessage)
+void Server::serverLog(Client *That, std::string const & ReceivedMessage)
 {
     std::cout << That->getName() << ": "<< ReceivedMessage;
 }
 
-std::vector<User *> const &Server::getUsers(){
+std::vector<Client *> const &Server::getUsers(){
 	return _Users;
 }
 
-User *Server::getUserByNickName(std::string const & NickName){
-	std::vector<User *>::iterator first, last;
+Client *Server::getUserByNickName(std::string const & NickName){
+	std::vector<Client *>::iterator first, last;
 	first = _Users.begin();
 	last = _Users.end();
 
@@ -256,8 +257,8 @@ User *Server::getUserByNickName(std::string const & NickName){
 	return NULL;
 }
 
-User *Server::getUserByName(std::string const & Name){
-	std::vector<User *>::iterator first, last;
+Client *Server::getUserByName(std::string const & Name){
+	std::vector<Client *>::iterator first, last;
 	first = _Users.begin();
 	last = _Users.end();
 
@@ -279,7 +280,7 @@ Channel *Server::getChannelByName(std::string const & NameChannel){
 }
 
 void Server::removeUserByNickName(std::string const & NickName) {
-    for (std::vector<User *>::iterator i = _Users.begin(); i != _Users.end(); ++i) {
+    for (std::vector<Client *>::iterator i = _Users.begin(); i != _Users.end(); ++i) {
         if ((*i)->getNickName() == NickName) {
             FD_CLR((*i)->_Fd, &_Fds_set);
             _Users.erase(i);

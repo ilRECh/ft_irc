@@ -1,3 +1,4 @@
+#pragma once
 #include "ACommand.hpp"
 
 class WHO : public ACommand {
@@ -6,7 +7,7 @@ private:
 	WHO();
 	WHO(WHO const &that);
 	WHO& operator=(WHO const &that);
-	bool	isHaveCommonChannels(User const *user_another)
+	bool	isHaveCommonChannels(Client const *user_another)
 	{
 		std::vector<Channel const *> two = user_another->getChannels();
 		std::vector<Channel const *> one = _User->getChannels();

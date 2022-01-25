@@ -6,7 +6,7 @@
 using std::vector;
 using std::string;
 
-class User;
+class Client;
 class ACommand;
 class Channel;
 
@@ -22,7 +22,7 @@ private:
 	string	ip;
 	string	port;
     bool	_LoopListen;
-	std::vector<User *> _Users;
+	std::vector<Client *> _Users;
 	std::vector<Channel *> _Channels;
     int _Sockfd;
 
@@ -33,16 +33,16 @@ private:
 	int		maxFd;
 
 	void readerClient(fd_set & fdsCpy);
-	void processCmd(User *User, std::string const & ReceivedMessage);
+	void processCmd(Client *User, std::string const & ReceivedMessage);
 	std::pair<std::string, std::string> parseCmd(std::string &Cmd);
-	void proceedCmd(std::pair<std::string, std::string> Cmd, User *User);
+	void proceedCmd(std::pair<std::string, std::string> Cmd, Client *User);
 	std::string timeStamp() { return "A long time ago"; }
 
-    void serverLog(User *that, std::string const & ReceivedMessage);
-    void sendMsg(User *From, User *To);
-	void sendMsg(User *To);
+    void serverLog(Client *that, std::string const & ReceivedMessage);
+    void sendMsg(Client *From, Client *To);
+	void sendMsg(Client *To);
 
-	std::vector<User *> const &getUsers();
+	std::vector<Client *> const &getUsers();
 
 
 	void removeUserByNickName(std::string const & NickName);
@@ -51,8 +51,8 @@ public:
 	Server(std::vector<std::string>& argv);
 	~Server();
 
-	User *getUserByNickName(std::string const & NickName);
-	User *getUserByName(std::string const & NickName);
+	Client *getUserByNickName(std::string const & NickName);
+	Client *getUserByName(std::string const & NickName);
 	Channel *getChannelByName(std::string const & NameChannel);
 	void run();
 };

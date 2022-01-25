@@ -1,3 +1,4 @@
+#pragma once
 #include "ACommand.hpp"
 
 class ISON : public ACommand {
@@ -14,7 +15,7 @@ public:
             
         }
 
-        for (std::vector<User *>::iterator it = _Users.begin();
+        for (std::vector<Client *>::iterator it = _Users.begin();
              it != _Users.end(); ++it)
         {
 

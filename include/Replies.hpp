@@ -552,7 +552,7 @@ the version or further version details.
 */
 
 #define	RPL_WHOREPLY(Channel, User, Host, Server, Nick, H_or_G, optionalAsterisk, optional_At_or_Plus, Hopcount, RealName) \
-"(352) " + Channel + " " + User + " " + Host + " " + Server + " " + Nick \
+"(352) " + Channel + " " + Client + " " + Host + " " + Server + " " + Nick \
 + "\n" + H_or_G + optionalAsterisk + optional_At_or_Plus + " :" + Hopcount + " " + RealName
 /*
 "<channel> <user> <host> <server> <nick> \
