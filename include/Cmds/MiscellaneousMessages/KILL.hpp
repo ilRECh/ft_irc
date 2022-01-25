@@ -9,8 +9,8 @@ public:
     KILL(Server &Server) : ACommand("KILL", Server) {}
     virtual ~KILL() {}
     virtual int run(){
-        if (_Argument.empty()) {
-            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+        if (_Arguments.empty()) {
+            return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
             
         }
         //code

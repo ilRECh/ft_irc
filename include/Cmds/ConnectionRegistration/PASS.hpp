@@ -9,18 +9,18 @@ public:
     PASS(Server & Server) : ACommand("PASS", Server) {}
     virtual ~PASS() {}
     virtual int run() {
-        std::vector<std::string> Tokens = ft::split(_Argument, " \b\t\n\v\f\r");
-        if (not Tokens.empty()) {
-            _Argument = Tokens[0];
-        } else {
-            _Argument = "";
+        if (_Initiator->isRegistered() == true) {
+            return _Initiator->updateReplyMessage(ERR_ALREADYREGISTRED);
+        } else if (_Arguments.empty()) {
+            return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+        } else if (not _Initiator->getName().empty() or
+            not _Initiator->getNickName().empty() or
+            not _Initiator->getRealName().empty() or
+            not _Initiator->getHostName().empty() or
+            not _Initiator->getServerName().empty()) {
+            return 0;
         }
-        if (_Argument.empty()) {
-            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-        } else if (_Initiator->isRegistered() == true) {
-            return _Initiator->setReplyMessage(ERR_ALREADYREGISTRED);
-        }
-        _Initiator->setPassword(_Argument);
+        _Initiator->setPassword(_Arguments[0]);
         return 0;
     }
 };/*

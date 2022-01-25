@@ -3,7 +3,8 @@
 #include "ft.hpp"
 #include "AUser.hpp"
 
-// #include "Password.hpp"
+#define MAY_BE_UNREGISTERED_seconds 100
+#define MAY_BE_INACTIVE_seconds 30
 
 using std::string;
 using std::vector;
@@ -15,13 +16,13 @@ class User : public AUser {
 private:
 	TimeStamp _time;
 	std::set<char> _mode_set;
-	std::string _Password;
 	User(User& that);
 	User& operator=(User& that);
 	vector<Channel const *> _Channels;
 	std::string _NickName;
 	std::string _RealName;
-	std::pair<bool, TimeStamp> Registration;
+	std::string _HostName;
+	std::string _ServerName;
 	struct {
 		bool IsRegistered;
 		TimeStamp Time;
@@ -37,14 +38,20 @@ public:
 
 	int const _Fd;
 
-	// NickName
+	// Names get|set
 	void setNickName(std::string const & NickName);
-	string const & getNickName( void ) const;
+	string const & getNickName() const;
+	void setRealName(std::string const & RealName);
+	string const & getRealName() const;
+	void setHostName(std::string const & HostName);
+	string const & getHostName() const;
+	void setServerName(std::string const & ServerName);
+	string const & getServerName() const;
 
 	//	* get|set mode
-	bool	getModeIsExist(char) const;
-	void	setMode(char);
-	void	unsetMode(char);
+	bool	getModeIsExist(char c) const;
+	void	setMode(char c);
+	void	unsetMode(char c);
 	
 	// * get time
 	TimeStamp const & getTime() const;
@@ -65,6 +72,6 @@ public:
 	void updateActivity();
 
 	// ReplyMessage
-	status setReplyMessage(std::string const & Msg);
+	status updateReplyMessage(std::string const & Msg);
 	std::string const getReplyMessage();
 };

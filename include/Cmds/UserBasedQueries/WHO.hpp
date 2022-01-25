@@ -2,7 +2,6 @@
 
 class WHO : public ACommand {
 private:
-<<<<<<< HEAD
 	WHO();
 	WHO(WHO const &that);
 	WHO& operator=(WHO const &that);
@@ -10,35 +9,6 @@ private:
 	{
 		std::vector<Channel const *> two = user_another->getChannels();
 		std::vector<Channel const *> one = _User->getChannels();
-=======
-    WHO();
-    WHO(WHO const &that);
-    WHO& operator=(WHO const &that);
-public:
-    WHO(Server &Server) : ACommand("WHO", Server) {}
-    virtual ~WHO() {}
-    virtual int run(){
-        if (_Argument.empty()) {
-            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            
-        }
-        //code
-    }
-};/*
-        Parameters: [<name> [<o>]]
-
-        The WHO message is used by a client to generate a query which returns
-        a list of information which 'matches' the <name> parameter given by
-        the client.  In the absence of the <name> parameter, all visible
-        (users who aren't invisible (user mode +i) and who don't have a
-        common channel with the requesting client) are listed.  The same
-        result can be achieved by using a <name> of "0" or any wildcard which
-
-        will end up matching every entry possible.
-
-        The <name> passed to WHO is matched against users' host, server, real
-        name and nickname if the channel <name> cannot be found.
->>>>>>> Ildar
 
 		for (size_t i = 0; i < one.size(); i++)
 			for (size_t j = 0; j < two.size(); j++)

@@ -27,7 +27,7 @@ Channel::~Channel(){}
 
 void	Channel::setLevelPrivate(User & who, eChannelPrivateLevel const ePrivateLevel){
 	if (not isAdmin(who)) {
-		who.setReplyMessage(ERR_CHANOPRIVSNEEDED(_Name));
+		who.updateReplyMessage(ERR_CHANOPRIVSNEEDED(_Name));
 		return ;
 	}
 	_ePrivateLevel = ePrivateLevel;
@@ -35,7 +35,7 @@ void	Channel::setLevelPrivate(User & who, eChannelPrivateLevel const ePrivateLev
 
 void	Channel::setName(User & who, string const & newNameChannel) {
 	if (not isAdmin(who)) {
-		who.setReplyMessage(ERR_CHANOPRIVSNEEDED(_Name));
+		who.updateReplyMessage(ERR_CHANOPRIVSNEEDED(_Name));
 		return ;
 	}
 	setName(newNameChannel);
@@ -66,7 +66,7 @@ const vector<User const *>& Channel::getAdmins(){ return _Admins;}
 void	Channel::addUser(User & who, User & whom){
 	if (_ePrivateLevel == CHANNEL_PRIVATE || _ePrivateLevel == CHANNEL_PROTECTED) {
 		if (not isAdmin(who) && not isOwner(who)) {
-			who.setReplyMessage(ERR_CHANOPRIVSNEEDED(_Name));
+			who.updateReplyMessage(ERR_CHANOPRIVSNEEDED(_Name));
 			return ;
 		}
 	}
@@ -86,7 +86,7 @@ void	Channel::addUser(User const & whom){
 void	Channel::removeUser(User & who, User & whom){
 	if (_ePrivateLevel == CHANNEL_PRIVATE || _ePrivateLevel == CHANNEL_PROTECTED) {
 		if (not isAdmin(who) && not isOwner(who)) {
-			who.setReplyMessage(ERR_CHANOPRIVSNEEDED(_Name));
+			who.updateReplyMessage(ERR_CHANOPRIVSNEEDED(_Name));
 			return ;
 		}
 	}
@@ -95,7 +95,7 @@ void	Channel::removeUser(User & who, User & whom){
 		removeAdmin(who, whom);
 	it = find(_Users.begin(), _Users.end(), &whom);
 	if (it == _Users.end()) {
-		who.setReplyMessage(ERR_NOSUCHNICK(whom.getNickName()));
+		who.updateReplyMessage(ERR_NOSUCHNICK(whom.getNickName()));
 		return ;
 	}
 	_Users.erase(it);
@@ -106,7 +106,7 @@ void	Channel::addAdmin(User & who, User & whom){
 	vector<User const *>::iterator end = _Admins.end();
 
 	if (not isAdmin(who)) {
-		who.setReplyMessage(ERR_CHANOPRIVSNEEDED(_Name));
+		who.updateReplyMessage(ERR_CHANOPRIVSNEEDED(_Name));
 		return ;
 	}
 	while(beg != end)
@@ -129,19 +129,19 @@ void	Channel::addAdmin(User const & whom){
 void	Channel::removeAdmin(User & who, User & whom){
 
 	if (not isAdmin(who)) {
-		who.setReplyMessage(ERR_CHANOPRIVSNEEDED(_Name));
+		who.updateReplyMessage(ERR_CHANOPRIVSNEEDED(_Name));
 		return ;
 	}
 	if (_Admins.size() == 1){
 		if (_Users.size() > 0) {
-			who.setReplyMessage(ft::to_string(__LINE__) + " in Channel is need to set appropriate message");
+			who.updateReplyMessage(ft::to_string(__LINE__) + " in Channel is need to set appropriate message");
 			return ;
 		}
 		delete this; //Is it appropriate here?
 	}
 	vector<User const *>::iterator it = find(_Admins.begin(), _Admins.end(), &whom);
 	if (it == _Admins.end()) {
-		who.setReplyMessage(ERR_NOSUCHNICK(whom.getNickName()));
+		who.updateReplyMessage(ERR_NOSUCHNICK(whom.getNickName()));
 		return ;
 	}
 	_Admins.erase(it);

@@ -40,17 +40,17 @@ private:
 
     void serverLog(User *that, std::string const & ReceivedMessage);
     void sendMsg(User *From, User *To);
-	void sendMsg(User *To);
 
 	std::vector<User *> const &getUsers();
 
 
-	void removeUserByNickName(std::string const & NickName);
 public:
 	Server(string const & ip, string const & port);
 	Server(std::vector<std::string>& argv);
 	~Server();
 
+	void sendMsg(User *To);
+	void removeUserByNickName(std::string const & NickName);
 	User *getUserByNickName(std::string const & NickName);
 	User *getUserByName(std::string const & NickName);
 	Channel *getChannelByName(std::string const & NameChannel);

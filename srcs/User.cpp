@@ -4,8 +4,7 @@
 
 User::User(int const Fd)
 	:	AUser(""),
-		_Fd(Fd) {
-}
+		_Fd(Fd) {}
 
 bool User::operator==(const User& that) const {
 	return _Name == that._Name;
@@ -19,13 +18,18 @@ void User::inviteToChannel(Channel const & channel) {
 	_Channels.push_back(&channel);
 }
 
-void User::setNickName(std::string const & NickName) {
-	_NickName = NickName;
-}
+// Names get|set
+void User::setNickName(std::string const & NickName) { _NickName = NickName; }
+string const & User::getNickName() const { return _NickName; }
 
-string const & User::getNickName( void ) const {
-	return _NickName;
-}
+void User::setRealName(std::string const & RealName) { _RealName = RealName; }
+string const & User::getRealName() const { return _RealName; }
+
+void User::setHostName(std::string const & HostName) { _HostName = HostName; }
+string const & User::getHostName() const { return _HostName; }
+
+void User::setServerName(std::string const & ServerName) { _ServerName = ServerName; }
+string const & User::getServerName() const { return _ServerName; }
 
 // Registration
 void User::setRegistered(bool const Condition) {
@@ -37,8 +41,8 @@ bool User::isRegistered() const {
 }
 
 bool User::unregisteredShouldDie() const {
-	if (_Registration.Time.hasTimePassed(30)) {
-		std::cout << _Name << " is unregistered. Died." << '\n';
+	if (not _Registration.IsRegistered
+		and _Registration.Time.hasTimePassed(MAY_BE_UNREGISTERED_seconds)) {
 		return true;
 	}
 	return false;
@@ -46,8 +50,7 @@ bool User::unregisteredShouldDie() const {
 
 // Last activity
 bool User::inactiveShouldDie() const {
-	if (_LastResponse.hasTimePassed(60)) {
-		std::cout << _Name << " is inactive. Died." << '\n';
+	if (_LastResponse.hasTimePassed(MAY_BE_INACTIVE_seconds)) {
 		return true;
 	}
 	return false;
@@ -58,7 +61,8 @@ void User::updateActivity() {
 }
 
 bool User::isReadyForPing() const {
-	if (_LastResponse.hasTimePassed(30) and not _LastResponse.hasTimePassed(60)) {
+	if (_LastResponse.hasTimePassed(MAY_BE_INACTIVE_seconds / 2)
+		and not _LastResponse.hasTimePassed(MAY_BE_INACTIVE_seconds)) {
 		return true;
 	}
 	return false;
@@ -90,7 +94,7 @@ std::vector<Channel const *> const & User::getChannels() const {
 	return _Channels;
 }
 
-status User::setReplyMessage(std::string const & Msg) {
+status User::updateReplyMessage(std::string const & Msg) {
 	_ReplyMessage += Msg + "\r\n";
 	return 0;
 }

@@ -9,8 +9,8 @@ public:
     LINKS(Server &Server) : ACommand("LINKS", Server) {}
     virtual ~LINKS() {}
     virtual int run(){
-        if (_Argument.empty()) {
-            return _Initiator->setReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+        if (_Arguments.empty()) {
+            return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
             
         }
         //code

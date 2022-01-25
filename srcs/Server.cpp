@@ -6,6 +6,7 @@
 #include "PASS.hpp"
 #include "NICK.hpp"
 #include "USER.hpp"
+#include "PING.hpp"
 
 Server::Server(std::vector<std::string> &argv)
         : _Commands(),
@@ -44,6 +45,7 @@ Server::Server(string const &ip, string const &port)
     _Commands.push_back(new PASS(*this));
     _Commands.push_back(new NICK(*this));
     _Commands.push_back(new USER(*this));
+    _Commands.push_back(new PING(*this));
     addrinfo hints;
 
     memset(&hints, 0, sizeof hints);
@@ -131,19 +133,28 @@ void Server::run()
             }
         }
 		for (std::vector<User *>::iterator User = _Users.begin(); User != _Users.end(); ++User) {
-			std::string ReplyMessage = (*User)->getReplyMessage();
             if ((*User)->isReadyForPing()) {
-                //PING(*User);
+                (*User)->updateReplyMessage("PING " + (*User)->getNickName());
             }
+			std::string ReplyMessage = (*User)->getReplyMessage();
 			if (not ReplyMessage.empty()) {
 				send((*User)->_Fd, ReplyMessage.c_str(), ReplyMessage.length(), 0);
 			} else {
-				if ((*User)->unregisteredShouldDie() || (*User)->inactiveShouldDie()) {
-					FD_CLR((*User)->_Fd, &_Fds_set);
-            		if ((User = _Users.erase(User)) == _Users.end()) {
-						break ;
-					}
-				}
+				if ((*User)->inactiveShouldDie()) {
+                    ReplyMessage = "QUIT: Smells Like Thees Spirit. B-gone, ghost.\r\n";
+                    send((*User)->_Fd, ReplyMessage.c_str(), ReplyMessage.length(), 0);
+                    FD_CLR((*User)->_Fd, &_Fds_set);
+                    if ((User = _Users.erase(User)) == _Users.end()) {
+                        break ;
+                    }
+				} else if ((*User)->unregisteredShouldDie()) {
+                    ReplyMessage = "QUIT: Are not as fast, are ya? Bye then, champ.\r\n";
+                    send((*User)->_Fd, ReplyMessage.c_str(), ReplyMessage.length(), 0);
+                    FD_CLR((*User)->_Fd, &_Fds_set);
+                    if ((User = _Users.erase(User)) == _Users.end()) {
+                        break ;
+                    }
+                }
 			}
 		}
     }
@@ -151,24 +162,27 @@ void Server::run()
 
 void Server::readerClient(fd_set & fdsCpy)
 {
-    for (std::vector<User *>::iterator it = _Users.begin();
-         it != _Users.end(); ++it)
+    for (std::vector<User *>::iterator User = _Users.begin();
+         User != _Users.end(); ++User)
     {
-        if (FD_ISSET((*it)->_Fd, &fdsCpy) > 0)
+        if (FD_ISSET((*User)->_Fd, &fdsCpy) > 0)
         {
-			FD_CLR((*it)->_Fd, &fdsCpy);
+			FD_CLR((*User)->_Fd, &fdsCpy);
 			char Buffer[SIZE] = { 0 };
 			ssize_t ReadByte = 0;
-			ReadByte = recv((*it)->_Fd, Buffer, SIZE, 0);
+			ReadByte = recv((*User)->_Fd, Buffer, SIZE, 0);
 			if (ReadByte < 0 && errno != EAGAIN) {
 				throw std::runtime_error(std::string("recv: ") + strerror(errno));
 			} else if (ReadByte == 0) {
-				FD_CLR((*it)->_Fd, &_Fds_set);
+                std::cout << (*User)->getNickName() << " closed connection. Died" << '\n';
+				FD_CLR((*User)->_Fd, &_Fds_set);
+                _Users.erase(User);
 				return ;
 			}
+            (*User)->updateActivity();
 			std::string ReceivedMessage(Buffer);
-            processCmd(*it, ReceivedMessage);
-            serverLog(*it, ReceivedMessage);
+            processCmd(*User, ReceivedMessage);
+            serverLog(*User, ReceivedMessage);
         }
     }
 }
@@ -195,7 +209,7 @@ void Server::proceedCmd(std::pair<std::string, std::string> Cmd, User *User) {
 			return ;
 		}
 	}
-	User->setReplyMessage(ERR_UNKNOWNCOMMAND(Cmd.first));
+	User->updateReplyMessage(ERR_UNKNOWNCOMMAND(Cmd.first));
 }
 
 std::pair<std::string, std::string> Server::parseCmd(std::string &Cmd)
@@ -225,20 +239,20 @@ void Server::sendMsg(User *From, User *To)
 {
     std::string ReturnValue;
 
-    ReturnValue += timeStamp() + " " + From->getName() + " " + From->getReplyMessage();
+    ReturnValue += timeStamp() + " " + From->getNickName() + " " + From->getReplyMessage();
     send(To->_Fd , ReturnValue.c_str(), ReturnValue.size(), 0);
 }
 
 void Server::sendMsg(User *To) {
     std::string ReturnValue;
 
-    ReturnValue += timeStamp() + " " + To->getName() + " " + To->getReplyMessage();
+    ReturnValue += timeStamp() + " " + To->getNickName() + " " + To->getReplyMessage();
     send(To->_Fd , ReturnValue.c_str(), ReturnValue.size(), 0);
 }
 
 void Server::serverLog(User *That, std::string const & ReceivedMessage)
 {
-    std::cout << That->getName() << ": "<< ReceivedMessage;
+    std::cout << That->getNickName() << ": "<< ReceivedMessage;
 }
 
 std::vector<User *> const &Server::getUsers(){
