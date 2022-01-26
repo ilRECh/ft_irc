@@ -43,4 +43,6 @@ public:
 	bool	isOwner (Client const & whom) const;
 	void	setLevelPrivate	(Client & who, eChannelPrivateLevel const ePrivateLevel);
 	void	setName(Client & who, string const & newNameChannel);
+
+    virtual status  updateReplyMessage(std::string const & Msg);
 };

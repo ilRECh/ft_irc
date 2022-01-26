@@ -1,4 +1,5 @@
-#include "../../ACommand.hpp"
+#pragma once
+#include "ACommand.hpp"
 #include <set>
 
 class PRIVMSG : public ACommand {
@@ -14,47 +15,38 @@ public:
         ft::deleteSpaces(targets);
         ft::deleteSpaces(_Argument);
         if (targets.empty()) {
-            {
-                std::string arr[] = { _Name };
-                return reply(ERR_NORECIPIENT, _User->_Fd, _User->getName(), L(arr));
-            }
+            return _Initiator->updateReplyMessage(ERR_NORECIPIENT(_Name));
         }
         if (_Argument.empty())
-            return reply(ERR_NOTEXTTOSEND, _User->_Fd, _User->getName());
+            return _Initiator->updateReplyMessage(ERR_NOTEXTTOSEND);
         std::set<std::string> recipients;
-        for (std::string last_target, size_t set_size; !targets.empty();
-            last_target = ft::SplitOneTimes(targets, " "))
+        for (std::string last_target; !targets.empty();)
         {
-            set_size = recipients.size();
-            recipients.insert(last_target);
-            if (recipients.size() == set_size) {
+            last_target = ft::SplitOneTimes(targets, " ");
+            if (!last_target.empty() && !recipients.insert(last_target).second) {
                 recipients.erase(last_target);
-                {
-                    std::string arr[] = {last_target};
-                    reply(ERR_TOOMANYTARGETS, _User->_Fd, _User->getName(), L(arr));
-                }
+                _Initiator->updateReplyMessage(ERR_TOOMANYTARGETS(last_target));
             }
         }
-        for (std::set<std::string>::iterator it = recipients.begin(),
-            User *lastUser = NULL,
-            Channel *lastChannel = NULL;
-            it != recipients.end(); ++it) {
-            lastUser = _Server.getUserByName(*it);
-            if (lastUser == NULL) {
-                lastChannel = _Server.getChannelByName(*it);
-                if (lastChannel == NULL) {
-                    {
-                        std::string arr[] = {*it};
-                        reply(ERR_NOSUCHNICK, _User->_Fd, _User->getName(), L(arr));
-                    }
-                } else if
-                    /*reply*/ ERR_CANNOTSENDTOCHAN;
+        AUser *last_target = NULL;
+        for (std::set<std::string>::iterator it = recipients.begin();
+            it != recipients.end(); ++it)
+        {
+            last_target = _Server.getUserByNickName(*it);
+            if (last_target == NULL){
+                last_target = _Server.getChannelByName(*it);
+                if (last_target == NULL)
+                    _Initiator->updateReplyMessage(ERR_NOSUCHNICK(*it));
+                else if (last_target->updateReplyMessage(_Argument))
+                    _Initiator->updateReplyMessage(ERR_CANNOTSENDTOCHAN(last_target->getName()));
             }
             else {
-                reply(0, lastUser->_Fd, _User->getName(), L(_Argument))
-                /*if (RPL_AWAY)*/
+                if (last_target->updateReplyMessage(_Argument))
+                    _Initiator->updateReplyMessage(RPL_AWAY(last_target->getName(), "Away"));
             }
         }
+        _Argument.erase();
+        return 0;
 /*          if ()
             return ERR_NOTOPLEVEL
             if ()
@@ -104,5 +96,4 @@ public:
         PRIVMSG #*.edu :NSFNet is undergoing work, expect interruptions
         ; Message to all users who come from a
         host which has a name matching *.edu.
-
 */

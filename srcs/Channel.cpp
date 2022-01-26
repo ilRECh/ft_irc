@@ -147,3 +147,13 @@ void	Channel::removeAdmin(Client & who, Client & whom){
 	}
 	_Admins.erase(it);
 }
+
+status  Channel::updateReplyMessage(std::string const & Msg){
+    for(EACH( const Client *, _Users)){
+        ((Client *)*it)->updateReplyMessage(Msg);
+    }
+    for(EACH( const Client *, _Admins)){
+        ((Client *)*it)->updateReplyMessage(Msg);
+    }
+    return 0;
+}

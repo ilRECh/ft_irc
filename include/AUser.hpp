@@ -27,4 +27,5 @@ public:
     std::string const & getPassword() const {
         return _Password;
     }
+    virtual status  updateReplyMessage(std::string const & Msg) = 0;
 };

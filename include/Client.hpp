@@ -3,8 +3,8 @@
 #include "ft.hpp"
 #include "AUser.hpp"
 
-#define MAY_BE_UNREGISTERED_seconds 30
-#define MAY_BE_INACTIVE_seconds 100
+#define MAY_BE_UNREGISTERED_seconds 300000
+#define MAY_BE_INACTIVE_seconds 100000
 
 using std::string;
 using std::vector;
@@ -72,6 +72,6 @@ public:
 	void updateActivity();
 
 	// ReplyMessage
-	status updateReplyMessage(std::string const & Msg);
+	virtual status updateReplyMessage(std::string const & Msg);
 	std::string const getReplyMessage();
 };

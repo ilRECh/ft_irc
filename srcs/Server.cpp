@@ -8,6 +8,7 @@
 #include "NICK.hpp"
 #include "USER.hpp"
 #include "PING.hpp"
+#include "PRIVMSG.hpp"
 
 Server::Server(std::vector<std::string> &argv)
         : _Commands(),
@@ -47,6 +48,7 @@ Server::Server(string const &ip, string const &port)
     _Commands.push_back(new NICK(*this));
     _Commands.push_back(new USER(*this));
     _Commands.push_back(new PING(*this));
+    _Commands.push_back(new PRIVMSG(*this));
     addrinfo hints;
 
     memset(&hints, 0, sizeof hints);

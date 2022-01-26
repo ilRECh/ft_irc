@@ -1,6 +1,6 @@
 TARGET		:= ircserv
 CXX			:= clang++
-CXXFLAGS	:= -pedantic-errors -Wall -Wextra -Werror -std=c++98 -pedantic
+CXXFLAGS	:= -pedantic-errors -Wall -Wextra -Werror -std=c++98 -pedantic -g -fno-limit-debug-info
 LDFLAGS		:= -L/usr/lib -lstdc++ -lm
 BUILD		:= ./build
 OBJ_DIR		:= $(BUILD)/objects
@@ -15,7 +15,9 @@ OBJECTS		:= $(SRC:%.cpp=$(OBJ_DIR)/%.o)
 DEPENDENCIES \
 			:= $(OBJECTS:.o=.d)
 
-.PHONY: all build clean fclean debug release info re
+.PHONY: all build clean fclean info re
+
+$(OBJECTS) : build
 
 all: build $(APP_DIR)/$(TARGET)
 
@@ -35,12 +37,6 @@ build:
 	@mkdir -p $(APP_DIR)
 	@mkdir -p $(OBJ_DIR)
 
-debug: CXXFLAGS += -g -fno-limit-debug-info
-debug: fclean all
-
-release: CXXFLAGS += -O2
-release: fclean all
-
 clean:
 	-@rm -rvf $(OBJ_DIR)/*
 
@@ -54,4 +50,4 @@ info:
 	@echo "[*] Objects:         ${OBJECTS}     \n"
 	@echo "[*] Dependencies:    ${DEPENDENCIES}\n"
 
-re			: clean all
+re			: fclean all

@@ -393,7 +393,7 @@ respectively.
 query list.
 */
 
-#define	RPL_AWAY(Away, MessageNick) "(301) " + Nick + " :" + AwayMessage
+#define	RPL_AWAY(Nick, AwayMessage) "(301) " + Nick + " :" + AwayMessage
 /*
 "<nick> :<away message>"
 */

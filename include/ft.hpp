@@ -25,6 +25,7 @@
 #define PASSWORD_NETWORK 2
 #define PORT_NETWORK 1
 #define HOST 0
+#define EACH(what, where) std::vector<what>::iterator it = where.begin(); it != where.end(); ++it
 
 typedef int status;
 
