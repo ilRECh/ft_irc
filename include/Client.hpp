@@ -3,8 +3,8 @@
 #include "ft.hpp"
 #include "AUser.hpp"
 
-#define MAY_BE_UNREGISTERED_seconds 30
-#define MAY_BE_INACTIVE_seconds 100
+#define MAY_BE_UNREGISTERED_seconds 100
+#define MAY_BE_INACTIVE_seconds 30
 
 using std::string;
 using std::vector;
@@ -23,12 +23,21 @@ private:
 	std::string _RealName;
 	std::string _HostName;
 	std::string _ServerName;
-	struct {
+	struct registration_s {
+		registration_s()
+			:	IsRegistered(false){}
 		bool IsRegistered;
 		TimeStamp Time;
 	} _Registration;
-	TimeStamp _LastResponse;
+	struct activity_s {
+		activity_s()
+			:	WaitingForPONG(false){} 
+		bool WaitingForPONG;
+		TimeStamp LastResponse;
+		TimeStamp LastPING;
+	} _Activity;
     std::string _ReplyMessage;
+
 public:
 	Client(int const Fd);
 	virtual ~Client() {}
@@ -68,8 +77,10 @@ public:
 
 	// Last Activity
 	bool inactiveShouldDie() const;
-	bool isReadyForPing() const;
+	bool ServerNeedToPING() const;
+	bool isWaitingForPONG() const;
 	void updateActivity();
+	void PINGisSent();
 
 	// ReplyMessage
 	status updateReplyMessage(std::string const & Msg);

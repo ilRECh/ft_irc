@@ -6,12 +6,20 @@ private:
     PING();
     PING(PING const &that);
     PING& operator=(PING const &that);
+    Client *_Target;
 public:
     PING(Server &Server) : ACommand("PING", Server) {}
     virtual ~PING() {}
     virtual int run(){
-        return 0;//_Initiator->updateReplyMessage("PING " + _Initiator->getNickName());
+        if (NULL == _Initiator) {
+            _Target->PINGisSent();
+            return _Target->updateReplyMessage("PING " + _Server.getServerAddrInfo());
+        }
+        return 0;
     }
+    void setTarget(Client *Target) {
+        _Target = Target;
+    };
 };/*
         Parameters: <server1> [<server2>]
 

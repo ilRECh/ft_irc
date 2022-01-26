@@ -8,6 +8,8 @@
 #include "NICK.hpp"
 #include "USER.hpp"
 #include "PING.hpp"
+#include "PONG.hpp"
+#include "UNKNOWNCOMMAND.hpp"
 
 Server::Server(std::vector<std::string> &argv)
         : _Commands(),
@@ -47,6 +49,7 @@ Server::Server(string const &ip, string const &port)
     _Commands.push_back(new NICK(*this));
     _Commands.push_back(new USER(*this));
     _Commands.push_back(new PING(*this));
+    _Commands.push_back(new PONG(*this));
     addrinfo hints;
 
     memset(&hints, 0, sizeof hints);
@@ -95,6 +98,10 @@ Server::~Server(void)
     }
 }
 
+std::string Server::getServerAddrInfo() const {
+    return ip + ":" + port;
+}
+
 void Server::run()
 {
     timeval tm = {0, 10000};
@@ -102,6 +109,8 @@ void Server::run()
     std::cout << "Waiting for a connection..." << '\n';
     while (_LoopListen)
     {
+
+        //GetConnectionPart
         int const UserFd = accept(_Sockfd, servinfo->ai_addr, &_Socklen);
         if (UserFd >= 0) {
             if (UserFd > maxFd) {
@@ -122,6 +131,8 @@ void Server::run()
         } else if (UserFd < 0 && errno != EAGAIN) {
             throw std::runtime_error("Fatal. Accepting the " + ft::to_string(UserFd) + " failed.\n" + strerror(errno));
         }
+
+        //ReadPart
         int retSelect = 1;
 		fd_set fdsCopy = _Fds_set;
         while (retSelect && maxFd)
@@ -133,9 +144,13 @@ void Server::run()
                 throw std::runtime_error("Error: Select");
             }
         }
+
+        //Reply part
 		for (std::vector<Client *>::iterator User = _Users.begin(); User != _Users.end(); ++User) {
-            if ((*User)->isReadyForPing()) {
-                (*User)->updateReplyMessage("PING " + (*User)->getNickName());
+            if ((*User)->ServerNeedToPING()) {
+                PING ping(*this);
+                ping.setTarget(*User);
+                ping.run();
             }
 			std::string ReplyMessage = (*User)->getReplyMessage();
 			if (not ReplyMessage.empty()) {
@@ -180,7 +195,6 @@ void Server::readerClient(fd_set & fdsCpy)
                 _Users.erase(Client);
 				return ;
 			}
-            (*Client)->updateActivity();
 			std::string ReceivedMessage(Buffer);
             processCmd(*Client, ReceivedMessage);
             serverLog(*Client, ReceivedMessage);
@@ -200,17 +214,22 @@ void Server::processCmd(Client *User, std::string const & ReceivedMessage)
 }
 
 void Server::proceedCmd(std::pair<std::string, std::string> Cmd, Client *User) {
-	for (std::vector<ACommand *>::iterator command = _Commands.begin();
-			command != _Commands.end(); ++command) {
-		if (Cmd.first == (*command)->_Name) {
-			std::cout << (*command)->_Name << std::endl;
-			(*command)->setArgument(Cmd.second);
-			(*command)->setInitiator(User);
-			(*command)->run();
-			return ;
-		}
-	}
-	User->updateReplyMessage(ERR_UNKNOWNCOMMAND(Cmd.first));
+    try {
+        for (std::vector<ACommand *>::iterator command = _Commands.begin();
+                command != _Commands.end(); ++command) {
+            if (Cmd.first == (*command)->_Name) {
+                std::cout << (*command)->_Name << std::endl;
+                    (*command)->setArgument(Cmd.second);
+                    (*command)->setInitiator(User);
+                    (*command)->run();
+                return ;
+            }
+        }
+        UNKNOWNCOMMAND uc(*this);
+        uc.setInitiator(User);
+        uc.setArgument(Cmd.first);
+        uc.run();
+    } catch (...) {}
 }
 
 std::pair<std::string, std::string> Server::parseCmd(std::string &Cmd)

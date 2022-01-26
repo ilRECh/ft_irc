@@ -50,22 +50,33 @@ bool Client::unregisteredShouldDie() const {
 
 // Last activity
 bool Client::inactiveShouldDie() const {
-	if (_LastResponse.hasTimePassed(MAY_BE_INACTIVE_seconds)) {
+	if (_Activity.WaitingForPONG and
+		_Activity.LastResponse.hasTimePassed(MAY_BE_INACTIVE_seconds)) {
 		return true;
 	}
 	return false;
 }
 
 void Client::updateActivity() {
-	_LastResponse.updateBaseTime();
+	_Activity.LastResponse.updateBaseTime();
+	_Activity.LastPING.updateBaseTime();
+	_Activity.WaitingForPONG = false;
 }
 
-bool Client::isReadyForPing() const {
-	if (_LastResponse.hasTimePassed(MAY_BE_INACTIVE_seconds / 2)
-		and not _LastResponse.hasTimePassed(MAY_BE_INACTIVE_seconds)) {
+bool Client::ServerNeedToPING() const {
+	if (not _Activity.WaitingForPONG and
+		_Activity.LastPING.hasTimePassed(MAY_BE_INACTIVE_seconds / 2)) {
 		return true;
 	}
 	return false;
+}
+
+void Client::PINGisSent() {
+	_Activity.WaitingForPONG = true;
+}
+
+bool Client::isWaitingForPONG() const {
+	return _Activity.WaitingForPONG;
 }
 
 //	* get|set mode

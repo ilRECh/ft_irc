@@ -49,6 +49,7 @@ public:
 	Server(string const & ip, string const & port);
 	Server(std::vector<std::string>& argv);
 	~Server();
+	std::string getServerAddrInfo() const;
 
 	void removeUserByNickName(std::string const & NickName);
 	Client *getUserByNickName(std::string const & NickName);

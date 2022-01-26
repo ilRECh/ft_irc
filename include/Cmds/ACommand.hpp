@@ -36,6 +36,11 @@ public:
     }
     bool setInitiator(Client *User) {
         _Initiator = User;
+        if ((_Initiator->isWaitingForPONG() and _Name not_eq "PONG") or
+            (_Initiator->getPassword().empty() and _Name not_eq "PASS")) {
+            throw("dummy");
+        }
+        _Initiator->updateActivity();
         return true;
     }
     virtual int run() = 0;
