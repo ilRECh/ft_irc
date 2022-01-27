@@ -83,13 +83,13 @@ std::string ft::SplitOneTimes(std::string &str, std::string delimiter)
 
 std::string::size_type ft::find_word(
 	std::string const & needle, 
-	std::string::iterator hstackBegin, 
-	std::string::iterator hstackEnd)
+	std::string::iterator begin, 
+	std::string::iterator end)
 {
 	std::string::size_type res = 0;
-	for (std::string::iterator i = hstackBegin; i != hstackEnd; ++i, ++res)
+	for (std::string::iterator i = begin; i != end; ++i, ++res)
 	{
-		for (std::string::size_type j = 0; j < needle.size() && i + j != hstackEnd; ++j)
+		for (std::string::size_type j = 0; j < needle.size() && i + j != end; ++j)
 		{
 			if (*(i + j) != needle[j])
 				break ;
@@ -117,11 +117,10 @@ std::vector<std::string> uniSplit(std::string & toUnite){
 	return (result);
 }
 
-bool ft::compareSimpleWildcard(
-	std::string wExpression, 
-	std::string ToCompare)
+bool ft::compareSimpleWildcard(std::string wExpression, std::string toCompare)
 {
 	typedef std::string::size_type size_type;
+	
 	std::vector<std::string> splitedByStar;
 	size_type	lenWord = 0;
 	size_type	pos1 = 0;
@@ -133,14 +132,14 @@ bool ft::compareSimpleWildcard(
 	{
 		if (splitedByStar[i][0] == '*')
 			continue;
-		pos2 = find_word(splitedByStar[i], ToCompare.begin() + pos1 + lenWord, ToCompare.end());
+		pos2 = find_word(splitedByStar[i], toCompare.begin() + pos1 + lenWord, toCompare.end());
 		pos1 = pos2 + pos1 + lenWord;
 		if ((pos2 == std::string::npos) || (pos2 && (!i || (i && splitedByStar[i - 1][0] != '*'))))
 			return false;
 		lenWord = splitedByStar[i].size();
 		if (i + 1 == splitedByStar.size())
 			if (wExpression[wExpression.size() - 1] != '*')
-				if (ToCompare.size() != pos1 + lenWord)
+				if (toCompare.size() != pos1 + lenWord)
 					--i;
 	}
 	return true;
