@@ -37,7 +37,7 @@ public:
 				if (_Clients[i]->getName() == name)
 					users_To_Show.push_back(_Clients[i]);
 		}
-		// ! Куда послать этот лист юзеров "users_To_Show"
+		
 	}
 };
 /**
