@@ -18,7 +18,7 @@ private:
 	std::set<char> _mode_set;
 	Client(Client& that);
 	Client& operator=(Client& that);
-	vector<Channel const *> _Channels;
+	std::set<Channel const *> _Channels;
 	std::string _NickName;
 	std::string _RealName;
 	std::string _HostName;
@@ -69,7 +69,7 @@ public:
 	//	* get|set Channels
 	void inviteToChannel(Channel const & channel);
 	void setChannel(Channel const * Channel);
-	std::vector<Channel const *> const &getChannels() const;
+	std::set<Channel const *> const &getChannels() const;
 
 	//	* get Registered
 	bool isRegistered() const;

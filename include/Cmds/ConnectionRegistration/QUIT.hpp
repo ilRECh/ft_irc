@@ -6,6 +6,7 @@ private:
     QUIT();
     QUIT(QUIT const &that);
     QUIT& operator=(QUIT const &that);
+    Client *_Target;
 public:
     QUIT(Server &Server) : ACommand("QUIT", Server) {}
     virtual ~QUIT() {}
@@ -15,6 +16,7 @@ public:
         _Initiator->updateReplyMessage(Reply);
         _Server.sendMsg(_Initiator);
         _Server.removeUserByNickName(_Initiator->_NickName);
+        return 0;
     }
 };/*
    Parameters: [<Quit message>]

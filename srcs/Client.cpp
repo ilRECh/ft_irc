@@ -15,7 +15,7 @@ bool Client::operator!=(const Client& that) const {
 }
 
 void Client::inviteToChannel(Channel const & channel) {
-	_Channels.push_back(&channel);
+	_Channels.insert(&channel);
 }
 
 // Names get|set
@@ -95,13 +95,13 @@ TimeStamp const & Client::getTime() const{
 }
 
 void Client::setChannel(Channel const * channel){
-	std::vector<Channel *>::iterator first, last;
+	std::set<Channel *>::iterator first, last;
 
 	if (std::find(_Channels.begin(), _Channels.end(), channel) != _Channels.end())
-		_Channels.push_back(channel);
+		_Channels.insert(channel);
 }
 
-std::vector<Channel const *> const & Client::getChannels() const {
+std::set<Channel const *> const & Client::getChannels() const {
 	return _Channels;
 }
 
