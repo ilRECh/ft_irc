@@ -117,7 +117,7 @@ std::vector<std::string> uniSplit(std::string & toUnite){
 	return (result);
 }
 
-bool ft::compareSimpleWildcard(std::string wExpression, std::string toCompare)
+bool ft::wildcard(std::string wExpression, std::string toCompare)
 {
 	typedef std::string::size_type size_type;
 	
