@@ -12,7 +12,7 @@ public:
     virtual ~PING() {}
     virtual int run(){
         if (NULL == _Initiator) {
-            _Target->PINGisSent();
+            _Target->_Activity.WaitingForPONG = true;
             return _Target->updateReplyMessage("PING " + _Server.getServerAddrInfo());
         }
         return 0;

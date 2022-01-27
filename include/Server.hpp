@@ -33,14 +33,13 @@ private:
 	int		maxFd;
 
 	void readerClient(fd_set & fdsCpy);
-	void processCmd(Client *User, std::string const & ReceivedMessage);
+	void processCmd(Client *User);
 	std::pair<std::string, std::string> parseCmd(std::string &Cmd);
 	void proceedCmd(std::pair<std::string, std::string> Cmd, Client *User);
 	std::string timeStamp() { return "A long time ago"; }
 
     void serverLog(Client *that, std::string const & ReceivedMessage);
     void sendMsg(Client *From, Client *To);
-	void sendMsg(Client *To);
 
 	std::vector<Client *> const &getUsers();
 
@@ -51,6 +50,7 @@ public:
 	~Server();
 	std::string getServerAddrInfo() const;
 
+	void sendMsg(Client *To);
 	void removeUserByNickName(std::string const & NickName);
 	Client *getUserByNickName(std::string const & NickName);
 	Client *getUserByName(std::string const & NickName);

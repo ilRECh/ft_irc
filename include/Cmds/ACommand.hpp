@@ -36,11 +36,18 @@ public:
     }
     bool setInitiator(Client *User) {
         _Initiator = User;
-        if ((_Initiator->isWaitingForPONG() and _Name not_eq "PONG") or
-            (_Initiator->getPassword().empty() and _Name not_eq "PASS")) {
+        if (_Initiator->_Activity.WaitingForPONG and _Name not_eq "PONG") {
             throw("dummy");
+        } else if (not _Initiator->_Registration.IsRegistered){
+            if ((_Initiator->_Password.empty() and _Name == "NICK") or
+                (_Initiator->_NickName.empty() and _Name == "USER")) {
+                _Initiator->updateReplyMessage(ERR_NOTREGISTERED);
+                throw("dummy");
+            }
         }
-        _Initiator->updateActivity();
+        if (not _Initiator->_Activity.WaitingForPONG) {
+            _Initiator->updateActivity();
+        }
         return true;
     }
     virtual int run() = 0;

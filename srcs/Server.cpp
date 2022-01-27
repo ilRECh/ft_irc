@@ -190,26 +190,28 @@ void Server::readerClient(fd_set & fdsCpy)
 			if (ReadByte < 0 && errno != EAGAIN) {
 				throw std::runtime_error(std::string("recv: ") + strerror(errno));
 			} else if (ReadByte == 0) {
-                std::cout << (*Client)->getNickName() << " closed connection. Died" << '\n';
 				FD_CLR((*Client)->_Fd, &_Fds_set);
                 _Users.erase(Client);
 				return ;
 			}
-			std::string ReceivedMessage(Buffer);
-            processCmd(*Client, ReceivedMessage);
-            serverLog(*Client, ReceivedMessage);
+            (*Client)->getIncomingBuffer() += Buffer;
+            serverLog(*Client, (*Client)->getIncomingBuffer());
+            processCmd(*Client);
         }
     }
 }
 
-void Server::processCmd(Client *User, std::string const & ReceivedMessage)
+void Server::processCmd(Client *Client)
 {
-    std::vector<std::string> Cmds = ft::splitByCmds(ReceivedMessage, "\r\n");
-
+    if (Client->getIncomingBuffer().end()[-1] != '\n') {
+        return ;
+    }
+    std::vector<std::string> Cmds = ft::splitByCmds(Client->getIncomingBuffer(), "\r\n");
+    Client->getIncomingBuffer().clear();
     for (std::vector<std::string>::iterator it = Cmds.begin();
             it != Cmds.end(); ++it) {
         std::pair<std::string, std::string> Cmd = parseCmd(*it);
-        proceedCmd(Cmd, User);
+        proceedCmd(Cmd, Client);
     }
 }
 

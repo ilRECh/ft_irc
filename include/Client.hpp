@@ -3,8 +3,8 @@
 #include "ft.hpp"
 #include "AUser.hpp"
 
-#define MAY_BE_UNREGISTERED_seconds 100
-#define MAY_BE_INACTIVE_seconds 30
+#define MAY_BE_UNREGISTERED_seconds 60
+#define MAY_BE_INACTIVE_seconds 100
 
 using std::string;
 using std::vector;
@@ -25,19 +25,19 @@ private:
 	std::string _ServerName;
 	struct registration_s {
 		registration_s()
-			:	IsRegistered(false){}
+			:	IsRegistered(false) {}
 		bool IsRegistered;
 		TimeStamp Time;
 	} _Registration;
 	struct activity_s {
 		activity_s()
-			:	WaitingForPONG(false){} 
+			:	WaitingForPONG(false) {} 
 		bool WaitingForPONG;
 		TimeStamp LastResponse;
 		TimeStamp LastPING;
 	} _Activity;
     std::string _ReplyMessage;
-
+	std::string _IncomingBuffer;
 public:
 	Client(int const Fd);
 	virtual ~Client() {}
@@ -45,17 +45,18 @@ public:
 	bool operator!=(const Client& that) const;
 	bool operator==(const Client& that) const;
 
+
 	int const _Fd;
 
 	// Names get|set
-	void setNickName(std::string const & NickName);
+	// void setNickName(std::string const & NickName);
 	string const & getNickName() const;
-	void setRealName(std::string const & RealName);
-	string const & getRealName() const;
-	void setHostName(std::string const & HostName);
-	string const & getHostName() const;
-	void setServerName(std::string const & ServerName);
-	string const & getServerName() const;
+	// void setRealName(std::string const & RealName);
+	// string const & getRealName() const;
+	// void setHostName(std::string const & HostName);
+	// string const & getHostName() const;
+	// void setServerName(std::string const & ServerName);
+	// string const & getServerName() const;
 
 	//	* get|set mode
 	bool	getModeIsExist(char c) const;
@@ -72,7 +73,7 @@ public:
 
 	//	* get Registered
 	bool isRegistered() const;
-	void setRegistered(bool const Condition);
+	// void setRegistered(bool const Condition);
 	bool unregisteredShouldDie() const;
 
 	// Last Activity
@@ -85,4 +86,50 @@ public:
 	// ReplyMessage
 	status updateReplyMessage(std::string const & Msg);
 	std::string const getReplyMessage();
+
+	// Incoming buffer
+	std::string& getIncomingBuffer();
+private:
+	friend class ACommand;
+	friend class INVITE;
+	friend class JOIN;
+	friend class KICK;
+	friend class LIST;
+	friend class MODE;
+	friend class NAMES;
+	friend class PART;
+	friend class TOPIC;
+	friend class NICK;
+	friend class OPER;
+	friend class PASS;
+	friend class QUIT;
+	friend class SERVER;
+	friend class SQUIT;
+	friend class USER;
+	friend class ERROR;
+	friend class KILL;
+	friend class PING;
+	friend class PONG;
+	friend class AWAY;
+	friend class ISON;
+	friend class REHASH;
+	friend class RESTART;
+	friend class SUMMON;
+	friend class UNKNOWNCOMMAND;
+	friend class USERHOST;
+	friend class USERS;
+	friend class WALLOPS;
+	friend class NOTICE;
+	friend class PRIVMSG;
+	friend class ADMIN;
+	friend class CONNECT;
+	friend class INFO;
+	friend class LINKS;
+	friend class STATS;
+	friend class TIME;
+	friend class TRACE;
+	friend class VERSIONS;
+	friend class WHO;
+	friend class WHOIS;
+	friend class WHOWAS;
 };

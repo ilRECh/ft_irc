@@ -19,26 +19,26 @@ void Client::inviteToChannel(Channel const & channel) {
 }
 
 // Names get|set
-void Client::setNickName(std::string const & NickName) { _NickName = NickName; }
+// void Client::setNickName(std::string const & NickName) { _NickName = NickName; }
 string const & Client::getNickName() const { return _NickName; }
 
-void Client::setRealName(std::string const & RealName) { _RealName = RealName; }
-string const & Client::getRealName() const { return _RealName; }
+// void Client::setRealName(std::string const & RealName) { _RealName = RealName; }
+// string const & Client::getRealName() const { return _RealName; }
 
-void Client::setHostName(std::string const & HostName) { _HostName = HostName; }
-string const & Client::getHostName() const { return _HostName; }
+// void Client::setHostName(std::string const & HostName) { _HostName = HostName; }
+// string const & Client::getHostName() const { return _HostName; }
 
-void Client::setServerName(std::string const & ServerName) { _ServerName = ServerName; }
-string const & Client::getServerName() const { return _ServerName; }
+// void Client::setServerName(std::string const & ServerName) { _ServerName = ServerName; }
+// string const & Client::getServerName() const { return _ServerName; }
 
 // Registration
-void Client::setRegistered(bool const Condition) {
-	_Registration.IsRegistered = Condition;
-}
+// void Client::setRegistered(bool const Condition) {
+// 	_Registration.IsRegistered = Condition;
+// }
 
-bool Client::isRegistered() const {
-	return _Registration.IsRegistered;
-}
+// bool Client::isRegistered() const {
+// 	return _Registration.IsRegistered;
+// }
 
 bool Client::unregisteredShouldDie() const {
 	if (not _Registration.IsRegistered
@@ -71,9 +71,9 @@ bool Client::ServerNeedToPING() const {
 	return false;
 }
 
-void Client::PINGisSent() {
-	_Activity.WaitingForPONG = true;
-}
+// void Client::PINGisSent() {
+// 	_Activity.WaitingForPONG = true;
+// }
 
 bool Client::isWaitingForPONG() const {
 	return _Activity.WaitingForPONG;
@@ -114,4 +114,8 @@ std::string const Client::getReplyMessage() {
 	std::string ret(_ReplyMessage);
 	_ReplyMessage.clear();
 	return ret;
+}
+
+std::string& Client::getIncomingBuffer() {
+	return _IncomingBuffer;
 }
