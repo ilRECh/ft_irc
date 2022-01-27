@@ -76,3 +76,72 @@ std::string ft::SplitOneTimes(std::string &str, std::string delimiter)
     return (token);
 }
 
+//*		*123*123*		3 2
+//*		123*123*123*	3 3
+//*		123*123*123*321 3 4
+
+
+std::string::size_type ft::find_word(
+	std::string const & needle, 
+	std::string::iterator hstackBegin, 
+	std::string::iterator hstackEnd)
+{
+	std::string::size_type res = 0;
+	for (std::string::iterator i = hstackBegin; i != hstackEnd; ++i, ++res)
+	{
+		for (std::string::size_type j = 0; j < needle.size() && i + j != hstackEnd; ++j)
+		{
+			if (*(i + j) != needle[j])
+				break ;
+			if (j + 1 == needle.size())
+				return res;
+		}
+	}
+	return std::string::npos;
+}
+
+
+std::vector<std::string> uniSplit(std::string & toUnite){
+	std::vector<std::string> result;
+	std::vector<std::string> tmp = ft::split(toUnite, "*");
+
+	if (toUnite[0] == '*')
+		result.push_back("*");
+	for (size_t i = 0; i < tmp.size(); i++)
+	{
+		result.push_back(tmp[i]);
+		result.push_back("*");
+	}
+	if (toUnite[toUnite.size() -1] != '*')
+		result.pop_back();
+	return (result);
+}
+
+bool ft::compareSimpleWildcard(
+	std::string wExpression, 
+	std::string ToCompare)
+{
+	typedef std::string::size_type size_type;
+	std::vector<std::string> splitedByStar;
+	size_type	lenWord = 0;
+	size_type	pos1 = 0;
+	size_type	pos2 = 0;
+
+	splitedByStar = uniSplit(wExpression);
+
+	for (size_type i = 0; i < splitedByStar.size(); i++)
+	{
+		if (splitedByStar[i][0] == '*')
+			continue;
+		pos2 = find_word(splitedByStar[i], ToCompare.begin() + pos1 + lenWord, ToCompare.end());
+		pos1 = pos2 + pos1 + lenWord;
+		if ((pos2 == std::string::npos) || (pos2 && (!i || (i && splitedByStar[i - 1][0] != '*'))))
+			return false;
+		lenWord = splitedByStar[i].size();
+		if (i + 1 == splitedByStar.size())
+			if (wExpression[wExpression.size() - 1] != '*')
+				if (ToCompare.size() != pos1 + lenWord)
+					--i;
+	}
+	return true;
+}

@@ -22,7 +22,7 @@ private:
 	string	ip;
 	string	port;
     bool	_LoopListen;
-	std::vector<Client *> _Users;
+	std::vector<Client *> _Clients;
 	std::vector<Channel *> _Channels;
     int _Sockfd;
 
@@ -41,19 +41,15 @@ private:
     void serverLog(Client *that, std::string const & ReceivedMessage);
     void sendMsg(Client *From, Client *To);
 	void sendMsg(Client *To);
-
-	std::vector<Client *> const &getUsers();
-
-
 public:
 	Server(string const & ip, string const & port);
 	Server(std::vector<std::string>& argv);
 	~Server();
 	std::string getServerAddrInfo() const;
-
 	void removeUserByNickName(std::string const & NickName);
 	Client *getUserByNickName(std::string const & NickName);
-	Client *getUserByName(std::string const & NickName);
+	std::vector<Client *> getUsersByName(std::string const & Name);
+	std::vector<Client *> const &getClients();
 	Channel *getChannelByName(std::string const & NameChannel);
 	void run();
 };

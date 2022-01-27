@@ -15,8 +15,8 @@ public:
             
         }
 
-        for (std::vector<Client *>::iterator it = _Users.begin();
-             it != _Users.end(); ++it)
+        for (std::vector<Client *>::iterator it = _Clients.begin();
+             it != _Clients.end(); ++it)
         {
 
         }

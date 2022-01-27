@@ -85,8 +85,8 @@ Server::~Server(void)
 {
     freeaddrinfo(servinfo);
     close(_Sockfd);
-    for (std::vector<Client *>::iterator it = _Users.begin();
-         it != _Users.end(); ++it)
+    for (std::vector<Client *>::iterator it = _Clients.begin();
+         it != _Clients.end(); ++it)
     {
         close((*it)->_Fd);
         delete *it;
@@ -127,7 +127,7 @@ void Server::run()
             socklen_t Socklen = sizeof(AddrUser);
             std::cout << "status: " << getpeername(UserFd, (sockaddr *) &AddrUser, &Socklen) << '\n'; //* Выяняем кто подключился
             std::cout << "<<<<<<< " << inet_ntoa(AddrUser.sin_addr) << '\n'; // Left for testing, remove if Release
-            _Users.push_back(new Client(UserFd));
+            _Clients.push_back(new Client(UserFd));
         } else if (UserFd < 0 && errno != EAGAIN) {
             throw std::runtime_error("Fatal. Accepting the " + ft::to_string(UserFd) + " failed.\n" + strerror(errno));
         }
@@ -146,7 +146,7 @@ void Server::run()
         }
 
         //Reply part
-		for (std::vector<Client *>::iterator User = _Users.begin(); User != _Users.end(); ++User) {
+		for (std::vector<Client *>::iterator User = _Clients.begin(); User != _Clients.end(); ++User) {
             if ((*User)->ServerNeedToPING()) {
                 PING ping(*this);
                 ping.setTarget(*User);
@@ -160,14 +160,14 @@ void Server::run()
                     ReplyMessage = "QUIT: Smells Like Thees Spirit. B-gone, ghost.\r\n";
                     send((*User)->_Fd, ReplyMessage.c_str(), ReplyMessage.length(), 0);
                     FD_CLR((*User)->_Fd, &_Fds_set);
-                    if ((User = _Users.erase(User)) == _Users.end()) {
+                    if ((User = _Clients.erase(User)) == _Clients.end()) {
                         break ;
                     }
 				} else if ((*User)->unregisteredShouldDie()) {
                     ReplyMessage = "QUIT: Are not as fast, are ya? Bye then, champ.\r\n";
                     send((*User)->_Fd, ReplyMessage.c_str(), ReplyMessage.length(), 0);
                     FD_CLR((*User)->_Fd, &_Fds_set);
-                    if ((User = _Users.erase(User)) == _Users.end()) {
+                    if ((User = _Clients.erase(User)) == _Clients.end()) {
                         break ;
                     }
                 }
@@ -178,8 +178,8 @@ void Server::run()
 
 void Server::readerClient(fd_set & fdsCpy)
 {
-    for (std::vector<Client *>::iterator Client = _Users.begin();
-         Client != _Users.end(); ++Client)
+    for (std::vector<Client *>::iterator Client = _Clients.begin();
+         Client != _Clients.end(); ++Client)
     {
         if (FD_ISSET((*Client)->_Fd, &fdsCpy) > 0)
         {
@@ -192,7 +192,7 @@ void Server::readerClient(fd_set & fdsCpy)
 			} else if (ReadByte == 0) {
                 std::cout << (*Client)->getNickName() << " closed connection. Died" << '\n';
 				FD_CLR((*Client)->_Fd, &_Fds_set);
-                _Users.erase(Client);
+                _Clients.erase(Client);
 				return ;
 			}
 			std::string ReceivedMessage(Buffer);
@@ -275,14 +275,14 @@ void Server::serverLog(Client *That, std::string const & ReceivedMessage)
     std::cout << That->getNickName() << ": "<< ReceivedMessage;
 }
 
-std::vector<Client *> const &Server::getUsers(){
-	return _Users;
+std::vector<Client *> const &Server::getClients(){
+	return _Clients;
 }
 
 Client *Server::getUserByNickName(std::string const & NickName){
 	std::vector<Client *>::iterator first, last;
-	first = _Users.begin();
-	last = _Users.end();
+	first = _Clients.begin();
+	last = _Clients.end();
 
 	for (;first != last; ++first)
 		if ((*first)->getNickName() == NickName)
@@ -290,15 +290,15 @@ Client *Server::getUserByNickName(std::string const & NickName){
 	return NULL;
 }
 
-Client *Server::getUserByName(std::string const & Name){
-	std::vector<Client *>::iterator first, last;
-	first = _Users.begin();
-	last = _Users.end();
+std::vector<Client *> Server::getUsersByName(std::string const & Name){
+	std::vector<Client *>::iterator istart = _Clients.begin();
+	std::vector<Client *>::iterator ifinish = _Clients.end();
+	std::vector<Client *> result;
 
-	for (;first != last; ++first)
-		if ((*first)->getName() == Name)
-			return *first;
-	return NULL;
+	for(;istart != ifinish; ++istart)
+		if ((*istart)->getName() == Name)
+			result.push_back(*istart);
+	return result;
 }
 
 Channel *Server::getChannelByName(std::string const & NameChannel){
@@ -313,10 +313,10 @@ Channel *Server::getChannelByName(std::string const & NameChannel){
 }
 
 void Server::removeUserByNickName(std::string const & NickName) {
-    for (std::vector<Client *>::iterator i = _Users.begin(); i != _Users.end(); ++i) {
+    for (std::vector<Client *>::iterator i = _Clients.begin(); i != _Clients.end(); ++i) {
         if ((*i)->getNickName() == NickName) {
             FD_CLR((*i)->_Fd, &_Fds_set);
-            _Users.erase(i);
+            _Clients.erase(i);
         }
     }
 }

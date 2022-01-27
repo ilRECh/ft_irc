@@ -26,7 +26,7 @@ private:
 	//*				имя канала
 	//*				Список админов
 	vector<Client const *>	_Admins;
-	vector<Client const *>	_Users;
+	vector<Client const *>	_Clients;
 	void	addAdmin(Client const & whom);
 	void	addUser(Client const & whom);
 	using AUser::setName;

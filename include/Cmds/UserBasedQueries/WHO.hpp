@@ -9,7 +9,7 @@ private:
 	bool	isHaveCommonChannels(Client const *user_another)
 	{
 		std::vector<Channel const *> two = user_another->getChannels();
-		std::vector<Channel const *> one = _User->getChannels();
+		std::vector<Channel const *> one = _Initiator->getChannels();
 
 		for (size_t i = 0; i < one.size(); i++)
 			for (size_t j = 0; j < two.size(); j++)
@@ -21,21 +21,21 @@ public:
 	WHO(Server const *Server) : ACommand("WHO", Server) {}
 	virtual ~WHO() {}
 	virtual int run(std::string name = std::string()){
-		std::vector<Client const *> const & _Users = _Server->getUsers();
-		std::vector<Client const *> users_To_Show;
+		std::vector<Client *> const & _Clients = _Server->getUsers();
+		std::vector<Client *> users_To_Show;
 		
 		if (_Argument.empty()) {
 			//std::string arr[] = { _Name }; // ? чей этот _Name ?
 			//return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
-			std::vector<Channel const *> const & channels = _User->getChannels();
+			std::vector<Channel const *> const & channels = _Initiator->getChannels();
 
-			for (size_t i = 0; i < _Users.size(); i++)
-				if (isHaveCommonChannels(_Users[i]) && !_Users[i]->getModeIsExist('i'))
-					users_To_Show.push_back(_Users[i]);
+			for (size_t i = 0; i < _Clients.size(); i++)
+				if (isHaveCommonChannels(_Clients[i]) && !_Clients[i]->getModeIsExist('i'))
+					users_To_Show.push_back(_Clients[i]);
 		} else {
-			for (size_t i = 0; i < _Users.size(); i++)
-				if (_Users[i]->getName() == name)
-					users_To_Show.push_back(_Users[i]);
+			for (size_t i = 0; i < _Clients.size(); i++)
+				if (_Clients[i]->getName() == name)
+					users_To_Show.push_back(_Clients[i]);
 		}
 		// ! Куда послать этот лист юзеров "users_To_Show"
 	}
