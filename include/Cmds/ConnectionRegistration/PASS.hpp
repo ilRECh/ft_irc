@@ -10,15 +10,11 @@ public:
     PASS(Server & Server) : ACommand("PASS", Server) {}
     virtual ~PASS() {}
     virtual int run() {
-        if (_Initiator->isRegistered() == true) {
+        if (_Initiator->_Registration.IsRegistered == true) {
             return _Initiator->updateReplyMessage(ERR_ALREADYREGISTRED);
         } else if (_Arguments.empty()) {
             return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-        } else if (not _Initiator->getName().empty() or
-            not _Initiator->getNickName().empty() or
-            not _Initiator->getRealName().empty() or
-            not _Initiator->getHostName().empty() or
-            not _Initiator->getServerName().empty()) {
+        } else if (not _Initiator->_RealName.empty()) {
             return 0;
         }
         _Initiator->setPassword(_Arguments[0]);

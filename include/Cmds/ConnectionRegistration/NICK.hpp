@@ -33,7 +33,7 @@ public:
                 goto ErroneusNickNameGiven;
             }
         }
-        _Initiator->setNickName(Nick);
+        _Initiator->_NickName = Nick;
         return 0;
     }
 };/*

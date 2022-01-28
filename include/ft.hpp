@@ -17,14 +17,10 @@
 #include <netdb.h>
 #include <ctime>
 #include <set>
+#include <list>
 #include "TimeStamp.hpp"
 
 #define SIZE 512
-#define HOST_PORTNETWORK_PASSWORDNETWORK_PORT_PASSWORD 4
-#define PORT_PASSWORD 3
-#define PASSWORD_NETWORK 2
-#define PORT_NETWORK 1
-#define HOST 0
 
 typedef int status;
 

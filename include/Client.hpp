@@ -3,7 +3,7 @@
 #include "ft.hpp"
 #include "AUser.hpp"
 
-#define MAY_BE_UNREGISTERED_seconds 30
+#define MAY_BE_UNREGISTERED_seconds 60
 #define MAY_BE_INACTIVE_seconds 100
 
 using std::string;
@@ -18,17 +18,26 @@ private:
 	std::set<char> _mode_set;
 	Client(Client& that);
 	Client& operator=(Client& that);
-	vector<Channel const *> _Channels;
+	std::set<Channel const *> _Channels;
 	std::string _NickName;
 	std::string _RealName;
 	std::string _HostName;
 	std::string _ServerName;
-	struct {
+	struct registration_s {
+		registration_s()
+			:	IsRegistered(false) {}
 		bool IsRegistered;
 		TimeStamp Time;
 	} _Registration;
-	TimeStamp _LastResponse;
+	struct activity_s {
+		activity_s()
+			:	WaitingForPONG(false) {} 
+		bool WaitingForPONG;
+		TimeStamp LastResponse;
+		TimeStamp LastPING;
+	} _Activity;
     std::string _ReplyMessage;
+	std::string _IncomingBuffer;
 public:
 	Client(int const Fd);
 	virtual ~Client() {}
@@ -36,17 +45,11 @@ public:
 	bool operator!=(const Client& that) const;
 	bool operator==(const Client& that) const;
 
+
 	int const _Fd;
 
 	// Names get|set
-	void setNickName(std::string const & NickName);
 	string const & getNickName() const;
-	void setRealName(std::string const & RealName);
-	string const & getRealName() const;
-	void setHostName(std::string const & HostName);
-	string const & getHostName() const;
-	void setServerName(std::string const & ServerName);
-	string const & getServerName() const;
 
 	//	* get|set mode
 	bool	getModeIsExist(char c) const;
@@ -59,19 +62,67 @@ public:
 	//	* get|set Channels
 	void inviteToChannel(Channel const & channel);
 	void setChannel(Channel const * Channel);
-	std::vector<Channel const *> const &getChannels() const;
+	std::set<Channel const *> const &getChannels() const;
 
 	//	* get Registered
 	bool isRegistered() const;
-	void setRegistered(bool const Condition);
+	// void setRegistered(bool const Condition);
 	bool unregisteredShouldDie() const;
 
 	// Last Activity
 	bool inactiveShouldDie() const;
-	bool isReadyForPing() const;
+	bool ServerNeedToPING() const;
+	bool isWaitingForPONG() const;
 	void updateActivity();
+	void PINGisSent();
 
 	// ReplyMessage
 	status updateReplyMessage(std::string const & Msg);
 	std::string const getReplyMessage();
+
+	// Incoming buffer
+	std::string& getIncomingBuffer();
+private:
+	friend class ACommand;
+	friend class INVITE;
+	friend class JOIN;
+	friend class KICK;
+	friend class LIST;
+	friend class MODE;
+	friend class NAMES;
+	friend class PART;
+	friend class TOPIC;
+	friend class NICK;
+	friend class OPER;
+	friend class PASS;
+	friend class QUIT;
+	friend class SERVER;
+	friend class SQUIT;
+	friend class USER;
+	friend class ERROR;
+	friend class KILL;
+	friend class PING;
+	friend class PONG;
+	friend class AWAY;
+	friend class ISON;
+	friend class REHASH;
+	friend class RESTART;
+	friend class SUMMON;
+	friend class UNKNOWNCOMMAND;
+	friend class USERHOST;
+	friend class USERS;
+	friend class WALLOPS;
+	friend class NOTICE;
+	friend class PRIVMSG;
+	friend class ADMIN;
+	friend class CONNECT;
+	friend class INFO;
+	friend class LINKS;
+	friend class STATS;
+	friend class TIME;
+	friend class TRACE;
+	friend class VERSIONS;
+	friend class WHO;
+	friend class WHOIS;
+	friend class WHOWAS;
 };

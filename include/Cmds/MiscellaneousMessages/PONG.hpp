@@ -10,11 +10,10 @@ public:
     PONG(Server &Server) : ACommand("PONG", Server) {}
     virtual ~PONG() {}
     virtual int run(){
-        if (_Arguments.empty()) {
-            return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            
+        if (_Argument == _Server.getServerAddrInfo()) {
+            _Initiator->updateActivity();
         }
-        //code
+        return 0;
     }
 };/*
         Parameters: <daemon> [<daemon2>]

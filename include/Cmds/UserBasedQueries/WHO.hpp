@@ -8,8 +8,8 @@ private:
 	WHO& operator=(WHO const &that);
 	bool	isHaveCommonChannels(Client const *user_another)
 	{
-		std::vector<Channel const *> two = user_another->getChannels();
-		std::vector<Channel const *> one = _User->getChannels();
+		std::set<Channel const *> two = user_another->getChannels();
+		std::set<Channel const *> one = _User->getChannels();
 
 		for (size_t i = 0; i < one.size(); i++)
 			for (size_t j = 0; j < two.size(); j++)
@@ -21,13 +21,13 @@ public:
 	WHO(Server const *Server) : ACommand("WHO", Server) {}
 	virtual ~WHO() {}
 	virtual int run(std::string name = std::string()){
-		std::vector<Client const *> const & _Users = _Server->getUsers();
-		std::vector<Client const *> users_To_Show;
+		std::set<Client const *> const & _Users = _Server->getUsers();
+		std::set<Client const *> users_To_Show;
 		
 		if (_Argument.empty()) {
 			//std::string arr[] = { _Name }; // ? чей этот _Name ?
 			//return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
-			std::vector<Channel const *> const & channels = _User->getChannels();
+			std::set<Channel const *> const & channels = _User->getChannels();
 
 			for (size_t i = 0; i < _Users.size(); i++)
 				if (isHaveCommonChannels(_Users[i]) && !_Users[i]->getModeIsExist('i'))
