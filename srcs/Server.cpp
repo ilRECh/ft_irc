@@ -22,7 +22,7 @@ Server::Server(string const & Port, string const & Password)
         _ServInfo(NULL),
         _Socklen(0),
         _FdsSet(),
-        _MaxFd(-1) {
+        _MaxFd(0) {
     _Commands.push_back(new PASS(*this));
     _Commands.push_back(new NICK(*this));
     _Commands.push_back(new USER(*this));
@@ -56,8 +56,7 @@ Server::Server(string const & Port, string const & Password)
         throw std::runtime_error(string("bind: ") + strerror(errno));
     if (listen(_Sockfd, 1)) // *! Возможно второй аргумент придется увеличить
         throw std::runtime_error(string("listen: ") + strerror(errno));
-    FD_ZERO(&_FdsSet);
-    _MaxFd = 0;
+    // FD_ZERO(&_FdsSet);
 }
 
 Server::~Server(void)
@@ -119,30 +118,37 @@ void Server::run()
         }
 
         //Reply part
-		for (std::set<Client *>::iterator User = _Users.begin(); User != _Users.end(); ++User) {
+        for (std::set<Client *>::iterator User = _Users.begin(); User != _Users.end(); ++User) {
             if ((*User)->ServerNeedToPING()) {
                 PING ping(*this);
                 ping.setTarget(*User);
                 ping.run();
             }
-			std::string ReplyMessage = (*User)->getReplyMessage();
-			if (not ReplyMessage.empty()) {
-				send((*User)->_Fd, ReplyMessage.c_str(), ReplyMessage.length(), 0);
-			} else {
+            std::string ReplyMessage = (*User)->getReplyMessage();
+            if (not ReplyMessage.empty()) {
+                send((*User)->_Fd, ReplyMessage.c_str(), ReplyMessage.length(), 0);
+            } else {
                 QUIT q(*this);
-                q.setInitiator(*User);
-				if ((*User)->inactiveShouldDie()) {
-                    q.setArgument("QUIT: Smells Like Thees Spirit. B-gone, ghost.\r\n");
+                q.setTarget(*User);
+                if ((*User)->inactiveShouldDie()) {
+                    q.setArgument("QUIT: Smells Like Thees Spirit. B-gone, ghost.");
                     q.run();
-				} else if ((*User)->unregisteredShouldDie()) {
-                    q.setArgument("QUIT: Are not as fast, are ya? Bye then, champ.\r\n");
+                } else if ((*User)->unregisteredShouldDie()) {
+                    q.setArgument("QUIT: Are not as fast, are ya? Bye then, champ.");
                     q.run();
                 }
-			}
-            if (User == _Users.end()) {
-                break ;
             }
-		}
+        }
+
+        //Erase part
+        while (not _UsersToBeErased.empty()) {
+            std::set<Client *>::iterator ToBeErased = _Users.find(_UsersToBeErased.front());
+            FD_CLR((*ToBeErased)->_Fd, &_FdsSet);
+            close((*ToBeErased)->_Fd);
+            delete(*ToBeErased);
+            _Users.erase(ToBeErased);
+            _UsersToBeErased.pop_front();
+        }
     }
 }
 
@@ -231,20 +237,20 @@ void Server::sendMsg(Client *From, Client *To)
 {
     std::string ReturnValue;
 
-    ReturnValue += timeStamp() + " " + From->getNickName() + " " + From->getReplyMessage();
+    ReturnValue += _Age.getTimeStrCurrent() + " " + From->getNickName() + " " + From->getReplyMessage();
     send(To->_Fd , ReturnValue.c_str(), ReturnValue.size(), 0);
 }
 
 void Server::sendMsg(Client *To) {
     std::string ReturnValue;
 
-    ReturnValue += timeStamp() + " " + To->getNickName() + " " + To->getReplyMessage();
+    ReturnValue += _Age.getTimeStrCurrent() + " " + To->getNickName() + " " + To->getReplyMessage();
     send(To->_Fd , ReturnValue.c_str(), ReturnValue.size(), 0);
 }
 
 void Server::serverLog(Client *That, std::string const & ReceivedMessage)
 {
-    std::cout << That->getNickName() << ": "<< ReceivedMessage;
+    std::cout << That->getNickName() << ": "<< ReceivedMessage << std::endl;
 }
 
 std::set<Client *> const &Server::getUsers(){
@@ -284,11 +290,6 @@ Channel *Server::getChannelByName(std::string const & NameChannel){
 	return NULL;
 }
 
-void Server::removeUserByNickName(std::string const & NickName) {
-    for (std::set<Client *>::iterator i = _Users.begin(); i != _Users.end(); ++i) {
-        if ((*i)->getNickName() == NickName) {
-            FD_CLR((*i)->_Fd, &_FdsSet);
-            _Users.erase(i);
-        }
-    }
+void Server::pushBackErase(Client *Client) {
+    _UsersToBeErased.push_front(Client);
 }

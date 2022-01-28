@@ -12,6 +12,9 @@ class Channel;
 
 class Server {
 private:
+	// Time since start
+	TimeStamp _Age;
+
 	// Parameters
 	std::string _Ip;
 	std::string _Port;
@@ -28,6 +31,7 @@ private:
 	// Top level logic
 	std::vector<ACommand *> _Commands;
 	std::set<Client *> _Users;
+	std::list<Client *> _UsersToBeErased;
 	std::set<Channel *> _Channels;
 
 	// Insights
@@ -35,7 +39,6 @@ private:
 	void processCmd(Client *User);
 	std::pair<std::string, std::string> parseCmd(std::string &Cmd);
 	void proceedCmd(std::pair<std::string, std::string> Cmd, Client *User);
-	std::string timeStamp() { return "A long time ago"; }
     void serverLog(Client *that, std::string const & ReceivedMessage);
     void sendMsg(Client *From, Client *To);
 	std::set<Client *> const &getUsers();
@@ -50,5 +53,5 @@ public:
 	Client *getUserByName(std::string const & NickName);
 	Channel *getChannelByName(std::string const & NameChannel);
 	void sendMsg(Client *To);
-	void removeUserByNickName(std::string const & NickName);
+	void pushBackErase(Client *Client);
 };

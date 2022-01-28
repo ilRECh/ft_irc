@@ -17,6 +17,7 @@
 #include <netdb.h>
 #include <ctime>
 #include <set>
+#include <list>
 #include "TimeStamp.hpp"
 
 #define SIZE 512

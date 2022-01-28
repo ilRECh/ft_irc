@@ -49,14 +49,7 @@ public:
 	int const _Fd;
 
 	// Names get|set
-	// void setNickName(std::string const & NickName);
 	string const & getNickName() const;
-	// void setRealName(std::string const & RealName);
-	// string const & getRealName() const;
-	// void setHostName(std::string const & HostName);
-	// string const & getHostName() const;
-	// void setServerName(std::string const & ServerName);
-	// string const & getServerName() const;
 
 	//	* get|set mode
 	bool	getModeIsExist(char c) const;

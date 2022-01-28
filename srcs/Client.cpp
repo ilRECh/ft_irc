@@ -18,27 +18,7 @@ void Client::inviteToChannel(Channel const & channel) {
 	_Channels.insert(&channel);
 }
 
-// Names get|set
-// void Client::setNickName(std::string const & NickName) { _NickName = NickName; }
 string const & Client::getNickName() const { return _NickName; }
-
-// void Client::setRealName(std::string const & RealName) { _RealName = RealName; }
-// string const & Client::getRealName() const { return _RealName; }
-
-// void Client::setHostName(std::string const & HostName) { _HostName = HostName; }
-// string const & Client::getHostName() const { return _HostName; }
-
-// void Client::setServerName(std::string const & ServerName) { _ServerName = ServerName; }
-// string const & Client::getServerName() const { return _ServerName; }
-
-// Registration
-// void Client::setRegistered(bool const Condition) {
-// 	_Registration.IsRegistered = Condition;
-// }
-
-// bool Client::isRegistered() const {
-// 	return _Registration.IsRegistered;
-// }
 
 bool Client::unregisteredShouldDie() const {
 	if (not _Registration.IsRegistered
@@ -106,7 +86,7 @@ std::set<Channel const *> const & Client::getChannels() const {
 }
 
 status Client::updateReplyMessage(std::string const & Msg) {
-	_ReplyMessage += Msg + "\r\n";
+	_ReplyMessage += _time.getTimeStrCurrent() + " " + Msg + "\r\n";
 	return 0;
 }
 
