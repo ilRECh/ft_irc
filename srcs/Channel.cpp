@@ -43,8 +43,8 @@ void	Channel::setName(Client & who, string const & newNameChannel) {
 }
 
 bool Channel::isAdmin(Client const & whom) const {
-	vector<Client const *>::const_iterator beg = _Admins.begin();
-	vector<Client const *>::const_iterator end = _Admins.end();
+	std::set<Client const *>::const_iterator beg = _Admins.begin();
+	std::set<Client const *>::const_iterator end = _Admins.end();
 
 	while(beg != end)
 		if (whom == **(beg++))
@@ -53,8 +53,8 @@ bool Channel::isAdmin(Client const & whom) const {
 }
 
 bool Channel::isOwner(Client const & whom) const {
-	vector<Client const *>::const_iterator beg = _Clients.begin();
-	vector<Client const *>::const_iterator end = _Clients.end();
+	std::set<Client const *>::const_iterator beg = _Clients.begin();
+	std::set<Client const *>::const_iterator end = _Clients.end();
 
 	while(beg != end)
 		if (whom == **(beg++))
@@ -62,7 +62,7 @@ bool Channel::isOwner(Client const & whom) const {
 	return false;
 }
 
-const vector<Client const *>& Channel::getAdmins(){ return _Admins;}
+const std::set<Client const *>& Channel::getAdmins(){ return _Admins;}
 
 void	Channel::addUser(Client & who, Client & whom){
 	if (_ePrivateLevel == CHANNEL_PRIVATE || _ePrivateLevel == CHANNEL_PROTECTED) {
@@ -71,17 +71,17 @@ void	Channel::addUser(Client & who, Client & whom){
 			return ;
 		}
 	}
-	vector<Client const *>::iterator it = find(_Clients.begin(), _Clients.end(), &whom);
+	std::set<Client const *>::iterator it = find(_Clients.begin(), _Clients.end(), &whom);
 	if (it == _Clients.end())
-		_Clients.push_back(&whom);
+		_Clients.insert(&whom);
 }
 
 void	Channel::addUser(Client const & whom){
-	vector<Client const *>::iterator it;
+	std::set<Client const *>::iterator it;
 
 	it = find(_Clients.begin(), _Clients.end(), &whom);
 	if (it == _Clients.end())
-		_Clients.push_back(&whom);
+		_Clients.insert(&whom);
 }
 
 void	Channel::removeUser(Client & who, Client & whom){
@@ -91,7 +91,7 @@ void	Channel::removeUser(Client & who, Client & whom){
 			return ;
 		}
 	}
-	vector<Client const *>::iterator it = find(_Admins.begin(), _Admins.end(), &whom);
+	std::set<Client const *>::iterator it = find(_Admins.begin(), _Admins.end(), &whom);
 	if (it != _Admins.end())
 		removeAdmin(who, whom);
 	it = find(_Clients.begin(), _Clients.end(), &whom);
@@ -103,8 +103,8 @@ void	Channel::removeUser(Client & who, Client & whom){
 }
 
 void	Channel::addAdmin(Client & who, Client & whom){
-	vector<Client const *>::iterator beg = _Admins.begin();
-	vector<Client const *>::iterator end = _Admins.end();
+	std::set<Client const *>::iterator beg = _Admins.begin();
+	std::set<Client const *>::iterator end = _Admins.end();
 
 	if (not isAdmin(who)) {
 		who.updateReplyMessage(ERR_CHANOPRIVSNEEDED(_Name));
@@ -113,18 +113,18 @@ void	Channel::addAdmin(Client & who, Client & whom){
 	while(beg != end)
 		if (**beg == whom)
 			return ;
-	_Admins.push_back(&whom);
+	_Admins.insert(&whom);
 	addUser(whom);
 }
 
 void	Channel::addAdmin(Client const & whom){
-	vector<Client const *>::iterator beg = _Admins.begin();
-	vector<Client const *>::iterator end = _Admins.end();
+	std::set<Client const *>::iterator beg = _Admins.begin();
+	std::set<Client const *>::iterator end = _Admins.end();
 
 	while(beg != end)
 		if (**beg == whom)
 			return ;
-	_Admins.push_back(&whom);
+	_Admins.insert(&whom);
 }
 
 void	Channel::removeAdmin(Client & who, Client & whom){
@@ -140,7 +140,7 @@ void	Channel::removeAdmin(Client & who, Client & whom){
 		}
 		delete this; //Is it appropriate here?
 	}
-	vector<Client const *>::iterator it = find(_Admins.begin(), _Admins.end(), &whom);
+	std::set<Client const *>::iterator it = find(_Admins.begin(), _Admins.end(), &whom);
 	if (it == _Admins.end()) {
 		who.updateReplyMessage(ERR_NOSUCHNICK(whom.getNickName()));
 		return ;

@@ -2,6 +2,7 @@
 
 #include "ft.hpp"
 #include "AUser.hpp"
+#include <map>
 
 using std::string;
 using std::vector;
@@ -25,8 +26,8 @@ private:
 	eChannelPrivateLevel			_ePrivateLevel;
 	//*				имя канала
 	//*				Список админов
-	vector<Client const *>	_Admins;
-	vector<Client const *>	_Clients;
+	std::set<Client const *>	_Admins;
+	std::set<Client const *>/* std::set<char>> */	_Clients;
 	void	addAdmin(Client const & whom);
 	void	addUser(Client const & whom);
 	using AUser::setName;
@@ -38,7 +39,7 @@ public:
 	void	addUser			(Client & who, Client & whom);
 	void	removeUser		(Client & who, Client & whom);
 	void	removeAdmin		(Client & who, Client & whom);
-	const	vector<Client const *>& getAdmins();
+	const	std::set<Client const *>& getAdmins();
 	bool	isAdmin (Client const & whom) const;
 	bool	isOwner (Client const & whom) const;
 	void	setLevelPrivate	(Client & who, eChannelPrivateLevel const ePrivateLevel);

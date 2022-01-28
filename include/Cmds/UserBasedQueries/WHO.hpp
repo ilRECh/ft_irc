@@ -8,8 +8,8 @@ private:
 	WHOIS& operator=(WHOIS const &that);
 	bool	isHaveCommonChannels(Client const *user_another)
 	{
-		std::vector<Channel const *> two = user_another->getChannels();
-		std::vector<Channel const *> one = _Initiator->getChannels();
+		std::set<Channel const *> two = user_another->getChannels();
+		std::set<Channel const *> one = _Initiator->getChannels();
 
 		for (size_t i = 0; i < one.size(); i++)
 			for (size_t j = 0; j < two.size(); j++)
@@ -49,12 +49,16 @@ private:
 	}
 
 public:
-	WHOIS(Server &Server) : ACommand("WHOIS", Server) {setArguments(_Argument);}
-	virtual ~WHOIS() {}
-	virtual int run(){
-		std::vector<Client *> usersToShow;
-		std::vector<Client *> _Clients;
-		std::stringstream result;
+	WHO(Server const & Server) : ACommand("WHO", Server) {}
+	virtual ~WHO() {}
+	virtual int run(std::string name = std::string()){
+		std::set<Client const *> const & _Clients = _Server->getUsers();
+		std::set<Client const *> users_To_Show;
+		
+		if (_Argument.empty()) {
+			//std::string arr[] = { _Name }; // ? чей этот _Name ?
+			//return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
+			std::set<Channel const *> const & channels = _User->getChannels();
 
 		if (_Arguments.empty() || !isRespondRequireTreeAlpha())
 		{

@@ -12,45 +12,48 @@ class Channel;
 
 class Server {
 private:
-	std::string _Password;
+	// Time since start
+	TimeStamp _Age;
+
+	// Parameters
+	std::string _Ip;
 	std::string _Port;
-	std::string _Host;
-	std::string _PortNetwork;
-	std::string _PasswordNetwork;
-	std::vector<ACommand *> _Commands;
+	std::string _Password;
 
-	string	ip;
-	string	port;
-    bool	_LoopListen;
-	std::vector<Client *> _Clients;
-	std::vector<Channel *> _Channels;
+	// Networking
+    bool _LoopListen;
     int _Sockfd;
-
-	addrinfo *servinfo;
+	addrinfo *_ServInfo;
 	socklen_t _Socklen;
+	fd_set _FdsSet;
+	int _MaxFd;
 
-	fd_set	_Fds_set;
-	int		maxFd;
+	// Top level logic
+	std::vector<ACommand *> _Commands;
+	std::set<Client *> _Clients;
+	std::list<Client *> _UsersToBeErased;
+	std::set<Channel *> _Channels;
 
+	// Insights
 	void readerClient(fd_set & fdsCpy);
-	void processCmd(Client *User, std::string const & ReceivedMessage);
+	void processCmd(Client *User);
 	std::pair<std::string, std::string> parseCmd(std::string &Cmd);
 	void proceedCmd(std::pair<std::string, std::string> Cmd, Client *User);
-	std::string timeStamp() { return "A long time ago"; }
-
     void serverLog(Client *that, std::string const & ReceivedMessage);
     void sendMsg(Client *From, Client *To);
-	void sendMsg(Client *To);
+	std::set<Client *> const &getUsers();
+
 public:
-	Server(string const & ip, string const & port);
-	Server(std::vector<std::string>& argv);
+	Server(string const & Port, std::string const & Password);
 	~Server();
-	std::string getServerAddrInfo() const;
-	void removeUserByNickName(std::string const & NickName);
+
+	void sendMsg(Client *To);
+	void run();
+	std::string getServerAddrInfo() const { return _Ip + ":" + _Port; }
 	Client *getUserByNickName(std::string const & NickName);
 	//* now it support find by wildcard
-	std::vector<Client *> getUsersByName(std::string Name);
-	std::vector<Client *> const &getClients();
+	std::set<Client *> getUsersByName(std::string Name);
+	std::set<Client *> const &getClients();
 	Channel *getChannelByName(std::string const & NameChannel);
-	void run();
+	void pushBackErase(Client *Client);
 };

@@ -15,30 +15,10 @@ bool Client::operator!=(const Client& that) const {
 }
 
 void Client::inviteToChannel(Channel const & channel) {
-	_Channels.push_back(&channel);
+	_Channels.insert(&channel);
 }
 
-// Names get|set
-void Client::setNickName(std::string const & NickName) { _NickName = NickName; }
 string const & Client::getNickName() const { return _NickName; }
-
-void Client::setRealName(std::string const & RealName) { _RealName = RealName; }
-string const & Client::getRealName() const { return _RealName; }
-
-void Client::setHostName(std::string const & HostName) { _HostName = HostName; }
-string const & Client::getHostName() const { return _HostName; }
-
-void Client::setServerName(std::string const & ServerName) { _ServerName = ServerName; }
-string const & Client::getServerName() const { return _ServerName; }
-
-// Registration
-void Client::setRegistered(bool const Condition) {
-	_Registration.IsRegistered = Condition;
-}
-
-bool Client::isRegistered() const {
-	return _Registration.IsRegistered;
-}
 
 bool Client::unregisteredShouldDie() const {
 	if (not _Registration.IsRegistered
@@ -50,7 +30,11 @@ bool Client::unregisteredShouldDie() const {
 
 // get IP address
 std::string Client::getAddresIP() const{
-	struct sockaddr_in AddrUser = {0};
+#ifdef __linux__
+    sockaddr_in AddrUser = {0,0,{0},{0}};
+#elif __APPLE__
+    sockaddr_in AddrUser = {0,0,0,{0},{0}};
+#endif
 	socklen_t Socklen = sizeof(AddrUser);
 	getpeername(this->_Fd, (sockaddr *) &AddrUser, &Socklen);
 	return inet_ntoa(AddrUser.sin_addr);
@@ -79,9 +63,9 @@ bool Client::ServerNeedToPING() const {
 	return false;
 }
 
-void Client::PINGisSent() {
-	_Activity.WaitingForPONG = true;
-}
+// void Client::PINGisSent() {
+// 	_Activity.WaitingForPONG = true;
+// }
 
 bool Client::isWaitingForPONG() const {
 	return _Activity.WaitingForPONG;
@@ -107,18 +91,18 @@ TimeStamp const & Client::getLastActivity() const{
 }
 
 void Client::setChannel(Channel const * channel){
-	std::vector<Channel *>::iterator first, last;
+	std::set<Channel *>::iterator first, last;
 
 	if (std::find(_Channels.begin(), _Channels.end(), channel) != _Channels.end())
-		_Channels.push_back(channel);
+		_Channels.insert(channel);
 }
 
-std::vector<Channel const *> const & Client::getChannels() const {
+std::set<Channel const *> const & Client::getChannels() const {
 	return _Channels;
 }
 
 status Client::updateReplyMessage(std::string const & Msg) {
-	_ReplyMessage += Msg + "\r\n";
+	_ReplyMessage += _time.getTimeStrCurrent() + " " + Msg + "\r\n";
 	return 0;
 }
 
@@ -126,4 +110,8 @@ std::string const Client::getReplyMessage() {
 	std::string ret(_ReplyMessage);
 	_ReplyMessage.clear();
 	return ret;
+}
+
+std::string& Client::getIncomingBuffer() {
+	return _IncomingBuffer;
 }

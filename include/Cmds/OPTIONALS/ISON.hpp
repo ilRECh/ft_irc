@@ -15,7 +15,7 @@ public:
             
         }
 
-        for (std::vector<Client *>::iterator it = _Clients.begin();
+        for (std::set<Client *>::iterator it = _Clients.begin();
              it != _Clients.end(); ++it)
         {
 
