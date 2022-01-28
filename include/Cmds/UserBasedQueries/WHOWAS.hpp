@@ -14,7 +14,7 @@ public:
             return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
             
         }
-        //code
+        
     }
 };/*
         Parameters: <nickname> [<count> [<server>]]

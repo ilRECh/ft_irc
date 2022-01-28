@@ -64,6 +64,7 @@ public:
 	
 	// * get time
 	TimeStamp const & getTime() const;
+	TimeStamp const & getLastActivity() const;
 
 	//	* get|set Channels
 	void inviteToChannel(Channel const & channel);

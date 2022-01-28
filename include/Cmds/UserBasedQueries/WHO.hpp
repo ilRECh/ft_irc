@@ -61,9 +61,9 @@ private:
 			{
 				result << "+============================================+" << "\r\n";
 				result << "Name: " << (*start)->getName() << "\r\n";
-				result << "NickName: " << (*start)->getNickName() << "\r\n";
-				result << "RealName: " << (*start)->getRealName() << "\r\n";
-				result << "RealName: " << (*start)->getRealName() << "\r\n";
+				result << "Nick name: " << (*start)->getNickName() << "\r\n";
+				result << "Real name: " << (*start)->getRealName() << "\r\n";
+				result << "Last activity: " << (*start)->getLastActivity().getTimeStrStarted() << "\r\n";
 			}
 		}
 		result << "+============================================+" << "\r\n";

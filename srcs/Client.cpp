@@ -94,6 +94,10 @@ TimeStamp const & Client::getTime() const{
 	return _time;
 }
 
+TimeStamp const & Client::getLastActivity() const{
+	return std::max(_Activity.LastResponse, _Activity.LastPING);
+}
+
 void Client::setChannel(Channel const * channel){
 	std::vector<Channel *>::iterator first, last;
 
