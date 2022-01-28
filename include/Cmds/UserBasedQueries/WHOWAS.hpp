@@ -42,7 +42,8 @@ public:
 				clientsToShow.push_back(_Server.getUsersByName(_Arguments[i]));
 			}
 		}
-        
+		std::string result = getResult(clientsToShow);
+		_Initiator->updateReplyMessage(result);
     }
 };/*
         Parameters: <nickname> [<count> [<server>]]
