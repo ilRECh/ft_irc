@@ -48,9 +48,5 @@ namespace ft {
         ss << to_convert;
         return ss.str();
     }
-
-	// если не найдет слово то вернет string::npos, иначе найдет первое вхождение относительно итератора Begin
-	std::string::size_type	find_word(std::string const & needle, std::string::iterator begin, std::string::iterator end);
-
 	bool	wildcard(std::string wildcardExpression, std::string beingToCompare);
 } // namespace ft
