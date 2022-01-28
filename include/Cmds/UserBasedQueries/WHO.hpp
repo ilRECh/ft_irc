@@ -27,38 +27,59 @@ private:
 		return countAlpha >= minAlpha;
 	}
 
-	bool compare(std::vector<Client *>::iterator & it1, std::vector<Client *>::iterator & it2){
-		return (*it1)->getName() < (*it2)->getName();
+
+	std::string shortByStar(std::string const &some, std::string::size_type posStar){
+		if (posStar)
+			return std::string("..") + some.substr(some.find_last_of(_Arguments[0].substr(0, posStar)));
+		return some.substr(0, some.find(_Arguments[0].substr(1))) + "..";
 	}
 
-	std::stringstream & getResult(std::vector<Client *> & usersToShow){
-		std::sort(usersToShow.begin(), usersToShow.end(), compare);
-		std::vector<Client *>::iterator start, finish;
+	std::string getResult(std::vector<Client *> & usersToShow){
+		std::vector<Client *>::iterator start;
+		std::vector<Client *>::iterator finish;
+		std::string::size_type posStar;
 		std::stringstream result;
+		bool isOneStar;
 
 		start = usersToShow.begin();
 		finish = usersToShow.end();
-		for (;start != finish; ++start)
-		{
-			result << "+============================================+" << std::endl;
-			result << "Name: " << (*start)->getName() << std::endl;
-			result << "NickName: " << (*start)->getNickName() << std::endl;
-			result << "RealName: " << (*start)->getRealName() << std::endl;
-			result << "RealName: " << (*start)->getRealName() << std::endl;
+		if (_Arguments.size() > 1 && std::tolower(_Arguments[1][0]) == 'o')
+		{			
+			posStar = _Arguments[0].find('*');
+			isOneStar = posStar ==_Arguments[0].find_last_of('*');
+			result << "+============================================+" << "\r\n";
+			if (isOneStar)
+				for (;start != finish; ++start)
+					result << "(" << shortByStar((*start)->getName(), posStar) << ")" << ", ";
+			else
+				for (;start != finish; ++start)
+					result << (*start)->getName() << ", ";
 		}
-		result << "+============================================+" << std::endl;
-		return result;
+		else
+		{
+			for (;start != finish; ++start)
+			{
+				result << "+============================================+" << "\r\n";
+				result << "Name: " << (*start)->getName() << "\r\n";
+				result << "NickName: " << (*start)->getNickName() << "\r\n";
+				result << "RealName: " << (*start)->getRealName() << "\r\n";
+				result << "RealName: " << (*start)->getRealName() << "\r\n";
+			}
+		}
+		result << "+============================================+" << "\r\n";
+		return result.str();
 	}
 
 public:
 	WHO(Server &Server) : ACommand("WHO", Server) {setArguments(_Argument);}
 	virtual ~WHO() {}
 	virtual int run(){
-		std::stringstream	result;
-		std::vector<Client *> _Clients;
 		std::vector<Client *> usersToShow;
+		std::vector<Client *> _Clients;
+		std::stringstream result;
 
-		if (_Arguments.empty() || !isRespondRequireTreeAlpha()) {
+		if (_Arguments.empty() || !isRespondRequireTreeAlpha())
+		{
 			_Clients = _Arguments.empty() ? _Server.getUsersByName("*") : _Server.getUsersByName(_Arguments[0]);
 			for (size_t i = 0; i < _Clients.size(); i++)
 				if (isHaveCommonChannels(_Clients[i]) && !_Clients[i]->getModeIsExist('i'))
@@ -68,8 +89,8 @@ public:
 		{
 			usersToShow = _Server.getUsersByName(_Arguments[0]);
 		}
-		/*return ? << */getResult(usersToShow);
-		
+		_Initiator->updateReplyMessage(getResult(usersToShow));
+		return 0;
 	}
 };
 /**
