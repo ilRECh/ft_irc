@@ -24,8 +24,10 @@ private:
 				if (clientsToShow[i][j]->getLastActivity().hasTimePassed(MAY_BE_INACTIVE_seconds))
 					toSortVec.push_back(clientsToShow[i][j]);
 		sortByRecently(toSortVec);
+		result << "+============================================+" << "\r\n";
 		for (size_t i = 0; i < toSortVec.size(); i++)
 			result << "Nick: " << toSortVec[i]->getName() << " last activity: " << toSortVec[i]->getLastActivity().getTimeStrStarted() << "\r\n";
+		result << "+============================================+" << "\r\n";
 		
 	}
 public:
