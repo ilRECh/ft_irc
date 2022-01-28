@@ -48,7 +48,8 @@ public:
 	std::string getServerAddrInfo() const;
 	void removeUserByNickName(std::string const & NickName);
 	Client *getUserByNickName(std::string const & NickName);
-	std::vector<Client *> getUsersByName(std::string const & Name);
+	//* now it support find by wildcard
+	std::vector<Client *> getUsersByName(std::string Name);
 	std::vector<Client *> const &getClients();
 	Channel *getChannelByName(std::string const & NameChannel);
 	void run();

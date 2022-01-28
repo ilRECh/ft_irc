@@ -17,26 +17,58 @@ private:
 					return true;
 		return false;
 	}
-public:
-	WHO(Server const *Server) : ACommand("WHO", Server) {}
-	virtual ~WHO() {}
-	virtual int run(std::string name = std::string()){
-		std::vector<Client *> const & _Clients = _Server->getUsers();
-		std::vector<Client *> users_To_Show;
-		
-		if (_Argument.empty()) {
-			//std::string arr[] = { _Name }; // ? чей этот _Name ?
-			//return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
-			std::vector<Channel const *> const & channels = _Initiator->getChannels();
 
+	bool	isRespondRequireTreeAlpha(){
+		uint const	minAlpha = 3;
+		uint		countAlpha = 0;
+
+		for(size_t i = 0; i < _Arguments[0].size(); ++i)
+			_Arguments[0][i] != '*' && ++countAlpha;
+		return countAlpha >= minAlpha;
+	}
+
+	bool compare(std::vector<Client *>::iterator & it1, std::vector<Client *>::iterator & it2){
+		return (*it1)->getName() < (*it2)->getName();
+	}
+
+	std::stringstream & getResult(std::vector<Client *> & usersToShow){
+		std::sort(usersToShow.begin(), usersToShow.end(), compare);
+		std::vector<Client *>::iterator start, finish;
+		std::stringstream result;
+
+		start = usersToShow.begin();
+		finish = usersToShow.end();
+		for (;start != finish; ++start)
+		{
+			result << "+============================================+" << std::endl;
+			result << "Name: " << (*start)->getName() << std::endl;
+			result << "NickName: " << (*start)->getNickName() << std::endl;
+			result << "RealName: " << (*start)->getRealName() << std::endl;
+			result << "RealName: " << (*start)->getRealName() << std::endl;
+		}
+		result << "+============================================+" << std::endl;
+		return result;
+	}
+
+public:
+	WHO(Server &Server) : ACommand("WHO", Server) {setArguments(_Argument);}
+	virtual ~WHO() {}
+	virtual int run(){
+		std::stringstream	result;
+		std::vector<Client *> _Clients;
+		std::vector<Client *> usersToShow;
+
+		if (_Arguments.empty() || !isRespondRequireTreeAlpha()) {
+			_Clients = _Arguments.empty() ? _Server.getUsersByName("*") : _Server.getUsersByName(_Arguments[0]);
 			for (size_t i = 0; i < _Clients.size(); i++)
 				if (isHaveCommonChannels(_Clients[i]) && !_Clients[i]->getModeIsExist('i'))
-					users_To_Show.push_back(_Clients[i]);
-		} else {
-			for (size_t i = 0; i < _Clients.size(); i++)
-				if (_Clients[i]->getName() == name)
-					users_To_Show.push_back(_Clients[i]);
+					usersToShow.push_back(_Clients[i]);
 		}
+		else
+		{
+			usersToShow = _Server.getUsersByName(_Arguments[0]);
+		}
+		/*return ? << */getResult(usersToShow);
 		
 	}
 };

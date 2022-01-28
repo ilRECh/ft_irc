@@ -290,14 +290,32 @@ Client *Server::getUserByNickName(std::string const & NickName){
 	return NULL;
 }
 
-std::vector<Client *> Server::getUsersByName(std::string const & Name){
+//* now it support find by wildcard
+std::vector<Client *> Server::getUsersByName(std::string Name){
 	std::vector<Client *>::iterator istart = _Clients.begin();
 	std::vector<Client *>::iterator ifinish = _Clients.end();
 	std::vector<Client *> result;
 
-	for(;istart != ifinish; ++istart)
-		if ((*istart)->getName() == Name)
-			result.push_back(*istart);
+	for(uint i = Name.size(); true;)
+	{
+		if (Name[--i] != '*')
+			break;
+		if (!i)
+			return _Clients;
+	}
+
+	if (Name.find('*') == std::string::npos)
+	{
+		for(;istart != ifinish; ++istart)
+			if (ft::wildcard(Name, (*istart)->getName()))
+				result.push_back(*istart);
+	}
+	else
+	{
+		for(;istart != ifinish; ++istart)
+			if ((*istart)->getName() == Name)
+				result.push_back(*istart);
+	}
 	return result;
 }
 
