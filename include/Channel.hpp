@@ -27,7 +27,7 @@ private:
 	//*				имя канала
 	//*				Список админов
 	std::set<Client const *>	_Admins;
-	std::map<Client const *, std::set<char>>	_Users;
+	std::set<Client const *>/* std::set<char>> */	_Clients;
 	void	addAdmin(Client const & whom);
 	void	addUser(Client const & whom);
 	using AUser::setName;

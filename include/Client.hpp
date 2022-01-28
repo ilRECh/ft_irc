@@ -58,6 +58,7 @@ public:
 	
 	// * get time
 	TimeStamp const & getTime() const;
+	TimeStamp const & getLastActivity() const;
 
 	//	* get|set Channels
 	void inviteToChannel(Channel const & channel);
@@ -68,6 +69,9 @@ public:
 	bool isRegistered() const;
 	// void setRegistered(bool const Condition);
 	bool unregisteredShouldDie() const;
+
+	// get IP address
+	std::string getAddresIP() const;
 
 	// Last Activity
 	bool inactiveShouldDie() const;

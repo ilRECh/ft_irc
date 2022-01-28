@@ -28,6 +28,18 @@ bool Client::unregisteredShouldDie() const {
 	return false;
 }
 
+// get IP address
+std::string Client::getAddresIP() const{
+#ifdef __linux__
+    sockaddr_in AddrUser = {0,0,{0},{0}};
+#elif __APPLE__
+    sockaddr_in AddrUser = {0,0,0,{0},{0}};
+#endif
+	socklen_t Socklen = sizeof(AddrUser);
+	getpeername(this->_Fd, (sockaddr *) &AddrUser, &Socklen);
+	return inet_ntoa(AddrUser.sin_addr);
+}
+
 // Last activity
 bool Client::inactiveShouldDie() const {
 	if (_Activity.WaitingForPONG and
@@ -72,6 +84,10 @@ void	Client::unsetMode(char c){
 
 TimeStamp const & Client::getTime() const{
 	return _time;
+}
+
+TimeStamp const & Client::getLastActivity() const{
+	return std::max(_Activity.LastResponse, _Activity.LastPING);
 }
 
 void Client::setChannel(Channel const * channel){

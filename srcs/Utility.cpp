@@ -76,3 +76,41 @@ std::string ft::SplitOneTimes(std::string &str, std::string delimiter)
     return (token);
 }
 
+bool ft::wildcard(std::string wExpression, std::string toCompare)
+{
+	typedef std::string::size_type size_type;
+	
+	std::vector<std::string> splitedByStar;
+	std::vector<std::string> tmp = ft::split(wExpression, "*");
+
+	size_type	lenWord = 0;
+	size_type	pos1 = 0;
+	size_type	pos2 = 0;
+
+	if (wExpression[0] == '*')
+		splitedByStar.push_back("*");
+	for (size_t i = 0; i < tmp.size(); i++)
+	{
+		splitedByStar.push_back(tmp[i]);
+		splitedByStar.push_back("*");
+	}
+	if (wExpression[wExpression.size() -1] != '*')
+		splitedByStar.pop_back();
+
+	for (size_type i = 0; i < splitedByStar.size(); i++)
+	{
+		if (splitedByStar[i][0] == '*')
+			continue;
+		pos2 = std::string(toCompare.begin() + pos1 + lenWord, toCompare.end()).find(splitedByStar[i]);
+		//pos2 = find_word(splitedByStar[i], );
+		pos1 = pos2 + pos1 + lenWord;
+		if ((pos2 == std::string::npos) || (pos2 && (!i || (i && splitedByStar[i - 1][0] != '*'))))
+			return false;
+		lenWord = splitedByStar[i].size();
+		if (i + 1 == splitedByStar.size())
+			if (wExpression[wExpression.size() - 1] != '*')
+				if (toCompare.size() != pos1 + lenWord)
+					--i;
+	}
+	return true;
+}

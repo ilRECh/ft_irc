@@ -44,4 +44,5 @@ namespace ft {
         ss << to_convert;
         return ss.str();
     }
+	bool	wildcard(std::string wildcardExpression, std::string beingToCompare);
 } // namespace ft

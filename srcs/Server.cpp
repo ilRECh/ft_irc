@@ -63,8 +63,8 @@ Server::~Server(void)
 {
     freeaddrinfo(_ServInfo);
     close(_Sockfd);
-    for (std::set<Client *>::iterator it = _Users.begin();
-         it != _Users.end(); ++it) {
+    for (std::set<Client *>::iterator it = _Clients.begin();
+         it != _Clients.end(); ++it) {
         close((*it)->_Fd);
         delete *it;
     }
@@ -92,14 +92,14 @@ void Server::run()
             FD_SET(UserFd, &_FdsSet);
             send(UserFd, "=> Server connected!\n", 22, 0);
 #ifdef __linux__
-            sockaddr_in AddrUser = {0, 0, {0}, {0}};
+    sockaddr_in AddrUser = {0,0,{0},{0}};
 #elif __APPLE__
-            sockaddr_in AddrUser = {0, 0, 0, {0}, {0}};
+    sockaddr_in AddrUser = {0,0,0,{0},{0}};
 #endif
             socklen_t Socklen = sizeof(AddrUser);
             std::cout << "status: " << getpeername(UserFd, (sockaddr *) &AddrUser, &Socklen) << '\n'; //* Выяняем кто подключился
             std::cout << "<<<<<<< " << inet_ntoa(AddrUser.sin_addr) << '\n'; // Left for testing, remove if Release
-            _Users.insert(new Client(UserFd));
+            _Clients.insert(new Client(UserFd));
         } else if (UserFd < 0 && errno != EAGAIN) {
             throw std::runtime_error("Fatal. Accepting the " + ft::to_string(UserFd) + " failed.\n" + strerror(errno));
         }
@@ -118,7 +118,7 @@ void Server::run()
         }
 
         //Reply part
-        for (std::set<Client *>::iterator User = _Users.begin(); User != _Users.end(); ++User) {
+        for (std::set<Client *>::iterator User = _Clients.begin(); User != _Clients.end(); ++User) {
             if ((*User)->ServerNeedToPING()) {
                 PING ping(*this);
                 ping.setTarget(*User);
@@ -142,11 +142,11 @@ void Server::run()
 
         //Erase part
         while (not _UsersToBeErased.empty()) {
-            std::set<Client *>::iterator ToBeErased = _Users.find(_UsersToBeErased.front());
+            std::set<Client *>::iterator ToBeErased = _Clients.find(_UsersToBeErased.front());
             FD_CLR((*ToBeErased)->_Fd, &_FdsSet);
             close((*ToBeErased)->_Fd);
             delete(*ToBeErased);
-            _Users.erase(ToBeErased);
+            _Clients.erase(ToBeErased);
             _UsersToBeErased.pop_front();
         }
     }
@@ -154,8 +154,8 @@ void Server::run()
 
 void Server::readerClient(fd_set & fdsCpy)
 {
-    for (std::set<Client *>::iterator Client = _Users.begin();
-         Client != _Users.end(); ++Client)
+    for (std::set<Client *>::iterator Client = _Clients.begin();
+         Client != _Clients.end(); ++Client)
     {
         if (FD_ISSET((*Client)->_Fd, &fdsCpy) > 0)
         {
@@ -167,7 +167,7 @@ void Server::readerClient(fd_set & fdsCpy)
 				throw std::runtime_error(std::string("recv: ") + strerror(errno));
 			} else if (ReadByte == 0) {
 				FD_CLR((*Client)->_Fd, &_FdsSet);
-                _Users.erase(Client);
+                _Clients.erase(Client);
 				return ;
 			}
             (*Client)->getIncomingBuffer() += Buffer;
@@ -254,13 +254,13 @@ void Server::serverLog(Client *That, std::string const & ReceivedMessage)
 }
 
 std::set<Client *> const &Server::getUsers(){
-	return _Users;
+	return _Clients;
 }
 
 Client *Server::getUserByNickName(std::string const & NickName){
 	std::set<Client *>::iterator first, last;
-	first = _Users.begin();
-	last = _Users.end();
+	first = _Clients.begin();
+	last = _Clients.end();
 
 	for (;first != last; ++first)
 		if ((*first)->getNickName() == NickName)
@@ -268,15 +268,33 @@ Client *Server::getUserByNickName(std::string const & NickName){
 	return NULL;
 }
 
-Client *Server::getUserByName(std::string const & Name){
-	std::set<Client *>::iterator first, last;
-	first = _Users.begin();
-	last = _Users.end();
+//* now it support find by wildcard
+std::set<Client *> Server::getUsersByName(std::string Name){
+	std::set<Client *>::iterator istart = _Clients.begin();
+	std::set<Client *>::iterator ifinish = _Clients.end();
+	std::set<Client *> result;
 
-	for (;first != last; ++first)
-		if ((*first)->getName() == Name)
-			return *first;
-	return NULL;
+	for(uint i = Name.size(); true;)
+	{
+		if (Name[--i] != '*')
+			break;
+		if (!i)
+			return _Clients;
+	}
+
+	if (Name.find('*') == std::string::npos)
+	{
+		for(;istart != ifinish; ++istart)
+			if (ft::wildcard(Name, (*istart)->getName()))
+				result.insert(*istart);
+	}
+	else
+	{
+		for(;istart != ifinish; ++istart)
+			if ((*istart)->getName() == Name)
+				result.insert(*istart);
+	}
+	return result;
 }
 
 Channel *Server::getChannelByName(std::string const & NameChannel){

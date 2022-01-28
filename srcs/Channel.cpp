@@ -53,8 +53,8 @@ bool Channel::isAdmin(Client const & whom) const {
 }
 
 bool Channel::isOwner(Client const & whom) const {
-	std::set<Client const *>::const_iterator beg = _Users.begin();
-	std::set<Client const *>::const_iterator end = _Users.end();
+	std::set<Client const *>::const_iterator beg = _Clients.begin();
+	std::set<Client const *>::const_iterator end = _Clients.end();
 
 	while(beg != end)
 		if (whom == **(beg++))
@@ -71,17 +71,17 @@ void	Channel::addUser(Client & who, Client & whom){
 			return ;
 		}
 	}
-	std::set<Client const *>::iterator it = find(_Users.begin(), _Users.end(), &whom);
-	if (it == _Users.end())
-		_Users.insert(&whom);
+	std::set<Client const *>::iterator it = find(_Clients.begin(), _Clients.end(), &whom);
+	if (it == _Clients.end())
+		_Clients.insert(&whom);
 }
 
 void	Channel::addUser(Client const & whom){
 	std::set<Client const *>::iterator it;
 
-	it = find(_Users.begin(), _Users.end(), &whom);
-	if (it == _Users.end())
-		_Users.insert(&whom);
+	it = find(_Clients.begin(), _Clients.end(), &whom);
+	if (it == _Clients.end())
+		_Clients.insert(&whom);
 }
 
 void	Channel::removeUser(Client & who, Client & whom){
@@ -94,12 +94,12 @@ void	Channel::removeUser(Client & who, Client & whom){
 	std::set<Client const *>::iterator it = find(_Admins.begin(), _Admins.end(), &whom);
 	if (it != _Admins.end())
 		removeAdmin(who, whom);
-	it = find(_Users.begin(), _Users.end(), &whom);
-	if (it == _Users.end()) {
+	it = find(_Clients.begin(), _Clients.end(), &whom);
+	if (it == _Clients.end()) {
 		who.updateReplyMessage(ERR_NOSUCHNICK(whom.getNickName()));
 		return ;
 	}
-	_Users.erase(it);
+	_Clients.erase(it);
 }
 
 void	Channel::addAdmin(Client & who, Client & whom){
@@ -134,7 +134,7 @@ void	Channel::removeAdmin(Client & who, Client & whom){
 		return ;
 	}
 	if (_Admins.size() == 1){
-		if (_Users.size() > 0) {
+		if (_Clients.size() > 0) {
 			who.updateReplyMessage(ft::to_string(__LINE__) + " in Channel is need to set appropriate message");
 			return ;
 		}

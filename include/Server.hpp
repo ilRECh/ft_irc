@@ -30,7 +30,7 @@ private:
 
 	// Top level logic
 	std::vector<ACommand *> _Commands;
-	std::set<Client *> _Users;
+	std::set<Client *> _Clients;
 	std::list<Client *> _UsersToBeErased;
 	std::set<Channel *> _Channels;
 
@@ -47,11 +47,13 @@ public:
 	Server(string const & Port, std::string const & Password);
 	~Server();
 
+	void sendMsg(Client *To);
 	void run();
 	std::string getServerAddrInfo() const { return _Ip + ":" + _Port; }
 	Client *getUserByNickName(std::string const & NickName);
-	Client *getUserByName(std::string const & NickName);
+	//* now it support find by wildcard
+	std::set<Client *> getUsersByName(std::string Name);
+	std::set<Client *> const &getClients();
 	Channel *getChannelByName(std::string const & NameChannel);
-	void sendMsg(Client *To);
 	void pushBackErase(Client *Client);
 };
