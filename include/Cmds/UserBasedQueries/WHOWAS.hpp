@@ -28,7 +28,7 @@ private:
 		for (size_t i = 0; i < toSortVec.size(); i++)
 			result << "Nick: " << toSortVec[i]->getName() << " last activity: " << toSortVec[i]->getLastActivity().getTimeStrStarted() << "\r\n";
 		result << "+============================================+" << "\r\n";
-		
+		return result.str();		
 	}
 public:
     WHOWAS(Server &Server) : ACommand("WHOWAS", Server) {}
