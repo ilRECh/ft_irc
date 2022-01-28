@@ -59,6 +59,7 @@ private:
 				result << "Name: " << (*start)->getName() << "\r\n";
 				result << "Nick name: " << (*start)->getNickName() << "\r\n";
 				result << "Real name: " << (*start)->getRealName() << "\r\n";
+				result << "IP: " << (*start)->getAddresIP() << "\r\n";
 				result << "Last activity: " << (*start)->getLastActivity().getTimeStrStarted() << "\r\n";
 			}
 		}

@@ -48,6 +48,14 @@ bool Client::unregisteredShouldDie() const {
 	return false;
 }
 
+// get IP address
+std::string Client::getAddresIP() const{
+	struct sockaddr_in AddrUser = {0};
+	socklen_t Socklen = sizeof(AddrUser);
+	getpeername(this->_Fd, (sockaddr *) &AddrUser, &Socklen);
+	return inet_ntoa(AddrUser.sin_addr);
+}
+
 // Last activity
 bool Client::inactiveShouldDie() const {
 	if (_Activity.WaitingForPONG and

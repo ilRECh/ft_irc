@@ -1,21 +1,75 @@
 #pragma once
 #include "ACommand.hpp"
 
-class WHO : public ACommand {
+class WHOIS : public ACommand {
 private:
-    WHO();
-    WHO(WHO const &that);
-    WHO& operator=(WHO const &that);
+	WHOIS();
+	WHOIS(WHOIS const &that);
+	WHOIS& operator=(WHOIS const &that);
+	bool	isHaveCommonChannels(Client const *user_another)
+	{
+		std::vector<Channel const *> two = user_another->getChannels();
+		std::vector<Channel const *> one = _Initiator->getChannels();
+
+		for (size_t i = 0; i < one.size(); i++)
+			for (size_t j = 0; j < two.size(); j++)
+				if (one[i] == two[j])
+					return true;
+		return false;
+	}
+
+	bool	isRespondRequireTreeAlpha(){
+		uint const	minAlpha = 3;
+		uint		countAlpha = 0;
+
+		for(size_t i = 0; i < _Arguments[0].size(); ++i)
+			_Arguments[0][i] != '*' && ++countAlpha;
+		return countAlpha >= minAlpha;
+	}
+
+
+	std::string shortByStar(std::string const &some, std::string::size_type posStar){
+		if (posStar)
+			return std::string("..") + some.substr(some.find_last_of(_Arguments[0].substr(0, posStar)));
+		return some.substr(0, some.find(_Arguments[0].substr(1))) + "..";
+	}
+
+	std::string getResult(std::vector<Client *> & usersToShow){
+		std::vector<Client *>::iterator start = usersToShow.begin();
+		std::vector<Client *>::iterator finish = usersToShow.end();
+		std::string::size_type posStar;
+		std::stringstream result;
+		for (;start != finish; ++start)
+		{
+			result << "+============================================+" << "\r\n";
+			result << "Name: " << (*start)->getName() << ", ";
+		}
+		result << "+============================================+" << "\r\n";
+		return result.str();
+	}
+
 public:
-    WHO(Server &Server) : ACommand("WHO", Server) {}
-    virtual ~WHO() {}
-    virtual int run(){
-        if (_Arguments.empty()) {
-            return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            
-        }
-        
-    }
+	WHOIS(Server &Server) : ACommand("WHOIS", Server) {setArguments(_Argument);}
+	virtual ~WHOIS() {}
+	virtual int run(){
+		std::vector<Client *> usersToShow;
+		std::vector<Client *> _Clients;
+		std::stringstream result;
+
+		if (_Arguments.empty() || !isRespondRequireTreeAlpha())
+		{
+			_Clients = _Arguments.empty() ? _Server.getUsersByName("*") : _Server.getUsersByName(_Arguments[0]);
+			for (size_t i = 0; i < _Clients.size(); i++)
+				if (isHaveCommonChannels(_Clients[i]) && !_Clients[i]->getModeIsExist('i'))
+					usersToShow.push_back(_Clients[i]);
+		}
+		else
+		{
+			usersToShow = _Server.getUsersByName(_Arguments[0]);
+		}
+		_Initiator->updateReplyMessage(getResult(usersToShow));
+		return 0;
+	}
 };
 /**
 *		Parameters: [<name> [<o>]]

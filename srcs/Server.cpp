@@ -119,11 +119,7 @@ void Server::run()
             fcntl(UserFd, F_SETFD, fcntl(UserFd, F_GETFD) | O_NONBLOCK);
             FD_SET(UserFd, &_Fds_set);
             send(UserFd, "=> Server connected!\n", 22, 0);
-#ifdef __linux__
-            sockaddr_in AddrUser = {0, 0, {0}, {0}};
-#elif __APPLE__
-            sockaddr_in AddrUser = {0, 0, 0, {0}, {0}};
-#endif
+			struct sockaddr_in AddrUser = {0};
             socklen_t Socklen = sizeof(AddrUser);
             std::cout << "status: " << getpeername(UserFd, (sockaddr *) &AddrUser, &Socklen) << '\n'; //* Выяняем кто подключился
             std::cout << "<<<<<<< " << inet_ntoa(AddrUser.sin_addr) << '\n'; // Left for testing, remove if Release

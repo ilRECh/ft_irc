@@ -76,6 +76,9 @@ public:
 	void setRegistered(bool const Condition);
 	bool unregisteredShouldDie() const;
 
+	// get IP address
+	std::string getAddresIP() const;
+
 	// Last Activity
 	bool inactiveShouldDie() const;
 	bool ServerNeedToPING() const;
