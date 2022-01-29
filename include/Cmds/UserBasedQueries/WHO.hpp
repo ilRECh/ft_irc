@@ -54,11 +54,6 @@ public:
 	virtual int run(std::string name = std::string()){
 		std::set<Client const *> const & _Clients = _Server->getUsers();
 		std::set<Client const *> users_To_Show;
-		
-		if (_Argument.empty()) {
-			//std::string arr[] = { _Name }; // ? чей этот _Name ?
-			//return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
-			std::set<Channel const *> const & channels = _User->getChannels();
 
 		if (_Arguments.empty() || !isRespondRequireTreeAlpha())
 		{
