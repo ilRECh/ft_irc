@@ -22,8 +22,6 @@
 
 #define SIZE 512
 
-typedef int status;
-
 namespace ft {
     std::vector<std::string> split(
         std::string const& tosplit,
@@ -31,12 +29,8 @@ namespace ft {
     std::vector<std::string> splitByCmds(
         std::string const& tosplit,
         std::string const& DelimiterWord);
-    std::string assemble(
-        std::vector<std::string>::iterator Start,
-        std::vector<std::string>::iterator Stop);
     void deleteSpaces(std::string &string);
     std::string SplitOneTimes(std:: string &str, std::string delimiter);
-
 
     template <typename T>
     std::string to_string(T to_convert) {

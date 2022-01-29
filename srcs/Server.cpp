@@ -300,13 +300,13 @@ std::set<Client *> Server::getUsersByName(std::string Name){
 	if (Name.find('*') == std::string::npos)
 	{
 		for(;istart != ifinish; ++istart)
-			if (ft::wildcard(Name, (*istart)->getName()))
+			if (ft::wildcard(Name, (*istart)->getUserName()))
 				result.insert(*istart);
 	}
 	else
 	{
 		for(;istart != ifinish; ++istart)
-			if ((*istart)->getName() == Name)
+			if ((*istart)->getUserName() == Name)
 				result.insert(*istart);
 	}
 	return result;
@@ -318,7 +318,7 @@ Channel *Server::getChannelByName(std::string const & NameChannel){
 	first = _Channels.begin();
 	last = _Channels.end();
 	for(;first != last; ++first)
-		if ((*first)->getName() == NameChannel)
+		if ((*first)->getChannelName() == NameChannel)
 			return *first;
 	return NULL;
 }

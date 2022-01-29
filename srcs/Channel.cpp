@@ -12,7 +12,7 @@ Channel::Channel(
 	string const & nameChannel,
 	Client const & userAdmin,
 	eChannelPrivateLevel const ePrivateLevel)
-	:	AUser(nameChannel) {
+	:	_ChannelName(nameChannel) {
 	_ePrivateLevel = ePrivateLevel;
 	addAdmin(userAdmin);
 }
@@ -20,7 +20,7 @@ Channel::Channel(
 Channel::Channel(
 	string const & nameChannel,
 	Client const & userAdmin)
-	:	AUser(nameChannel) {
+	:	_ChannelName(nameChannel) {
 	addAdmin(userAdmin);
 }
 
@@ -28,7 +28,7 @@ Channel::~Channel(){}
 
 void	Channel::setLevelPrivate(Client & who, eChannelPrivateLevel const ePrivateLevel){
 	if (not isAdmin(who)) {
-		who.updateReplyMessage(ERR_CHANOPRIVSNEEDED(_Name));
+		who.updateReplyMessage(ERR_CHANOPRIVSNEEDED(_ChannelName));
 		return ;
 	}
 	_ePrivateLevel = ePrivateLevel;
@@ -36,10 +36,10 @@ void	Channel::setLevelPrivate(Client & who, eChannelPrivateLevel const ePrivateL
 
 void	Channel::setName(Client & who, string const & newNameChannel) {
 	if (not isAdmin(who)) {
-		who.updateReplyMessage(ERR_CHANOPRIVSNEEDED(_Name));
+		who.updateReplyMessage(ERR_CHANOPRIVSNEEDED(_ChannelName));
 		return ;
 	}
-	setName(newNameChannel);
+	_ChannelName = newNameChannel;
 }
 
 bool Channel::isAdmin(Client const & whom) const {
@@ -67,7 +67,7 @@ const std::set<Client const *>& Channel::getAdmins(){ return _Admins;}
 void	Channel::addUser(Client & who, Client & whom){
 	if (_ePrivateLevel == CHANNEL_PRIVATE || _ePrivateLevel == CHANNEL_PROTECTED) {
 		if (not isAdmin(who) && not isOwner(who)) {
-			who.updateReplyMessage(ERR_CHANOPRIVSNEEDED(_Name));
+			who.updateReplyMessage(ERR_CHANOPRIVSNEEDED(_ChannelName));
 			return ;
 		}
 	}
@@ -87,7 +87,7 @@ void	Channel::addUser(Client const & whom){
 void	Channel::removeUser(Client & who, Client & whom){
 	if (_ePrivateLevel == CHANNEL_PRIVATE || _ePrivateLevel == CHANNEL_PROTECTED) {
 		if (not isAdmin(who) && not isOwner(who)) {
-			who.updateReplyMessage(ERR_CHANOPRIVSNEEDED(_Name));
+			who.updateReplyMessage(ERR_CHANOPRIVSNEEDED(_ChannelName));
 			return ;
 		}
 	}
@@ -107,7 +107,7 @@ void	Channel::addAdmin(Client & who, Client & whom){
 	std::set<Client const *>::iterator end = _Admins.end();
 
 	if (not isAdmin(who)) {
-		who.updateReplyMessage(ERR_CHANOPRIVSNEEDED(_Name));
+		who.updateReplyMessage(ERR_CHANOPRIVSNEEDED(_ChannelName));
 		return ;
 	}
 	while(beg != end)
@@ -130,7 +130,7 @@ void	Channel::addAdmin(Client const & whom){
 void	Channel::removeAdmin(Client & who, Client & whom){
 
 	if (not isAdmin(who)) {
-		who.updateReplyMessage(ERR_CHANOPRIVSNEEDED(_Name));
+		who.updateReplyMessage(ERR_CHANOPRIVSNEEDED(_ChannelName));
 		return ;
 	}
 	if (_Admins.size() == 1){

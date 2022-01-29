@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ft.hpp"
-#include "AUser.hpp"
 #include <map>
 
 using std::string;
@@ -17,8 +16,10 @@ enum eChannelPrivateLevel {
 class Client;
 class Server;
 
-class Channel : public AUser {
+class Channel {
 private:
+	std::string _ChannelName;
+	std::string _Password;
 	//! typePrivateLevel
 	//* CHANNEL_PRIVATE могут приглашать только админы;
 	//* CHANNEL_PROTECTED могут приглашать только админы и участники;
@@ -30,11 +31,11 @@ private:
 	std::set<Client const *>/* std::set<char>> */	_Clients;
 	void	addAdmin(Client const & whom);
 	void	addUser(Client const & whom);
-	using AUser::setName;
 public:
 	Channel(string const & nameChannel, Client const & userAdmin);
 	Channel(string const & nameChannel, Client const & userAdmin, eChannelPrivateLevel const ePrivateLevel);
 	~Channel();
+	std::string const &getChannelName() const { return _ChannelName; }
 	void	addAdmin		(Client & who, Client & whom);
 	void	addUser			(Client & who, Client & whom);
 	void	removeUser		(Client & who, Client & whom);

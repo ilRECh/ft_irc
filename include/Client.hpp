@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ft.hpp"
-#include "AUser.hpp"
 
 #define MAY_BE_UNREGISTERED_seconds 60
 #define MAY_BE_INACTIVE_seconds 100
@@ -12,13 +11,15 @@ using std::vector;
 class Channel;
 class TimeStamp;
 
-class Client : public AUser {
+class Client {
 private:
 	TimeStamp _time;
 	std::set<char> _mode_set;
 	Client(Client& that);
 	Client& operator=(Client& that);
 	std::set<Channel const *> _Channels;
+	std::string _Password;
+	std::string _UserName;
 	std::string _NickName;
 	std::string _RealName;
 	std::string _HostName;
@@ -45,8 +46,9 @@ public:
 	bool operator!=(const Client& that) const;
 	bool operator==(const Client& that) const;
 
-
+	std::string const &getUserName() const { return _UserName; };
 	int const _Fd;
+	void setPassword(std::string & Password) { _Password = Password; }
 
 	// Names get|set
 	string const & getNickName() const;
@@ -81,7 +83,7 @@ public:
 	void PINGisSent();
 
 	// ReplyMessage
-	status updateReplyMessage(std::string const & Msg);
+	bool updateReplyMessage(std::string const & Msg);
 	std::string const getReplyMessage();
 
 	// Incoming buffer
