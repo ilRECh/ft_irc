@@ -63,10 +63,6 @@ bool Client::ServerNeedToPING() const {
 	return false;
 }
 
-// void Client::PINGisSent() {
-// 	_Activity.WaitingForPONG = true;
-// }
-
 bool Client::isWaitingForPONG() const {
 	return _Activity.WaitingForPONG;
 }

@@ -10,6 +10,19 @@ class Client;
 class ACommand;
 class Channel;
 
+enum OperatorStatus {
+	YOUREOPER,
+	NOOPERHOST,
+	PASSWDMISMATCH
+};
+struct operators_s {
+	std::string Name;
+	std::string Password;
+	bool operator==(std::string const & ThatName) const {
+		return Name == ThatName;
+	}
+};
+
 class Server {
 private:
 	// Time since start
@@ -33,13 +46,9 @@ private:
 	std::set<Client *> _Clients;
 	std::list<Client *> _UsersToBeErased;
 	std::set<Channel *> _Channels;
-	static struct operators_s {
-		std::string Name;
-		std::string Password;
-		bool operator==(std::string const & ThatName) const {
-			return Name == ThatName;
-		}
-	} _Operators[1];
+
+	// Opers
+	static operators_s _Operators[1];
 
 	// Insights
 	void readerClient(fd_set & fdsCpy);
@@ -62,6 +71,8 @@ public:
 	std::set<Client *> getUsersByName(std::string Name);
 	std::set<Client *> const &getClients();
 	Channel *getChannelByName(std::string const & NameChannel);
-	bool canBeAutorized(std::string const & Name, std::string const & Password);
+	OperatorStatus canBeAutorized(
+		std::string const & Name,
+		std::string const & Password);
 	void pushBackErase(Client *Client);
 };

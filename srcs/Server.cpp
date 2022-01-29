@@ -3,16 +3,28 @@
 
 #include "Channel.hpp"
 
-// Commands
+// Channel Operations
+
+// Connection Registration
 #include "PASS.hpp"
 #include "NICK.hpp"
 #include "USER.hpp"
 #include "QUIT.hpp"
+#include "OPER.hpp"
+
+// Miscellaneous Messages
 #include "PING.hpp"
 #include "PONG.hpp"
+
+// OPTIONALS
 #include "UNKNOWNCOMMAND.hpp"
 
-Server::operators_s Server::_Operators[] = { {"admin", "admin"} };
+// Sending Messages
+
+// Server Queries And Commands
+
+
+operators_s Server::_Operators[] = { {"admin", "admin"} };
 
 //* Domain can be AF_INET
 Server::Server(string const & Port, string const & Password)
@@ -29,6 +41,7 @@ Server::Server(string const & Port, string const & Password)
     _Commands.push_back(new NICK(*this));
     _Commands.push_back(new USER(*this));
     _Commands.push_back(new QUIT(*this));
+    _Commands.push_back(new OPER(*this));
     _Commands.push_back(new PING(*this));
     _Commands.push_back(new PONG(*this));
     addrinfo hints;
@@ -310,13 +323,17 @@ Channel *Server::getChannelByName(std::string const & NameChannel){
 	return NULL;
 }
 
-bool Server::canBeAutorized(std::string const & Name, std::string const & Password) {
+OperatorStatus Server::canBeAutorized(
+    std::string const & Name,
+    std::string const & Password) {
     operators_s *_Operators_end = _Operators + sizeof(_Operators) / sizeof(operators_s);
     operators_s *oper = std::find(_Operators, _Operators_end, Name);
-    if (oper != _Operators_end and oper->Password == Password) {
-        return true;
+    if (oper == _Operators_end) {
+        return NOOPERHOST;
+    } else if (oper->Password != Password) {
+        return PASSWDMISMATCH;
     }
-    return false;
+    return YOUREOPER;
 }
 
 

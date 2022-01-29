@@ -10,10 +10,22 @@ public:
     OPER(Server &Server) : ACommand("OPER", Server) {}
     virtual ~OPER() {}
     virtual int run(){
-        if (_Arguments.empty()) {
+        if (_Arguments.size() < 2) {
             return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
         }
-        //code
+        OperatorStatus Status = _Server.canBeAutorized(_Arguments[0], _Arguments[1]);
+        switch (Status) {
+            case NOOPERHOST:
+                return _Initiator->updateReplyMessage(ERR_NOOPERHOST);
+                break ;
+            case PASSWDMISMATCH:
+                return _Initiator->updateReplyMessage(ERR_PASSWDMISMATCH);
+                break ;
+            default:
+                break ;
+        }
+        _Initiator->_mode_set.insert('o');
+        return _Initiator->updateReplyMessage(RPL_YOUREOPER);
     }
 };/*
    Parameters: <user> <password>
