@@ -36,7 +36,6 @@ public:
     virtual int run(){
 		std::vector<std::vector<Client *>> clientsToShow;
         if (_Arguments.empty()) {
-            //return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
 			clientsToShow.push_back(_Server.getUsersByName("*"));
         } else {
 			for (size_t i = 0; i < _Arguments.size(); i++)
