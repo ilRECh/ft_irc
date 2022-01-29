@@ -269,7 +269,7 @@ Client *Server::getUserByNickName(std::string const & NickName){
 }
 
 //* now it support find by wildcard
-std::set<Client *> Server::getUsersByName(std::string Name){
+std::set<Client *> Server::getClientsByName(std::string Name){
 	std::set<Client *>::iterator istart = _Clients.begin();
 	std::set<Client *>::iterator ifinish = _Clients.end();
 	std::set<Client *> result;

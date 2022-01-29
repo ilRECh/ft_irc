@@ -2,28 +2,23 @@
 #include "ACommand.hpp"
 
 class WHOWAS : public ACommand {
+	typedef typename std::set<Client *>			setClient;
+	typedef typename std::set<Channel *>		setChannel;
+	typedef typename setClient::iterator		IsetClient;
+	typedef typename setChannel::iterator		IsetChannel;
 private:
     WHOWAS();
     WHOWAS(WHOWAS const &that);
     WHOWAS& operator=(WHOWAS const &that);
 
-	void sortByRecently(std::vector<Client *> & toSortVec){
-		for (size_t i = 0; i < toSortVec.size(); i++)
-			for (size_t k = i + 1; k < toSortVec.size(); k++)
-				if (toSortVec[i]->getLastActivity() < toSortVec[k]->getLastActivity())
-					std::swap(toSortVec[i], toSortVec[k]);
-		
-	}
-
-	std::string getResult(std::vector<std::vector<Client *>> clientsToShow){
+	std::string getResult(std::vector<setClient> clientsToShow){
 		std::vector<Client *> toSortVec;
 		std::stringstream result;
 
 		for (size_t i = 0; i < clientsToShow.size(); i++)
-			for (size_t j = 0; j < clientsToShow[i].size(); j++)
-				if (clientsToShow[i][j]->getLastActivity().hasTimePassed(MAY_BE_INACTIVE_seconds))
-					toSortVec.push_back(clientsToShow[i][j]);
-		sortByRecently(toSortVec);
+			for (IsetClient j = clientsToShow[i].begin(); j != clientsToShow[i].end(); ++j)
+				if ((*j)->getLastActivity().hasTimePassed(MAY_BE_INACTIVE_seconds))
+					toSortVec.push_back(*j);
 		result << "+============================================+" << "\r\n";
 		for (size_t i = 0; i < toSortVec.size(); i++)
 			result << "Nick: " << toSortVec[i]->getName() << " last activity: " << toSortVec[i]->getLastActivity().getTimeStrStarted() << "\r\n";
@@ -34,13 +29,13 @@ public:
     WHOWAS(Server &Server) : ACommand("WHOWAS", Server) {}
     virtual ~WHOWAS() {}
     virtual int run(){
-		std::vector<std::vector<Client *>> clientsToShow;
+		std::vector<setClient> clientsToShow;
         if (_Arguments.empty()) {
-			clientsToShow.push_back(_Server.getUsersByName("*"));
+			clientsToShow.push_back(_Server.getClientsByName("*"));
         } else {
 			for (size_t i = 0; i < _Arguments.size(); i++)
 			{
-				clientsToShow.push_back(_Server.getUsersByName(_Arguments[i]));
+				clientsToShow.push_back(_Server.getClientsByName(_Arguments[i]));
 			}
 		}
 		std::string result = getResult(clientsToShow);

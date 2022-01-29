@@ -2,20 +2,20 @@
 #include "ACommand.hpp"
 
 class WHOIS : public ACommand {
+	typedef typename std::set<Client *>			setClient;
+	typedef typename std::set<Channel *>		setChannel;
+	typedef typename setClient::iterator		IsetClient;
+	typedef typename setChannel::iterator		IsetChannel;
 private:
 	WHOIS();
 	WHOIS(WHOIS const &that);
 	WHOIS& operator=(WHOIS const &that);
-	bool	isHaveCommonChannels(Client const *user_another)
+	bool	isHaveCommonChannels(Client *user_another)
 	{
-		std::vector<Channel const *> two = user_another->getChannels();
-		std::vector<Channel const *> one = _Initiator->getChannels();
+		std::set<Channel const *> one = _Initiator->_Channels;
+		std::set<Channel const *> two = user_another->_Channels;
 
-		for (size_t i = 0; i < one.size(); i++)
-			for (size_t j = 0; j < two.size(); j++)
-				if (one[i] == two[j])
-					return true;
-		return false;
+		return std::find_first_of(one.begin(), one.end(), two.begin(), two.end()) != one.end();
 	}
 
 	bool	isRespondRequireTreeAlpha(){
@@ -34,9 +34,9 @@ private:
 		return some.substr(0, some.find(_Arguments[0].substr(1))) + "..";
 	}
 
-	std::string getResult(std::vector<Client *> & usersToShow){
-		std::vector<Client *>::iterator start = usersToShow.begin();
-		std::vector<Client *>::iterator finish = usersToShow.end();
+	std::string getResult(setClient & usersToShow){
+		IsetClient start = usersToShow.begin();
+		IsetClient finish = usersToShow.end();
 		std::string::size_type posStar;
 		std::stringstream result;
 
@@ -56,9 +56,9 @@ private:
 			for (;start != finish; ++start)
 			{
 				result << "+============================================+" << "\r\n";
-				result << "Name: " << (*start)->getName() << "\r\n";
-				result << "Nick name: " << (*start)->getNickName() << "\r\n";
-				result << "Real name: " << (*start)->getRealName() << "\r\n";
+				result << "Name: " << (*start)->_Name << "\r\n";
+				result << "Nick name: " << (*start)->_NickName << "\r\n";
+				result << "Real name: " << (*start)->_RealName << "\r\n";
 				result << "IP: " << (*start)->getAddresIP() << "\r\n";
 				result << "Last activity: " << (*start)->getLastActivity().getTimeStrStarted() << "\r\n";
 			}
@@ -71,20 +71,20 @@ public:
 	WHOIS(Server &Server) : ACommand("WHOIS", Server) {setArguments(_Argument);}
 	virtual ~WHOIS() {}
 	virtual int run(){
-		std::vector<Client *> usersToShow;
-		std::vector<Client *> _Clients;
+		setClient usersToShow;
+		setClient _Clients;
 		std::stringstream result;
 
 		if (_Arguments.empty() || !isRespondRequireTreeAlpha())
 		{
-			_Clients = _Arguments.empty() ? _Server.getUsersByName("*") : _Server.getUsersByName(_Arguments[0]);
-			for (size_t i = 0; i < _Clients.size(); i++)
-				if (isHaveCommonChannels(_Clients[i]) && !_Clients[i]->getModeIsExist('i'))
-					usersToShow.push_back(_Clients[i]);
+			_Clients = _Arguments.empty() ? _Server.getClientsByName("*") : _Server.getClientsByName(_Arguments[0]);
+			for (IsetClient i = _Clients.begin(); i != _Clients.end(); ++i)
+				if (isHaveCommonChannels(*i) && !(*i)->getModeIsExist('i'))
+					usersToShow.insert(*i);
 		}
 		else
 		{
-			usersToShow = _Server.getUsersByName(_Arguments[0]);
+			usersToShow = _Server.getClientsByName(_Arguments[0]);
 		}
 		_Initiator->updateReplyMessage(getResult(usersToShow));
 		return 0;

@@ -52,7 +52,7 @@ public:
 	std::string getServerAddrInfo() const { return _Ip + ":" + _Port; }
 	Client *getUserByNickName(std::string const & NickName);
 	//* now it support find by wildcard
-	std::set<Client *> getUsersByName(std::string Name);
+	std::set<Client *> getClientsByName(std::string Name);
 	std::set<Client *> const &getClients();
 	Channel *getChannelByName(std::string const & NameChannel);
 	void pushBackErase(Client *Client);
