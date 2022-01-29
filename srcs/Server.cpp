@@ -12,6 +12,8 @@
 #include "PONG.hpp"
 #include "UNKNOWNCOMMAND.hpp"
 
+Server::operators_s Server::_Operators[] = { {"admin", "admin"} };
+
 //* Domain can be AF_INET
 Server::Server(string const & Port, string const & Password)
     :   _Ip("127.0.0.1"),
@@ -307,6 +309,16 @@ Channel *Server::getChannelByName(std::string const & NameChannel){
 			return *first;
 	return NULL;
 }
+
+bool Server::canBeAutorized(std::string const & Name, std::string const & Password) {
+    operators_s *_Operators_end = _Operators + sizeof(_Operators) / sizeof(operators_s);
+    operators_s *oper = std::find(_Operators, _Operators_end, Name);
+    if (oper != _Operators_end and oper->Password == Password) {
+        return true;
+    }
+    return false;
+}
+
 
 void Server::pushBackErase(Client *Client) {
     _UsersToBeErased.push_front(Client);
