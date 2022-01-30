@@ -18,6 +18,7 @@
 #include <ctime>
 #include <set>
 #include <list>
+#include <map>
 #include "TimeStamp.hpp"
 
 #define SIZE 512

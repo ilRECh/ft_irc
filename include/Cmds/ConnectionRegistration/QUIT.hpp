@@ -11,17 +11,10 @@ public:
     QUIT(Server &Server) : ACommand("QUIT", Server) {}
     virtual ~QUIT() {}
     virtual int run(){
-        if (_Initiator not_eq NULL) {
-            std::string Reply = _Arguments.empty() ? _Initiator->_NickName :
-                _Arguments[0];
-            _Initiator->updateReplyMessage(Reply);
-            _Server.pushBackErase(_Initiator);
-        } else {
-            std::string Reply = _Argument;
-            _Target->updateReplyMessage(Reply);
-            _Server.sendMsg(_Target);
-            _Server.pushBackErase(_Target);
-        }
+        Client *ClientToErase = _Initiator != NULL ? _Initiator : _Target;
+        std::string Reply = _Argument.empty() ? ClientToErase->_NickName : _Argument;
+        ClientToErase->updateReplyMessage(Reply);
+        _Server.pushBackErase(ClientToErase);
         return 0;
     }
     void setTarget(Client *Target) {

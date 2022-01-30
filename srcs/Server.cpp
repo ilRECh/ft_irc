@@ -1,5 +1,5 @@
-#include "Server.hpp"
 #include "Client.hpp"
+#include "Server.hpp"
 
 #include "Channel.hpp"
 
@@ -11,6 +11,7 @@
 #include "USER.hpp"
 #include "QUIT.hpp"
 #include "OPER.hpp"
+#include "SQUIT.hpp"
 
 // Miscellaneous Messages
 #include "PING.hpp"
@@ -28,7 +29,8 @@ operators_s Server::_Operators[] = { {"admin", "admin"} };
 
 //* Domain can be AF_INET
 Server::Server(string const & Port, string const & Password)
-    :   _Ip("127.0.0.1"),
+    :   Modes(),
+        _Ip("127.0.0.1"),
         _Port(Port),
         _Password(Password),
         _LoopListen(true),
@@ -42,6 +44,7 @@ Server::Server(string const & Port, string const & Password)
     _Commands.push_back(new USER(*this));
     _Commands.push_back(new QUIT(*this));
     _Commands.push_back(new OPER(*this));
+    _Commands.push_back(new SQUIT(*this));
     _Commands.push_back(new PING(*this));
     _Commands.push_back(new PONG(*this));
     addrinfo hints;
@@ -71,20 +74,30 @@ Server::Server(string const & Port, string const & Password)
         throw std::runtime_error(string("bind: ") + strerror(errno));
     if (listen(_Sockfd, 1)) // *! Возможно второй аргумент придется увеличить
         throw std::runtime_error(string("listen: ") + strerror(errno));
-    // FD_ZERO(&_FdsSet);
+}
+
+void Server::buryMe(std::string const & DyingMessage) {
+    _DyingMessage = DyingMessage;
+    _LoopListen = false;
 }
 
 Server::~Server(void)
 {
-    freeaddrinfo(_ServInfo);
-    close(_Sockfd);
     for (std::set<Client *>::iterator it = _Clients.begin();
-         it != _Clients.end(); ++it) {
+        it != _Clients.end(); ++it) {
+        std::string Reply = "QUIT :" + _DyingMessage;
+        send((*it)->_Fd, Reply.c_str(), Reply.length(), 0);
         close((*it)->_Fd);
         delete *it;
     }
+    freeaddrinfo(_ServInfo);
+    close(_Sockfd);
     for (std::vector<ACommand *>::iterator it = _Commands.begin();
-         it != _Commands.end(); ++it) {
+        it != _Commands.end(); ++it) {
+        delete *it;
+    }
+    for (std::set<Channel *>::iterator it = _Channels.begin();
+        it != _Channels.end(); ++it) {
         delete *it;
     }
 }
@@ -122,14 +135,11 @@ void Server::run()
         //ReadPart
         int retSelect = 1;
 		fd_set fdsCopy = _FdsSet;
-        while (retSelect && _MaxFd)
-        {
-            retSelect = select(_MaxFd + 1, &fdsCopy, NULL, NULL, &tm);
-            if (retSelect > 0) {
-                readerClient(fdsCopy);
-            } else if (retSelect < 0) {
-                throw std::runtime_error("Error: Select");
-            }
+        retSelect = select(_MaxFd + 1, &fdsCopy, NULL, NULL, &tm);
+        if (retSelect > 0) {
+            readerClient(fdsCopy);
+        } else if (retSelect < 0) {
+            throw std::runtime_error("Error: Select");
         }
 
         //Reply part
@@ -140,9 +150,7 @@ void Server::run()
                 ping.run();
             }
             std::string ReplyMessage = (*User)->getReplyMessage();
-            if (not ReplyMessage.empty()) {
-                send((*User)->_Fd, ReplyMessage.c_str(), ReplyMessage.length(), 0);
-            } else {
+            if (ReplyMessage.empty()) {
                 QUIT q(*this);
                 q.setTarget(*User);
                 if ((*User)->inactiveShouldDie()) {
@@ -153,16 +161,25 @@ void Server::run()
                     q.run();
                 }
             }
+            send((*User)->_Fd, ReplyMessage.c_str(), ReplyMessage.length(), 0);
         }
 
         //Erase part
-        while (not _UsersToBeErased.empty()) {
-            std::set<Client *>::iterator ToBeErased = _Clients.find(_UsersToBeErased.front());
+        while (not _ClientsToBeErased.empty()) {
+            std::set<Client *>::iterator ToBeErased = _Clients.find(_ClientsToBeErased.front());
             FD_CLR((*ToBeErased)->_Fd, &_FdsSet);
             close((*ToBeErased)->_Fd);
-            delete(*ToBeErased);
+            delete (*ToBeErased);
+            eraseClientFromModes(*ToBeErased);
             _Clients.erase(ToBeErased);
-            _UsersToBeErased.pop_front();
+            _ClientsToBeErased.pop_front();
+        }
+
+        while (not _ChannelsToBeErased.empty()) {
+            std::set<Channel *>::iterator ToBeErased = _Channels.find(_ChannelsToBeErased.front());
+            delete (*ToBeErased);
+            _Channels.erase(ToBeErased);
+            _ChannelsToBeErased.pop_front();
         }
     }
 }
@@ -248,21 +265,6 @@ std::pair<std::string, std::string> Server::parseCmd(std::string &Cmd)
     return Value;
 }
 
-void Server::sendMsg(Client *From, Client *To)
-{
-    std::string ReturnValue;
-
-    ReturnValue += _Age.getTimeStrCurrent() + " " + From->getNickName() + " " + From->getReplyMessage();
-    send(To->_Fd , ReturnValue.c_str(), ReturnValue.size(), 0);
-}
-
-void Server::sendMsg(Client *To) {
-    std::string ReturnValue;
-
-    ReturnValue += _Age.getTimeStrCurrent() + " " + To->getNickName() + " " + To->getReplyMessage();
-    send(To->_Fd , ReturnValue.c_str(), ReturnValue.size(), 0);
-}
-
 void Server::serverLog(Client *That, std::string const & ReceivedMessage)
 {
     std::cout << That->getNickName() << ": "<< ReceivedMessage << std::endl;
@@ -312,7 +314,7 @@ std::set<Client *> Server::getUsersByName(std::string Name){
 	return result;
 }
 
-Channel *Server::getChannelByName(std::string const & NameChannel){
+Channel *Server::getChannelByChannelName(std::string const & NameChannel){
 	std::set<Channel *>::iterator first, last;
 
 	first = _Channels.begin();
@@ -336,7 +338,10 @@ OperatorStatus Server::canBeAutorized(
     return YOUREOPER;
 }
 
-
 void Server::pushBackErase(Client *Client) {
-    _UsersToBeErased.push_front(Client);
+    _ClientsToBeErased.push_front(Client);
+}
+
+void Server::pushBackErase(Channel *Channel) {
+    _ChannelsToBeErased.push_front(Channel);
 }

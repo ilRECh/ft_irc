@@ -66,17 +66,6 @@ bool Client::isWaitingForPONG() const {
 	return _Activity.WaitingForPONG;
 }
 
-//	* get|set mode
-bool Client::getModeIsExist(char c) const {
-	return _mode_set.find(c) != _mode_set.end();
-}
-void	Client::setMode(char c){
-	_mode_set.insert(c);
-}
-void	Client::unsetMode(char c){
-	_mode_set.erase(c);
-}
-
 TimeStamp const & Client::getTime() const{
 	return _time;
 }

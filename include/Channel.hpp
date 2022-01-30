@@ -1,11 +1,7 @@
 #pragma once
 
 #include "ft.hpp"
-#include <map>
-
-using std::string;
-using std::vector;
-using std::find;
+#include "Modes.hpp"
 
 enum eChannelPrivateLevel {
 	CHANNEL_PRIVATE,
@@ -16,33 +12,35 @@ enum eChannelPrivateLevel {
 class Client;
 class Server;
 
-class Channel {
+class Channel : public Modes {
 private:
 	std::string _ChannelName;
 	std::string _Password;
+	std::string _Topic;
+	std::set<Client *> _Clients;
 	//! typePrivateLevel
 	//* CHANNEL_PRIVATE могут приглашать только админы;
 	//* CHANNEL_PROTECTED могут приглашать только админы и участники;
 	//* CHANNEL_PUBLIC могут все добавляться;
-	eChannelPrivateLevel			_ePrivateLevel;
-	//*				имя канала
-	//*				Список админов
-	std::set<Client const *>	_Admins;
-	std::set<Client const *>/* std::set<char>> */	_Clients;
-	void	addAdmin(Client const & whom);
+	eChannelPrivateLevel _ePrivateLevel;
 	void	addUser(Client const & whom);
 public:
-	Channel(string const & nameChannel, Client const & userAdmin);
-	Channel(string const & nameChannel, Client const & userAdmin, eChannelPrivateLevel const ePrivateLevel);
-	~Channel();
+	Channel(
+		std::string const & nameChannel,
+		Client *userAdmin,
+		eChannelPrivateLevel const ePrivateLevel = CHANNEL_PUBLIC);
+	~Channel() {}
+	
+	std::string const &getTopic() const;
+	void setTopic(std::string const & Topic);
 	std::string const &getChannelName() const { return _ChannelName; }
-	void	addAdmin		(Client & who, Client & whom);
-	void	addUser			(Client & who, Client & whom);
-	void	removeUser		(Client & who, Client & whom);
-	void	removeAdmin		(Client & who, Client & whom);
-	const	std::set<Client const *>& getAdmins();
-	bool	isAdmin (Client const & whom) const;
-	bool	isOwner (Client const & whom) const;
-	void	setLevelPrivate	(Client & who, eChannelPrivateLevel const ePrivateLevel);
-	void	setName(Client & who, string const & newNameChannel);
+	void	addClient(Client *whom, Client *who = NULL);
+	void	removeClient(Client const & who, Client & whom);
+	bool	isOnChannel(Client *whom) const;
+	void	setLevelPrivate(
+		Client *who,
+		eChannelPrivateLevel const ePrivateLevel);
+	void	setChannelName(
+		Client *who,
+		std::string const & newNameChannel);
 };

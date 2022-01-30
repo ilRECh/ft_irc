@@ -14,7 +14,6 @@ class TimeStamp;
 class Client {
 private:
 	TimeStamp _time;
-	std::set<char> _mode_set;
 	Client(Client& that);
 	Client& operator=(Client& that);
 	std::set<Channel const *> _Channels;
@@ -41,7 +40,7 @@ private:
 	std::string _IncomingBuffer;
 public:
 	Client(int const Fd);
-	virtual ~Client() {}
+	~Client() {}
 	
 	bool operator!=(const Client& that) const;
 	bool operator==(const Client& that) const;
@@ -52,11 +51,6 @@ public:
 
 	// Names get|set
 	string const & getNickName() const;
-
-	//	* get|set mode
-	bool	getModeIsExist(char c) const;
-	void	setMode(char c);
-	void	unsetMode(char c);
 	
 	// * get time
 	TimeStamp const & getTime() const;

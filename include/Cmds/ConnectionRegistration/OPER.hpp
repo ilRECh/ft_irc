@@ -24,7 +24,7 @@ public:
             default:
                 break ;
         }
-        _Initiator->_mode_set.insert('o');
+        _Server.setMode(_Initiator, 'o');
         return _Initiator->updateReplyMessage(RPL_YOUREOPER);
     }
 };/*

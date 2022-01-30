@@ -2,6 +2,7 @@
 
 #include "ft.hpp"
 #include "Replies.hpp"
+#include "Modes.hpp"
 
 using std::vector;
 using std::string;
@@ -23,7 +24,7 @@ struct operators_s {
 	}
 };
 
-class Server {
+class Server : public Modes {
 private:
 	// Time since start
 	TimeStamp _Age;
@@ -32,6 +33,9 @@ private:
 	std::string _Ip;
 	std::string _Port;
 	std::string _Password;
+
+	// On dying
+	std::string _DyingMessage;
 
 	// Networking
     bool _LoopListen;
@@ -44,8 +48,10 @@ private:
 	// Top level logic
 	std::vector<ACommand *> _Commands;
 	std::set<Client *> _Clients;
-	std::list<Client *> _UsersToBeErased;
+	std::list<Client *> _ClientsToBeErased;
 	std::set<Channel *> _Channels;
+	std::list<Channel *> _ChannelsToBeErased;
+
 
 	// Opers
 	static operators_s _Operators[1];
@@ -70,9 +76,11 @@ public:
 	//* now it support find by wildcard
 	std::set<Client *> getUsersByName(std::string Name);
 	std::set<Client *> const &getClients();
-	Channel *getChannelByName(std::string const & NameChannel);
+	Channel *getChannelByChannelName(std::string const & NameChannel);
 	OperatorStatus canBeAutorized(
 		std::string const & Name,
 		std::string const & Password);
 	void pushBackErase(Client *Client);
+	void pushBackErase(Channel *Channel);
+	void buryMe(std::string const & DyingMessage);
 };

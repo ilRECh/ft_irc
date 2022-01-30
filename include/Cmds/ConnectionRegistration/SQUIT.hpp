@@ -10,10 +10,17 @@ public:
     SQUIT(Server &Server) : ACommand("SQUIT", Server) {}
     virtual ~SQUIT() {}
     virtual int run(){
-        if (_Arguments.empty()) {
+        if (_Arguments.size() < 2) {
             return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
         }
-        //code
+        if (_Arguments[0] != _Server.getServerAddrInfo()) {
+            return _Initiator->updateReplyMessage(ERR_NOSUCHSERVER(_Arguments[0]));
+        } else if (not _Server.getModeIsExist(_Initiator, 'o')) {
+            return _Initiator->updateReplyMessage(ERR_NOPRIVILEGES);
+        }
+        std::vector<std::string> Reply = ft::split(_Argument, ":");
+        _Server.buryMe(Reply.size() != 2 ? "" : Reply[1]);
+        return 0;
     }
 };/*
    Parameters: <server> <comment>

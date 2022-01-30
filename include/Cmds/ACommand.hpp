@@ -3,6 +3,7 @@
 #include "ft.hpp"
 #include "Server.hpp"
 #include "Client.hpp"
+#include "Channel.hpp"
 #include "Replies.hpp"
 
 class Server;
