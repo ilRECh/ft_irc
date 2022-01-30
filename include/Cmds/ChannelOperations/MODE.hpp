@@ -12,7 +12,6 @@ public:
     virtual int run(){
         if (_Arguments.empty()) {
             return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            
         }
         //code
     }

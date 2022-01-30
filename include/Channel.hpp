@@ -16,7 +16,7 @@ class Channel : public Modes {
 private:
 	friend class NAMES;
 	std::string _ChannelName;
-	std::string _Password;
+	std::string _Key;
 	std::string _Topic;
 	std::set<Client *> _Clients;
 	Server *_Server;

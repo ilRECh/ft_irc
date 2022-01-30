@@ -27,7 +27,8 @@ public:
             }
             return _Initiator->updateReplyMessage(RPL_TOPIC(ChannelName, FoundChannel->getTopic()));
         } else {
-            if (not FoundChannel->getModeIsExist(_Initiator, '0')) {
+            if (FoundChannel->getModeIsExist(FoundChannel, 't') and
+                not FoundChannel->getModeIsExist(_Initiator, 'o')) {
                 return _Initiator->updateReplyMessage(ERR_CHANOPRIVSNEEDED(ChannelName));
             }
             FoundChannel->setTopic(Topic[1]);

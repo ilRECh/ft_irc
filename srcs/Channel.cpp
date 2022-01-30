@@ -14,7 +14,7 @@ Channel::Channel(
 	Client * userAdmin,
 	Server *Server,
 	eChannelPrivateLevel const ePrivateLevel)
-	:	Modes(),
+	:	Modes(this),
 		_ChannelName(nameChannel),
 		_Server(Server) {
 	_ePrivateLevel = ePrivateLevel;
