@@ -10,6 +10,9 @@
 #include "QUIT.hpp"
 #include "PING.hpp"
 #include "PONG.hpp"
+#include "PRIVMSG.hpp"
+#include "NOTICE.hpp"
+#include "AWAY.hpp"
 #include "UNKNOWNCOMMAND.hpp"
 
 //* Domain can be AF_INET

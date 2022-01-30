@@ -21,6 +21,7 @@ private:
 	std::set<Channel const *> _Channels;
 	std::string _NickName;
 	std::string _RealName;
+    std::string _Away;
 	std::string _HostName;
 	std::string _ServerName;
 	struct registration_s {

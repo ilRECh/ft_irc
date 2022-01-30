@@ -10,11 +10,38 @@ public:
     NOTICE(Server &Server) : ACommand("NOTICE", Server) {}
     virtual ~NOTICE() {}
     virtual int run(){
-        if (_Arguments.empty()) {
-            return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            
+        std::string targets = ft::SplitOneTimes(_Argument, ":");
+        ft::deleteSpaces(targets);
+        ft::deleteSpaces(_Argument);
+        if (targets.empty()) {
+            return 0;
         }
-        //code
+        if (_Argument.empty())
+            return 0;
+        std::set<std::string> recipients;
+        for (std::string last_target; !targets.empty();)
+        {
+            last_target = ft::SplitOneTimes(targets, " ");
+            if (!last_target.empty() && !recipients.insert(last_target).second) {
+                recipients.erase(last_target);
+            }
+        }
+        Client *last_target = NULL;
+        for (std::set<std::string>::iterator it = recipients.begin();
+             it != recipients.end(); ++it)
+        {
+            last_target = _Server.getUserByNickName(*it);
+            if (last_target == NULL){
+//                last_target = _Server.getChannelByName(*it);
+//                if (last_target == NULL)
+//                else if (last_target->updateReplyMessage(_Argument))
+            }
+            else {
+                    last_target->updateReplyMessage(_Argument);
+            }
+        }
+        _Argument.erase();
+        return 0;
     }
 };/*
         Parameters: <nickname> <text>

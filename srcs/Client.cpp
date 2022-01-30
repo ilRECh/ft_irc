@@ -103,6 +103,8 @@ std::set<Channel const *> const & Client::getChannels() const {
 
 status Client::updateReplyMessage(std::string const & Msg) {
 	_ReplyMessage += _time.getTimeStrCurrent() + " " + Msg + "\r\n";
+    if (!_Away.empty())
+        return 1;
 	return 0;
 }
 

@@ -10,11 +10,16 @@ public:
     AWAY(Server &Server) : ACommand("AWAY", Server) {}
     virtual ~AWAY() {}
     virtual int run(){
-        if (_Arguments.empty()) {
-            return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            
+        std::string cmd = ft::SplitOneTimes(_Argument, ":");
+        cmd.erase(0, cmd.length());//??
+        ft::deleteSpaces(_Argument);
+        if (_Argument.empty())
+        {
+            _Initiator->_Away.erase(0, cmd.length());
+            return _Initiator->updateReplyMessage(RPL_UNAWAY);
         }
-        //code
+        _Initiator->_Away = _Argument;
+        return _Initiator->updateReplyMessage(RPL_NOWAWAY);
     }
 };/*
         Parameters: [message]
