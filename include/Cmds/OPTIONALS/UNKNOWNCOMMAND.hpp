@@ -11,7 +11,6 @@ public:
     virtual ~UNKNOWNCOMMAND() {}
     virtual int run(){
         if (not _Argument.empty()) {
-            return _Initiator->updateReplyMessage(ERR_UNKNOWNCOMMAND(_Argument));
         }
         return 0;
     }

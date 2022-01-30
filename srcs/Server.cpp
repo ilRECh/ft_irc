@@ -224,9 +224,9 @@ void Server::processCmd(Client *Client)
 }
 
 void Server::proceedCmd(std::pair<std::string, std::string> Cmd, Client *User) {
-    try {
-        for (std::vector<ACommand *>::iterator command = _Commands.begin();
-                command != _Commands.end(); ++command) {
+    for (std::vector<ACommand *>::iterator command = _Commands.begin();
+            command != _Commands.end(); ++command) {
+        try {
             if (Cmd.first == (*command)->_Name) {
                 std::cout << (*command)->_Name << std::endl;
                     (*command)->setArgument(Cmd.second);
@@ -234,12 +234,9 @@ void Server::proceedCmd(std::pair<std::string, std::string> Cmd, Client *User) {
                     (*command)->run();
                 return ;
             }
-        }
-        UNKNOWNCOMMAND uc(*this);
-        uc.setInitiator(User);
-        uc.setArgument(Cmd.first);
-        uc.run();
-    } catch (...) {}
+        } catch (...) {}
+    }
+    User->updateReplyMessage(ERR_UNKNOWNCOMMAND(Cmd.first));
 }
 
 std::pair<std::string, std::string> Server::parseCmd(std::string &Cmd)
