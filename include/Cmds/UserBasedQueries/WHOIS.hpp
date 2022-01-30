@@ -2,20 +2,35 @@
 #include "ACommand.hpp"
 
 class WHOIS : public ACommand {
-	typedef typename std::set<Client *>			setClient;
-	typedef typename std::set<Channel *>		setChannel;
-	typedef typename setClient::iterator		IsetClient;
-	typedef typename setChannel::iterator		IsetChannel;
+	typedef typename std::set<Client *>		setClient;
+	typedef typename std::set<Channel *>	setChannel;
+	typedef typename setClient::iterator	IsetClient;
+	typedef typename setChannel::iterator	IsetChannel;
+	
+	typedef typename std::set<const Client *>	csetClient;
+	typedef typename std::set<const Channel *>	csetChannel;
+	typedef typename csetClient::iterator		IcsetClient;
+	typedef typename csetChannel::iterator		IcsetChannel;
 private:
 	WHOIS();
 	WHOIS(WHOIS const &that);
 	WHOIS& operator=(WHOIS const &that);
-	bool	isHaveCommonChannels(Client *user_another)
+	bool	isAcceptToShow(Client *user_another)
 	{
-		std::set<Channel const *> one = _Initiator->_Channels;
-		std::set<Channel const *> two = user_another->_Channels;
+		csetChannel &two = user_another->_Channels;
+		csetChannel &one = _Initiator->_Channels;
+		csetChannel common;
 
-		return std::find_first_of(one.begin(), one.end(), two.begin(), two.end()) != one.end();
+		if (std::find_first_of(one.begin(), one.end(), two.begin(), two.end()) == one.end())
+			return false;
+		for(IcsetChannel i = one.begin(); i != one.end(); ++i)
+			for(IcsetChannel j = two.begin(); j != two.end(); ++j)
+				if (*i == *j)
+					common.insert(*i);
+		for(IcsetChannel i = common.begin(); i != common.end(); ++i)
+			if (!(*i)->getModeIsExist(user_another, 'i'))
+				return true;
+		return false;
 	}
 
 	bool	isRespondRequireTreeAlpha(){
@@ -46,17 +61,16 @@ private:
 			result << "+============================================+" << "\r\n";
 			if (posStar ==_Arguments[0].find_last_of('*'))
 				for (;start != finish; ++start)
-					result << "(" << shortByStar((*start)->getName(), posStar) << ")" << ", ";
+					result << "(" << shortByStar((*start)->_NickName, posStar) << ")" << ", ";
 			else
 				for (;start != finish; ++start)
-					result << (*start)->getName() << ", ";
+					result << (*start)->_NickName << ", ";
 		}
 		else
 		{
 			for (;start != finish; ++start)
 			{
 				result << "+============================================+" << "\r\n";
-				result << "Name: " << (*start)->_Name << "\r\n";
 				result << "Nick name: " << (*start)->_NickName << "\r\n";
 				result << "Real name: " << (*start)->_RealName << "\r\n";
 				result << "IP: " << (*start)->getAddresIP() << "\r\n";
@@ -79,7 +93,7 @@ public:
 		{
 			_Clients = _Arguments.empty() ? _Server.getClientsByName("*") : _Server.getClientsByName(_Arguments[0]);
 			for (IsetClient i = _Clients.begin(); i != _Clients.end(); ++i)
-				if (isHaveCommonChannels(*i) && !(*i)->getModeIsExist('i'))
+				if (isAcceptToShow(*i))
 					usersToShow.insert(*i);
 		}
 		else

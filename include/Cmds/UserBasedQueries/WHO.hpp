@@ -6,17 +6,32 @@ class WHO : public ACommand {
 	typedef typename std::set<Channel *>	setChannel;
 	typedef typename setClient::iterator	IsetClient;
 	typedef typename setChannel::iterator	IsetChannel;
+	
+	typedef typename std::set<const Client *>	csetClient;
+	typedef typename std::set<const Channel *>	csetChannel;
+	typedef typename csetClient::iterator		IcsetClient;
+	typedef typename csetChannel::iterator		IcsetChannel;
 private:
 	WHO();
 	WHO(WHO const &that);
 	WHO& operator=(WHO const &that);
-	bool	isHaveCommonChannels(Client *user_another)
+	bool	isAcceptToShow(Client *user_another)
 	{
-		std::set<Channel const *> &two = user_another->_Channels;
-		std::set<Channel const *> &one = _Initiator->_Channels;
+		csetChannel &two = user_another->_Channels;
+		csetChannel &one = _Initiator->_Channels;
+		csetChannel common;
 
-		return std::find_first_of(one.begin(), one.end(), two.begin(), two.end()) != one.end();
-
+		if (std::find_first_of(one.begin(), one.end(), two.begin(), two.end()) == one.end())
+			return false;
+		for(IcsetChannel i = one.begin(); i != one.end(); ++i)
+			for(IcsetChannel j = two.begin(); j != two.end(); ++j)
+				if (*i == *j)
+					common.insert(*i);
+		for(IcsetChannel i = common.begin(); i != common.end(); ++i)
+			if (!(*i)->getModeIsExist(user_another, 'i'))
+				return true;
+		return false;
+		
 	}
 
 	bool	isRespondRequireTreeAlpha(){
@@ -42,7 +57,7 @@ private:
 		for (IsetClient	start = usersToShow.begin(); start != usersToShow.end(); ++start)
 		{
 			result << "+============================================+" << "\r\n";
-			result << "Name: " << (*start)->getName() << ", ";
+			result << "Name: " << (*start)->_NickName << ", ";
 		}
 		result << "+============================================+" << "\r\n";
 		return result.str();
@@ -59,7 +74,7 @@ public:
 		{
 			clients = _Arguments.empty() ? _Server.getClientsByName("*") : _Server.getClientsByName(_Arguments[0]);
 			for (IsetClient i = clients.begin(); i != clients.end(); ++i)
-				if (isHaveCommonChannels(*i) && !(*i)->getModeIsExist('i'))
+				if (isAcceptToShow(*i))
 					users_To_Show.insert(*i);
 		}
 		else
