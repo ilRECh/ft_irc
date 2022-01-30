@@ -18,6 +18,7 @@ class Client;
 class Server;
 
 class Channel : public AUser {
+	friend class NAMES;
 private:
 	//! typePrivateLevel
 	//* CHANNEL_PRIVATE могут приглашать только админы;

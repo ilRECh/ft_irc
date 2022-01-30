@@ -54,6 +54,6 @@ public:
 	//* now it support find by wildcard
 	std::set<Client *> getClientsByName(std::string Name);
 	std::set<Client *> const &getClients();
-	Channel *getChannelByName(std::string const & NameChannel);
+	std::set<Channel *>getChannelsByName(std::string Name);
 	void pushBackErase(Client *Client);
 };
