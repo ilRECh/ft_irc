@@ -1,13 +1,5 @@
-#include "ft.hpp"
 #include "Server.hpp"
-#include "Client.hpp"
-
-#include "Password.hpp"
-#include "TimeStamp.hpp"
-
 #include <iostream>
-using std::cout;
-using std::endl;
 
 void usage() {
 	std::cout << "\n\tUsage: ./ircserv <port> <password>\n" << std::endl;
@@ -23,9 +15,9 @@ int main(int argc, char **argv) {
 		Server server(argv[1] ? argv[1] : "2224", argv[2] ? argv[2] : "123");
 		server.run();
 	} catch(std::exception& e) {
-		cout << e.what() << endl;
+		std::cout << e.what() << std::endl;
 	} catch(...) {
-		cout << "Unexpected error" << endl;
+		std::cout << "Unexpected error" << std::endl;
 	}
 	return 0;
 }

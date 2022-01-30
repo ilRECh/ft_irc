@@ -3,15 +3,14 @@
 #include "Channel.hpp"
 
 Client::Client(int const Fd)
-	:	AUser(""),
-		_Fd(Fd) {}
+	:	_Fd(Fd) {}
 
 bool Client::operator==(const Client& that) const {
-	return _Name == that._Name;
+	return _UserName == that._UserName;
 }
 
 bool Client::operator!=(const Client& that) const {
-	return _Name != that._Name;
+	return _UserName != that._UserName;
 }
 
 void Client::inviteToChannel(Channel const & channel) {
@@ -63,40 +62,8 @@ bool Client::ServerNeedToPING() const {
 	return false;
 }
 
-// void Client::PINGisSent() {
-// 	_Activity.WaitingForPONG = true;
-// }
-
 bool Client::isWaitingForPONG() const {
 	return _Activity.WaitingForPONG;
-}
-
-//	* get|set mode
-bool Client::getModeIsExist(std::string mode) const {
-	std::string::iterator start = mode.begin();
-	std::string::iterator finish = mode.end();
-
-	while(start != finish){
-		if (_mode_set.find(std::tolower(*start++)) != _mode_set.end())
-			return true;
-	}
-	return false;
-}
-void	Client::setMode(std::string mode){
-	std::string::iterator start = mode.begin();
-	std::string::iterator finish = mode.end();
-
-	while(start != finish){
-		_mode_set.insert(std::tolower(*start++));
-	}
-}
-void	Client::unsetMode(std::string mode){
-	std::string::iterator start = mode.begin();
-	std::string::iterator finish = mode.end();
-
-	while(start != finish){
-		_mode_set.erase(std::tolower(*start++));
-	}
 }
 
 TimeStamp const & Client::getTime() const{
@@ -118,9 +85,9 @@ std::set<Channel const *> const & Client::getChannels() const {
 	return _Channels;
 }
 
-status Client::updateReplyMessage(std::string const & Msg) {
+bool Client::updateReplyMessage(std::string const & Msg) {
 	_ReplyMessage += _time.getTimeStrCurrent() + " " + Msg + "\r\n";
-	return 0;
+	return false;
 }
 
 std::string const Client::getReplyMessage() {

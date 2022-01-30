@@ -2,6 +2,7 @@
 
 #include "ft.hpp"
 #include "Replies.hpp"
+#include "Modes.hpp"
 
 using std::vector;
 using std::string;
@@ -10,7 +11,20 @@ class Client;
 class ACommand;
 class Channel;
 
-class Server {
+enum OperatorStatus {
+	YOUREOPER,
+	NOOPERHOST,
+	PASSWDMISMATCH
+};
+struct operators_s {
+	std::string Name;
+	std::string Password;
+	bool operator==(std::string const & ThatName) const {
+		return Name == ThatName;
+	}
+};
+
+class Server : public Modes {
 private:
 	// Time since start
 	TimeStamp _Age;
@@ -19,6 +33,9 @@ private:
 	std::string _Ip;
 	std::string _Port;
 	std::string _Password;
+
+	// On dying
+	std::string _DyingMessage;
 
 	// Networking
     bool _LoopListen;
@@ -31,8 +48,13 @@ private:
 	// Top level logic
 	std::vector<ACommand *> _Commands;
 	std::set<Client *> _Clients;
-	std::list<Client *> _UsersToBeErased;
+	std::list<Client *> _ClientsToBeErased;
 	std::set<Channel *> _Channels;
+	std::list<Channel *> _ChannelsToBeErased;
+
+
+	// Opers
+	static operators_s _Operators[1];
 
 	// Insights
 	void readerClient(fd_set & fdsCpy);
@@ -55,5 +77,11 @@ public:
 	std::set<Client *> getClientsByName(std::string Name);
 	std::set<Client *> const &getClients();
 	std::set<Channel *>getChannelsByName(std::string Name);
+	Channel *getChannelByChannelName(std::string const & NameChannel);
+	OperatorStatus canBeAutorized(
+		std::string const & Name,
+		std::string const & Password);
 	void pushBackErase(Client *Client);
+	void pushBackErase(Channel *Channel);
+	void buryMe(std::string const & DyingMessage);
 };

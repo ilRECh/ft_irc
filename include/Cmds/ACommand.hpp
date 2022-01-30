@@ -3,6 +3,7 @@
 #include "ft.hpp"
 #include "Server.hpp"
 #include "Client.hpp"
+#include "Channel.hpp"
 #include "Replies.hpp"
 
 class Server;
@@ -39,8 +40,19 @@ public:
         if (_Initiator->_Activity.WaitingForPONG and _Name not_eq "PONG") {
             throw("dummy");
         } else if (not _Initiator->_Registration.IsRegistered){
-            if ((_Initiator->_Password.empty() and _Name == "NICK") or
-                (_Initiator->_NickName.empty() and _Name == "USER")) {
+            bool IsPassProv = not _Initiator->_Password.empty();
+            bool IsNickProv = not _Initiator->_NickName.empty();
+            bool IsPASS = _Name == "PASS";
+            bool IsNICK = _Name == "NICK";
+            bool IsUSER = _Name == "USER";
+
+            if (IsPASS and IsNickProv) {
+                throw("dummy");
+            }
+            
+            if ((IsNICK and not IsPassProv) or
+                (IsUSER and (not IsPassProv or not IsNickProv)) or
+                not (IsPASS or IsNICK or IsUSER)) {
                 _Initiator->updateReplyMessage(ERR_NOTREGISTERED);
                 throw("dummy");
             }

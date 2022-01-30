@@ -19,7 +19,7 @@ public:
         _Arguments[3][0] != ':') {
             return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
         }
-        _Initiator->_Name = _Arguments[0];
+        _Initiator->_UserName = _Arguments[0];
         _Initiator->_HostName = _Arguments[1];
         _Initiator->_ServerName = _Arguments[2];
         _Initiator->_RealName = ft::split(_Argument, ":")[1];
