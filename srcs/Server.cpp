@@ -18,9 +18,11 @@
 #include "PONG.hpp"
 
 // OPTIONALS
-#include "UNKNOWNCOMMAND.hpp"
+#include "AWAY.hpp"
 
 // Sending Messages
+#include "PRIVMSG.hpp"
+#include "NOTICE.hpp"
 
 // Server Queries And Commands
 

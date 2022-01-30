@@ -21,6 +21,7 @@ private:
 	std::string _UserName;
 	std::string _NickName;
 	std::string _RealName;
+    std::string _Away;
 	std::string _HostName;
 	std::string _ServerName;
 	struct registration_s {
