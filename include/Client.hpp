@@ -52,9 +52,9 @@ public:
 	string const & getNickName() const;
 
 	//	* get|set mode
-	bool	getModeIsExist(char c) const;
-	void	setMode(char c);
-	void	unsetMode(char c);
+	bool	getModeIsExist(std::string mode) const;
+	void	setMode(std::string mode);
+	void	unsetMode(std::string mode);
 	
 	// * get time
 	TimeStamp const & getTime() const;

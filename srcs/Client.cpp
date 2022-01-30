@@ -72,14 +72,31 @@ bool Client::isWaitingForPONG() const {
 }
 
 //	* get|set mode
-bool Client::getModeIsExist(char c) const {
-	return _mode_set.find(c) != _mode_set.end();
+bool Client::getModeIsExist(std::string mode) const {
+	std::string::iterator start = mode.begin();
+	std::string::iterator finish = mode.end();
+
+	while(start != finish){
+		if (_mode_set.find(std::tolower(*start++)) != _mode_set.end())
+			return true;
+	}
+	return false;
 }
-void	Client::setMode(char c){
-	_mode_set.insert(c);
+void	Client::setMode(std::string mode){
+	std::string::iterator start = mode.begin();
+	std::string::iterator finish = mode.end();
+
+	while(start != finish){
+		_mode_set.insert(std::tolower(*start++));
+	}
 }
-void	Client::unsetMode(char c){
-	_mode_set.erase(c);
+void	Client::unsetMode(std::string mode){
+	std::string::iterator start = mode.begin();
+	std::string::iterator finish = mode.end();
+
+	while(start != finish){
+		_mode_set.erase(std::tolower(*start++));
+	}
 }
 
 TimeStamp const & Client::getTime() const{

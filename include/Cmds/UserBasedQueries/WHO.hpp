@@ -1,21 +1,22 @@
 #pragma once
 #include "ACommand.hpp"
 
-class WHOIS : public ACommand {
+class WHO : public ACommand {
+	typedef typename std::set<Client *>		setClient;
+	typedef typename std::set<Channel *>	setChannel;
+	typedef typename setClient::iterator	IsetClient;
+	typedef typename setChannel::iterator	IsetChannel;
 private:
-	WHOIS();
-	WHOIS(WHOIS const &that);
-	WHOIS& operator=(WHOIS const &that);
-	bool	isHaveCommonChannels(Client const *user_another)
+	WHO();
+	WHO(WHO const &that);
+	WHO& operator=(WHO const &that);
+	bool	isHaveCommonChannels(Client *user_another)
 	{
-		std::set<Channel const *> two = user_another->getChannels();
-		std::set<Channel const *> one = _Initiator->getChannels();
+		std::set<Channel const *> &two = user_another->_Channels;
+		std::set<Channel const *> &one = _Initiator->_Channels;
 
-		for (size_t i = 0; i < one.size(); i++)
-			for (size_t j = 0; j < two.size(); j++)
-				if (one[i] == two[j])
-					return true;
-		return false;
+		return std::find_first_of(one.begin(), one.end(), two.begin(), two.end()) != one.end();
+
 	}
 
 	bool	isRespondRequireTreeAlpha(){
@@ -34,12 +35,11 @@ private:
 		return some.substr(0, some.find(_Arguments[0].substr(1))) + "..";
 	}
 
-	std::string getResult(std::vector<Client *> & usersToShow){
-		std::vector<Client *>::iterator start = usersToShow.begin();
-		std::vector<Client *>::iterator finish = usersToShow.end();
+	std::string getResult(setClient & usersToShow){
 		std::string::size_type posStar;
 		std::stringstream result;
-		for (;start != finish; ++start)
+
+		for (IsetClient	start = usersToShow.begin(); start != usersToShow.end(); ++start)
 		{
 			result << "+============================================+" << "\r\n";
 			result << "Name: " << (*start)->getName() << ", ";
@@ -49,29 +49,24 @@ private:
 	}
 
 public:
-	WHO(Server const & Server) : ACommand("WHO", Server) {}
+	WHO(Server & Server) : ACommand("WHO", Server) {}
 	virtual ~WHO() {}
 	virtual int run(std::string name = std::string()){
-		std::set<Client const *> const & _Clients = _Server->getUsers();
-		std::set<Client const *> users_To_Show;
-		
-		if (_Argument.empty()) {
-			//std::string arr[] = { _Name }; // ? чей этот _Name ?
-			//return reply(ERR_NEEDMOREPARAMS, _User->_Fd, _User->getName(), L(arr));
-			std::set<Channel const *> const & channels = _User->getChannels();
+		setClient clients = _Server.getClientsByName("*");
+		setClient users_To_Show;
 
 		if (_Arguments.empty() || !isRespondRequireTreeAlpha())
 		{
-			_Clients = _Arguments.empty() ? _Server.getUsersByName("*") : _Server.getUsersByName(_Arguments[0]);
-			for (size_t i = 0; i < _Clients.size(); i++)
-				if (isHaveCommonChannels(_Clients[i]) && !_Clients[i]->getModeIsExist('i'))
-					usersToShow.push_back(_Clients[i]);
+			clients = _Arguments.empty() ? _Server.getClientsByName("*") : _Server.getClientsByName(_Arguments[0]);
+			for (IsetClient i = clients.begin(); i != clients.end(); ++i)
+				if (isHaveCommonChannels(*i) && !(*i)->getModeIsExist('i'))
+					users_To_Show.insert(*i);
 		}
 		else
 		{
-			usersToShow = _Server.getUsersByName(_Arguments[0]);
+			users_To_Show = _Server.getClientsByName(_Arguments[0]);
 		}
-		_Initiator->updateReplyMessage(getResult(usersToShow));
+		_Initiator->updateReplyMessage(getResult(users_To_Show));
 		return 0;
 	}
 };

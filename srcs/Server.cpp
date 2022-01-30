@@ -269,7 +269,7 @@ Client *Server::getUserByNickName(std::string const & NickName){
 }
 
 //* now it support find by wildcard
-std::set<Client *> Server::getUsersByName(std::string Name){
+std::set<Client *> Server::getClientsByName(std::string Name){
 	std::set<Client *>::iterator istart = _Clients.begin();
 	std::set<Client *>::iterator ifinish = _Clients.end();
 	std::set<Client *> result;
@@ -297,15 +297,32 @@ std::set<Client *> Server::getUsersByName(std::string Name){
 	return result;
 }
 
-Channel *Server::getChannelByName(std::string const & NameChannel){
-	std::set<Channel *>::iterator first, last;
+std::set<Channel *> Server::getChannelsByName(std::string Name){
+	std::set<Channel *>::iterator istart = _Channels.begin();
+	std::set<Channel *>::iterator ifinish = _Channels.end();
+	std::set<Channel *> result;
 
-	first = _Channels.begin();
-	last = _Channels.end();
-	for(;first != last; ++first)
-		if ((*first)->getName() == NameChannel)
-			return *first;
-	return NULL;
+	for(uint i = Name.size(); true;)
+	{
+		if (Name[--i] != '*')
+			break;
+		if (!i)
+			return _Channels;
+	}
+
+	if (Name.find('*') == std::string::npos)
+	{
+		for(;istart != ifinish; ++istart)
+			if (ft::wildcard(Name, (*istart)->getName()))
+				result.insert(*istart);
+	}
+	else
+	{
+		for(;istart != ifinish; ++istart)
+			if ((*istart)->getName() == Name)
+				result.insert(*istart);
+	}
+	return result;
 }
 
 void Server::pushBackErase(Client *Client) {

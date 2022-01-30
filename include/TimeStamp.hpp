@@ -31,7 +31,7 @@ public:
 // Вернет текущее время в
 	static time_t	getCurrTime();
 	
-// прошло ли время для текущего объекта ?
+// прошло ли время для текущего объекта ? (относительно _base_time этого объекта)
 	bool	hasTimePassed(time_t secunds) const;
 	
 // прошло ли время ?
