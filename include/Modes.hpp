@@ -13,6 +13,19 @@ public:
             delete it->second;
         }
     }
+    bool getModeIsExist(Client const * Client, std::string SomeModes) const {
+        clients_modes::const_iterator Modes = _ClientsModes.find(Client);
+        if (Modes != _ClientsModes.end()) {
+            for (size_t i = 0; i < SomeModes.size(); ++i) {
+                if (Modes->second->find(SomeModes[i]) == Modes->second->end()) {
+                    return false;
+                }
+            }
+        } else {
+            return false;
+        }
+        return true;
+    } 
     bool getModeIsExist(Client const * Client, char mode) const {
         clients_modes::const_iterator Modes = _ClientsModes.find(Client);
         if (Modes != _ClientsModes.end()) {

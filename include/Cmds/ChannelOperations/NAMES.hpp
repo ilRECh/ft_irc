@@ -40,12 +40,12 @@ private:
 		csClient			clients;
 
 		for(icsChannel i = channels.begin(); i != channels.end(); ++i)
-			for(icsCLient j = (**i)._Clients.begin() ;j != (**i)._Clients.end(); ++j)
-				if (!(*j)->getModeIsExist("ps"))
+			for(isCLient j = (*i)->_Clients.begin() ;j != (**i)._Clients.end(); ++j)
+				if (!(*i)->getModeIsExist((*j), "ps"))
 					clients.insert(*j);
 		result << "+=================================================+" << "\r\n";
 		for(icsCLient i = clients.begin(); i != clients.end(); ++i){
-			result << (*i)->getName() << ", ";
+			result << (*i)->_NickName << ", ";
 		}
 		result << "+=================================================+" << "\r\n";
 		return result.str();

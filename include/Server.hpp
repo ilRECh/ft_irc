@@ -81,6 +81,7 @@ public:
 	OperatorStatus canBeAutorized(
 		std::string const & Name,
 		std::string const & Password);
+	void pushBack(Channel *Channel);
 	void pushBackErase(Client *Client);
 	void pushBackErase(Channel *Channel);
 	void buryMe(std::string const & DyingMessage);

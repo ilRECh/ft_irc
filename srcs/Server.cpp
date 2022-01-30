@@ -4,6 +4,9 @@
 #include "Channel.hpp"
 
 // Channel Operations
+#include "NAMES.hpp"
+#include "PART.hpp"
+#include "TOPIC.hpp"
 
 // Connection Registration
 #include "PASS.hpp"
@@ -162,6 +165,7 @@ void Server::run()
                     q.setArgument("QUIT: Are not as fast, are ya? Bye then, champ.");
                     q.run();
                 }
+                ReplyMessage = (*User)->getReplyMessage();
             }
             send((*User)->_Fd, ReplyMessage.c_str(), ReplyMessage.length(), 0);
         }
@@ -213,7 +217,9 @@ void Server::readerClient(fd_set & fdsCpy)
 
 void Server::processCmd(Client *Client)
 {
-    if (Client->getIncomingBuffer().end()[-1] != '\n') {
+    if (Client->getIncomingBuffer().end()[-1] != '\n' or
+        Client->getIncomingBuffer() == "\n" or
+        Client->getIncomingBuffer() == "\r\n") {
         return ;
     }
     std::vector<std::string> Cmds = ft::splitByCmds(Client->getIncomingBuffer(), "\r\n");

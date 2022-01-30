@@ -9,8 +9,8 @@ private:
 public:
     PONG(Server &Server) : ACommand("PONG", Server) {}
     virtual ~PONG() {}
-    virtual int run(){
-        if (_Argument == _Server.getServerAddrInfo()) {
+    virtual int run() {
+        if (_Arguments[0] == _Server.getServerAddrInfo()) {
             _Initiator->updateActivity();
         }
         return 0;

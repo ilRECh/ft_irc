@@ -10,11 +10,29 @@ public:
     PART(Server &Server) : ACommand("PART", Server) {}
     virtual ~PART() {}
     virtual int run(){
-        if (_Arguments.empty()) {
+        if (_Argument.empty()) {
             return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            
         }
-        //code
+        _Arguments = ft::split(_Argument, " ,");
+        std::string Reply;
+        for (std::vector<std::string>::iterator i = _Arguments.begin(); i != _Arguments.end(); ++i) {
+            std::string ChannelName(*i);
+            Channel *FoundChannel = _Server.getChannelByChannelName(ChannelName);
+            if (not FoundChannel) {
+                Reply += ERR_NOSUCHCHANNEL(ChannelName);
+            } else if (not FoundChannel->isOnChannel(_Initiator)) {
+                Reply += ERR_NOTONCHANNEL(ChannelName);
+            } else {
+                FoundChannel->removeClient(_Initiator);
+            }
+            if (i + 1 != _Arguments.end()) {
+                Reply += "\r\n";
+            }
+        }
+        if (not Reply.empty()) {
+            return _Initiator->updateReplyMessage(Reply);
+        }
+        return 0;
     }
 };/*
    Parameters: <channel>{,<channel>}

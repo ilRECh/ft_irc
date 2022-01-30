@@ -19,6 +19,7 @@ private:
 	std::string _Password;
 	std::string _Topic;
 	std::set<Client *> _Clients;
+	Server *_Server;
 	//! typePrivateLevel
 	//* CHANNEL_PRIVATE могут приглашать только админы;
 	//* CHANNEL_PROTECTED могут приглашать только админы и участники;
@@ -29,6 +30,7 @@ public:
 	Channel(
 		std::string const & nameChannel,
 		Client *userAdmin,
+		Server *Server,
 		eChannelPrivateLevel const ePrivateLevel = CHANNEL_PUBLIC);
 	~Channel() {}
 	
@@ -36,7 +38,8 @@ public:
 	void setTopic(std::string const & Topic);
 	std::string const &getChannelName() const { return _ChannelName; }
 	void	addClient(Client *whom, Client *who = NULL);
-	void	removeClient(Client const & who, Client & whom);
+	void	removeClient(Client *whom);//, Client & whom);
+	// void	removeClient(Client const & who, Client & whom);
 	bool	isOnChannel(Client *whom) const;
 	void	setLevelPrivate(
 		Client *who,

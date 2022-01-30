@@ -2,6 +2,7 @@
 #include "Channel.hpp"
 #include "Replies.hpp"
 #include "Client.hpp"
+#include "Server.hpp"
 
 
 //! 	enum ePrivateLevel
@@ -11,9 +12,11 @@
 Channel::Channel(
 	string const & nameChannel,
 	Client * userAdmin,
+	Server *Server,
 	eChannelPrivateLevel const ePrivateLevel)
 	:	Modes(),
-	_ChannelName(nameChannel) {
+		_ChannelName(nameChannel),
+		_Server(Server) {
 	_ePrivateLevel = ePrivateLevel;
 	_Clients.insert(userAdmin);
 }
@@ -59,6 +62,22 @@ std::string const &Channel::getTopic() const {
 
 void Channel::setTopic(std::string const & Topic) {
 	_Topic = Topic;
+}
+
+void Channel::removeClient(Client *whom) {
+	static bool ToRemove = false;
+	if (ToRemove) {
+		return ;
+	}
+	std::set<Client *>::iterator i = find(_Clients.begin(), _Clients.end(), whom);
+	if (i != _Clients.end()) {
+		_Clients.erase(i);
+		eraseClientFromModes(*i);
+	}
+	if (_Clients.empty()) {
+		ToRemove = true;
+		_Server->pushBackErase(this);
+	}
 }
 
 // void	Channel::removeUser(Client & who, Client & whom){

@@ -2,7 +2,7 @@
 
 #include "ft.hpp"
 
-#define MAY_BE_UNREGISTERED_seconds 60
+#define MAY_BE_UNREGISTERED_seconds 40
 #define MAY_BE_INACTIVE_seconds 100
 
 using std::string;
@@ -109,7 +109,6 @@ private:
 	friend class REHASH;
 	friend class RESTART;
 	friend class SUMMON;
-	friend class UNKNOWNCOMMAND;
 	friend class USERHOST;
 	friend class USERS;
 	friend class WALLOPS;
