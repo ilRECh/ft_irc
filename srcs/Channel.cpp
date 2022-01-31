@@ -80,6 +80,47 @@ void Channel::removeClient(Client *whom) {
 	}
 }
 
+void Channel::replyToAllMembers(std::string msg){
+	std::set<Client *>::iterator first, last;
+
+	first = _Clients.begin();
+	last = _Clients.end();
+	while(first != last)
+		(*first++)->updateReplyMessage(msg);
+}
+
+void Channel::addToBan(Client * toBanUser)
+{
+	if (!isBanned(toBanUser))
+	{
+		_BanList.insert(toBanUser);
+		replyToAllMembers(toBanUser->_NickName + " banned!");
+	}
+}
+void Channel::removeFromBan(Client * unBanUser)
+{
+	if (isBanned(unBanUser))
+	{
+		_BanList.erase(unBanUser);
+		replyToAllMembers(unBanUser->_NickName + " unbanned");
+	}
+}
+bool Channel::isBanned(Client * isBannedUser)
+{
+	std::set<Client *>::iterator first, last;
+
+	first = _BanList.begin();
+	last = _BanList.end();
+	while(first != last)
+	{
+		if (*first == isBannedUser)
+			return true;
+		++first;
+	}
+	return false;
+}
+
+
 // void	Channel::removeUser(Client & who, Client & whom){
 // 	if (_ePrivateLevel == CHANNEL_PRIVATE || _ePrivateLevel == CHANNEL_PROTECTED) {
 // 		if (not isAdmin(who) && not isOwner(who)) {

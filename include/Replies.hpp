@@ -304,6 +304,11 @@ explicitly deny connections to you.
 "<channel> :Cannot join channel (+k)"
 */
 
+#define	ERR_BADCHANMASK(Channel) "(476) " + Channel + " :Bad parse, use"
+/*
+"<channel> :Bad parse & #"
+*/
+
 #define	ERR_NOPRIVILEGES "(481) :Permission Denied- You're not an IRC operator"
 /*
 ":Permission Denied- You're not an IRC operator"

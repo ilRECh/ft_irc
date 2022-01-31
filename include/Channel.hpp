@@ -15,10 +15,12 @@ class Server;
 class Channel : public Modes {
 private:
 	friend class NAMES;
+	friend class JOIN;
 	std::string _ChannelName;
 	std::string _Key;
 	std::string _Topic;
 	std::set<Client *> _Clients;
+	std::set<Client *> _BanList;
 	Server *_Server;
 	//! typePrivateLevel
 	//* CHANNEL_PRIVATE могут приглашать только админы;
@@ -47,4 +49,8 @@ public:
 	void	setChannelName(
 		Client *who,
 		std::string const & newNameChannel);
+	void replyToAllMembers(std::string msg);
+	void addToBan(Client * toBanUser);
+	void removeFromBan(Client * unBanUser);
+	bool isBanned(Client * isBannedUser);
 };

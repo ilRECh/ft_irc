@@ -14,7 +14,27 @@ private:
     JOIN();
     JOIN(JOIN const &that);
     JOIN& operator=(JOIN const &that);
-	
+	int	preparse(){
+		istr first, last;
+
+		first = _Argument.begin();
+		last = _Argument.end();
+		while
+		(
+			first != last && 
+			(
+				std::isalnum(*first)  ||
+				std::isspace(*first) ||
+				*first == '#' ||
+				*first == '&'
+			)
+		)
+			++first;
+		if (first != last)
+			_Argument = str(first, last);
+		return first != last;
+	}
+
 	vpStrStr smartSplit(){
 		vpStrStr result;
 		_Arguments = ft::split(_Argument, ",");
@@ -41,38 +61,56 @@ private:
 				result.push_back(pStrStr(vstr.front(), vstr.back()));
 			}
 			else
+			{
+				_Initiator->updateReplyMessage(ERR_NOSUCHCHANNEL(str("null")));
 				return vpStrStr();
+			}
 		}
 	}
 	
-	int join(str nameChannel){
-		//!code
-	}
-	int join(str nameChannel, str password){
-		//!code
+	int join(str & nameChannel, str & password){
+		std::set<Channel *> channels = _Server.getChannelsByName(nameChannel);
+		if (!channels.size())
+			return 1 + _Initiator->updateReplyMessage(ERR_NOSUCHCHANNEL(nameChannel));
+		Channel * chan = *channels.begin();
+		if (chan->getModeIsExist(chan, 'i'))
+		{
+			if (password.empty())
+				return 1 + _Initiator->updateReplyMessage(ERR_INVITEONLYCHAN(chan->getChannelName()));
+			else if (chan->_Key != password)
+				return 1 + _Initiator->updateReplyMessage(ERR_BADCHANNELKEY(chan->getChannelName()));
+		}
+		if (chan->isBanned(_Initiator))
+			return 1 + _Initiator->updateReplyMessage(ERR_BANNEDFROMCHAN(chan->getChannelName()));
+		chan->addClient(_Initiator);
+		chan->replyToAllMembers(_Initiator->_NickName + " joined");
+		return 0;
 	}
 
-	void	distributor(){
+	int	goJoinWithParse(){
 		vpStrStr args = smartSplit();
 		ivpStrStr first, last;
+		int	status = 0;
 
 		first = args.begin();
 		last = args.end();
 
+		if (first == last)
+			return 1;
 		while(first != last)
-		{
-			//!code
-			++first;
-		}
+			status |= join(first->first, first->second);
+		return status;
 	}
 public:
     JOIN(Server &Server) : ACommand("JOIN", Server) {}
     virtual ~JOIN() {}
     virtual int run(){
-        if (_Arguments.empty()) {
+        if (_Arguments.empty()) 
             return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-        }
-        //code
+		else if (preparse())
+			return 1 + _Initiator->updateReplyMessage(ERR_BADCHANMASK(_Argument));
+		else
+        	return goJoinWithParse();
     }
 };/*
    4.2.1 Join-сообщение
