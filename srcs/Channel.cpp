@@ -13,10 +13,12 @@ Channel::Channel(
 	string const & nameChannel,
 	Client * userAdmin,
 	Server *Server,
-	eChannelPrivateLevel const ePrivateLevel)
+	eChannelPrivateLevel const ePrivateLevel,
+	uint maxUserLimit)
 	:	Modes(this),
+		_maxUserLimit(maxUserLimit),
 		_ChannelName(nameChannel),
-		_Server(Server) {
+		_Server(Server){
 	_ePrivateLevel = ePrivateLevel;
 	_Clients.insert(userAdmin);
 }

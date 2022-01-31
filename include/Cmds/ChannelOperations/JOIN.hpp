@@ -73,6 +73,8 @@ private:
 		if (!channels.size())
 			return 1 + _Initiator->updateReplyMessage(ERR_NOSUCHCHANNEL(nameChannel));
 		Channel * chan = *channels.begin();
+		if (chan->_Clients.size() >= chan->_maxUserLimit)
+			return 1 + _Initiator->updateReplyMessage(ERR_CHANNELISFULL(chan->getChannelName()));
 		if (chan->getModeIsExist(chan, 'i'))
 		{
 			if (password.empty())

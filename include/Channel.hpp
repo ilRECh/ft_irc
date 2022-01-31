@@ -16,6 +16,7 @@ class Channel : public Modes {
 private:
 	friend class NAMES;
 	friend class JOIN;
+	uint _maxUserLimit;
 	std::string _ChannelName;
 	std::string _Key;
 	std::string _Topic;
@@ -33,7 +34,8 @@ public:
 		std::string const & nameChannel,
 		Client *userAdmin,
 		Server *Server,
-		eChannelPrivateLevel const ePrivateLevel = CHANNEL_PUBLIC);
+		eChannelPrivateLevel const ePrivateLevel = CHANNEL_PUBLIC,
+		uint maxUserLimit = 1024);
 	~Channel() {}
 	
 	std::string const &getTopic() const;
