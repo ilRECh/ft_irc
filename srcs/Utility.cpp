@@ -104,3 +104,22 @@ bool ft::wildcard(std::string wExpression, std::string toCompare)
 	}
 	return true;
 }
+
+std::string	ft::strTrim(std::string & str, std::string trimSymbol){
+	std::string::iterator first, end;
+	std::string::reverse_iterator rfirst, rend;
+
+	end = str.end();
+	rend = str.rend();
+	first = str.begin();
+	rfirst = str.rend();
+	while(std::find_first_of(first, first + 1, trimSymbol.begin(), trimSymbol.end()) == first)
+		if (++first == end)
+			break ;
+	while(std::find_first_of(rfirst, rfirst + 1, trimSymbol.begin(), trimSymbol.end()) == rfirst)
+		if (++rfirst == rend)
+			break ;
+	if (first < rfirst.base())
+		return std::string(first, rfirst.base());
+	return std::string();
+}

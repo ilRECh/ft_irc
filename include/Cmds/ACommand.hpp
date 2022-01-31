@@ -6,6 +6,8 @@
 #include "Channel.hpp"
 #include "Replies.hpp"
 
+#define SPACE_SYMBOLS " \b\t\n\v\f\r"
+
 class Server;
 class Client;
 
@@ -26,7 +28,7 @@ protected:
     std::string _Argument;
     Server & _Server;
     void setArguments(std::string const & Argument) {
-        _Arguments = ft::split(Argument, " \b\t\n\v\f\r");
+        _Arguments = ft::split(Argument, SPACE_SYMBOLS);
     }
 public:
     std::string const _Name;
