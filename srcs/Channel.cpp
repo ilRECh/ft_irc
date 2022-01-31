@@ -60,6 +60,7 @@ void	Channel::addClient(Client *whom, Client *who) {
 			return ;
 		}
 	}
+	replyToAllMembers(whom, "joined");
 	_Clients.insert(whom);
 }
 
@@ -87,13 +88,13 @@ void Channel::removeClient(Client *whom) {
 	}
 }
 
-void Channel::replyToAllMembers(std::string msg){
+void Channel::replyToAllMembers(Client * sender, std::string msg){
 	std::set<Client *>::iterator first, last;
 
 	first = _Clients.begin();
 	last = _Clients.end();
 	while(first != last)
-		(*first++)->updateReplyMessage(msg);
+		(*first++)->updateReplyMessage(sender->_NickName + " #" + this->getChannelName() +  " :" + msg + "\r\n");
 }
 
 void Channel::addToBan(Client * toBanUser)

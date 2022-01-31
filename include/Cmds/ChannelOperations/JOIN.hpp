@@ -85,7 +85,6 @@ private:
 		if (chan->isBanned(_Initiator))
 			return 1 + _Initiator->updateReplyMessage(ERR_BANNEDFROMCHAN(chan->getChannelName()));
 		chan->addClient(_Initiator);
-		chan->replyToAllMembers(_Initiator->_NickName + " joined");
 		return 0;
 	}
 

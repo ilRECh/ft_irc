@@ -51,7 +51,7 @@ public:
 	void	setChannelName(
 		Client *who,
 		std::string const & newNameChannel);
-	void replyToAllMembers(std::string msg);
+	void replyToAllMembers(Client * sender, std::string msg)
 	void addToBan(Client * toBanUser);
 	void removeFromBan(Client * unBanUser);
 	bool isBanned(Client * isBannedUser);
