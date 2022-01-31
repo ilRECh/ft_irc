@@ -50,6 +50,11 @@ bool Channel::isOnChannel(Client *whom) const {
 void	Channel::addClient(Client *whom, Client *who) {
 	if (who != NULL and
 		(_ePrivateLevel == CHANNEL_PRIVATE or _ePrivateLevel == CHANNEL_PROTECTED)) {
+		if (_Clients.size() >= _maxUserLimit)
+		{
+			who->updateReplyMessage(ERR_CHANNELISFULL(this->getChannelName()));
+			return ;
+		}
 		if (not getModeIsExist(who, 'o')) {
 			who->updateReplyMessage(ERR_CHANOPRIVSNEEDED(_ChannelName));
 			return ;
