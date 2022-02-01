@@ -60,7 +60,7 @@ void	Channel::addClient(Client *whom, Client *who) {
 			return ;
 		}
 	}
-	replyToAllMembers(whom, "joined");
+	replyToAllMembers("joined", whom);
 	_Clients.insert(whom);
 }
 
@@ -88,13 +88,19 @@ void Channel::removeClient(Client *whom) {
 	}
 }
 
-void Channel::replyToAllMembers(Client * sender, std::string msg){
-	std::set<Client *>::iterator first, last;
-
-	first = _Clients.begin();
-	last = _Clients.end();
-	while(first != last)
-		(*first++)->updateReplyMessage(sender->_NickName + " #" + this->getChannelName() +  " :" + msg + "\r\n");
+void Channel::replyToAllMembers(std::string msg, Client * sender) {
+	std::string Reply = this->getChannelName() +  " :" + msg;
+	if (sender != NULL) {
+		Reply = sender->_NickName + " " + Reply;
+		for (std::set<Client *>::iterator i = _Clients.begin(); i != _Clients.end(); ++i) {
+			if (*i != sender) {
+				(*i)->updateReplyMessage(Reply);
+			}
+		}
+	}
+	for (std::set<Client *>::iterator i = _Clients.begin(); i != _Clients.end(); ++i) {
+		(*i)->updateReplyMessage(Reply);
+	}
 }
 
 void Channel::addToBan(Client * toBanUser)
@@ -102,7 +108,7 @@ void Channel::addToBan(Client * toBanUser)
 	if (!isBanned(toBanUser))
 	{
 		_BanList.insert(toBanUser);
-		replyToAllMembers(toBanUser->_NickName + " banned!");
+		replyToAllMembers(toBanUser->_NickName + " banned");
 	}
 }
 void Channel::removeFromBan(Client * unBanUser)
