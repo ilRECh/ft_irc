@@ -17,7 +17,7 @@ public:
         } else if (not _Initiator->_RealName.empty()) {
             return 0;
         }
-        _Initiator->setPassword(_Arguments[0]);
+        _Initiator->_Password = ft::split(_Argument, " :").end()[-1];
         return 0;
     }
 };/*

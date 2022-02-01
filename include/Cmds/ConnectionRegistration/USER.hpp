@@ -12,8 +12,7 @@ public:
     virtual int run(){
         if (_Initiator->_Registration.IsRegistered == true) {
             return _Initiator->updateReplyMessage(ERR_ALREADYREGISTRED);
-        } else if (_Initiator->_Password.empty() or
-            _Initiator->_NickName.empty()) {
+        } else if (_Initiator->_Password.empty()) {
             return 0;
         } else if (_Arguments.size() < 4 or _Arguments[3].length() < 2 or
         _Arguments[3][0] != ':') {
@@ -24,6 +23,8 @@ public:
         _Initiator->_ServerName = _Arguments[2];
         _Initiator->_RealName = ft::split(_Argument, ":")[1];
         _Initiator->_Registration.IsRegistered = true;
+		_Initiator->updateReplyMessage(RPL_MOTDSTART(_Server.getServerAddrInfo()));
+		_Initiator->updateReplyMessage(RPL_ENDOFMOTD);
         return 0;
     }
 };/*
