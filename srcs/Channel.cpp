@@ -102,7 +102,7 @@ void Channel::addToBan(Client * toBanUser)
 	if (!isBanned(toBanUser))
 	{
 		_BanList.insert(toBanUser);
-		replyToAllMembers(toBanUser->_NickName + " banned!");
+		replyToAllMembers(toBanUser, "banned!");
 	}
 }
 void Channel::removeFromBan(Client * unBanUser)
@@ -110,7 +110,7 @@ void Channel::removeFromBan(Client * unBanUser)
 	if (isBanned(unBanUser))
 	{
 		_BanList.erase(unBanUser);
-		replyToAllMembers(unBanUser->_NickName + " unbanned");
+		replyToAllMembers(unBanUser, "unbanned");
 	}
 }
 bool Channel::isBanned(Client * isBannedUser)
