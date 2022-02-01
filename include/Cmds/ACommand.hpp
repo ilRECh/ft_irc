@@ -37,6 +37,7 @@ public:
     }
     bool setInitiator(Client *User) {
         _Initiator = User;
+#ifndef GODMODE
         if (_Initiator->_Activity.WaitingForPONG and _Name not_eq "PONG") {
             throw("dummy");
         } else if (not _Initiator->_Registration.IsRegistered){
@@ -57,6 +58,7 @@ public:
                 throw("dummy");
             }
         }
+#endif
         if (not _Initiator->_Activity.WaitingForPONG) {
             _Initiator->updateActivity();
         }

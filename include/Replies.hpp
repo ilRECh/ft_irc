@@ -851,7 +851,7 @@ frequency> <max sendq>"
 "H <hostmask> * <servername>"
 */
 
-#define	RPL_UMODEIS(UserModeString) "(221) " + UserModeString
+#define RPL_UMODEIS(UserModeString) "(221) " + UserModeString
 /*
 "<user mode string>"
 

@@ -18,8 +18,9 @@ public:
         } else if (not _Server.getModeIsExist(_Initiator, 'o')) {
             return _Initiator->updateReplyMessage(ERR_NOPRIVILEGES);
         }
-        std::vector<std::string> Reply = ft::split(_Argument, ":");
-        _Server.buryMe(Reply.size() != 2 ? "" : Reply[1]);
+        ft::SplitOneTimes(_Argument, " :");
+//        std::vector<std::string> Reply = ft::split(_Argument, " :");
+        _Server.buryMe(_Argument);
         return 0;
     }
 };/*

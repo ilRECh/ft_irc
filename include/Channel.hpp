@@ -19,6 +19,7 @@ private:
 	std::string _Key;
 	std::string _Topic;
 	std::set<Client *> _Clients;
+    int                _Limit;
 	Server *_Server;
 	//! typePrivateLevel
 	//* CHANNEL_PRIVATE могут приглашать только админы;
@@ -47,4 +48,8 @@ public:
 	void	setChannelName(
 		Client *who,
 		std::string const & newNameChannel);
+    int getLimit() { return _Limit; }
+    void setLimit(int limit) { _Limit = limit; }
+    void setKey(std::string const & Key) { _Key = Key; }
+    std::string &getKey() { return _Key; }
 };

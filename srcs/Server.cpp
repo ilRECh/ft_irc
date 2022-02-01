@@ -7,6 +7,7 @@
 #include "NAMES.hpp"
 #include "PART.hpp"
 #include "TOPIC.hpp"
+#include "MODE.hpp"
 
 // Connection Registration
 #include "PASS.hpp"
@@ -52,6 +53,8 @@ Server::Server(string const & Port, string const & Password)
     _Commands.push_back(new SQUIT(*this));
     _Commands.push_back(new PING(*this));
     _Commands.push_back(new PONG(*this));
+    _Commands.push_back(new PRIVMSG(*this));
+    _Commands.push_back(new MODE(*this));
     addrinfo hints;
 
     memset(&hints, 0, sizeof hints);
@@ -82,7 +85,7 @@ Server::Server(string const & Port, string const & Password)
 }
 
 void Server::buryMe(std::string const & DyingMessage) {
-    _DyingMessage = DyingMessage;
+    _DyingMessage = DyingMessage + "\r\n";
     _LoopListen = false;
 }
 
@@ -139,7 +142,7 @@ void Server::run()
 
         //ReadPart
         int retSelect = 1;
-		fd_set fdsCopy = _FdsSet;
+        fd_set fdsCopy = _FdsSet;
         retSelect = select(_MaxFd + 1, &fdsCopy, NULL, NULL, &tm);
         if (retSelect > 0) {
             readerClient(fdsCopy);
@@ -237,9 +240,9 @@ void Server::proceedCmd(std::pair<std::string, std::string> Cmd, Client *User) {
         try {
             if (Cmd.first == (*command)->_Name) {
                 std::cout << (*command)->_Name << std::endl;
-                    (*command)->setArgument(Cmd.second);
-                    (*command)->setInitiator(User);
-                    (*command)->run();
+                (*command)->setArgument(Cmd.second);
+                (*command)->setInitiator(User);
+                (*command)->run();
                 return ;
             }
         } catch (...) {}
