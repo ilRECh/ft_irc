@@ -2,15 +2,15 @@
 #include "ACommand.hpp"
 
 class WHO : public ACommand {
-	typedef typename std::set<Client *>		setClient;
-	typedef typename std::set<Channel *>	setChannel;
-	typedef typename setClient::iterator	IsetClient;
-	typedef typename setChannel::iterator	IsetChannel;
-	
-	typedef typename std::set<const Client *>	csetClient;
-	typedef typename std::set<const Channel *>	csetChannel;
-	typedef typename csetClient::iterator		IcsetClient;
-	typedef typename csetChannel::iterator		IcsetChannel;
+	typedef std::set<Client *>		setClient;
+	typedef std::set<Channel *>	setChannel;
+	typedef setClient::iterator	IsetClient;
+	typedef setChannel::iterator	IsetChannel;
+
+	typedef std::set<const Client *>	csetClient;
+	typedef std::set<const Channel *>	csetChannel;
+	typedef csetClient::iterator		IcsetClient;
+	typedef csetChannel::iterator		IcsetChannel;
 private:
 	WHO();
 	WHO(WHO const &that);
@@ -51,7 +51,6 @@ private:
 	}
 
 	std::string getResult(setClient & usersToShow){
-		std::string::size_type posStar;
 		std::stringstream result;
 
 		for (IsetClient	start = usersToShow.begin(); start != usersToShow.end(); ++start)
@@ -66,7 +65,7 @@ private:
 public:
 	WHO(Server & Server) : ACommand("WHO", Server) {}
 	virtual ~WHO() {}
-	virtual int run(std::string name = std::string()){
+	virtual int run(){
 		setClient clients = _Server.getClientsByName("*");
 		setClient users_To_Show;
 

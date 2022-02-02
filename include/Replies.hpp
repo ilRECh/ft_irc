@@ -655,7 +655,7 @@ replies.
 ":- <text>"
 */
 
-#define	RPL_ENDOFMOTD ": 376 :End of /MOTD command"
+#define	RPL_ENDOFMOTD(Nick) ": 376 " + Nick + " End of /MOTD command"
 /*
 ":End of /MOTD command"
 

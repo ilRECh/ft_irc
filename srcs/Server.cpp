@@ -30,6 +30,10 @@
 
 // Server Queries And Commands
 
+// UserBasedQueries
+#include "WHO.hpp"
+#include "WHOIS.hpp"
+#include "WHOWAS.hpp"
 
 operators_s Server::_Operators[] = { {"admin", "admin"} };
 
@@ -56,6 +60,9 @@ Server::Server(string const & Port, string const & Password)
 	_Commands.push_back(new AWAY(*this));
     _Commands.push_back(new PONG(*this));
     _Commands.push_back(new MODE(*this));
+    _Commands.push_back(new WHO(*this));
+    _Commands.push_back(new WHOIS(*this));
+    _Commands.push_back(new WHOWAS(*this));
     addrinfo hints;
 
     memset(&hints, 0, sizeof hints);

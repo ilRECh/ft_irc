@@ -2,10 +2,10 @@
 #include "ACommand.hpp"
 
 class WHOWAS : public ACommand {
-	typedef typename std::set<Client *>			setClient;
-	typedef typename std::set<Channel *>		setChannel;
-	typedef typename setClient::iterator		IsetClient;
-	typedef typename setChannel::iterator		IsetChannel;
+	typedef std::set<Client *>			setClient;
+	typedef std::set<Channel *>		setChannel;
+	typedef setClient::iterator		IsetClient;
+	typedef setChannel::iterator		IsetChannel;
 private:
     WHOWAS();
     WHOWAS(WHOWAS const &that);
@@ -40,6 +40,7 @@ public:
 		}
 		std::string result = getResult(clientsToShow);
 		_Initiator->updateReplyMessage(result);
+        return 0;
     }
 };/*
         Parameters: <nickname> [<count> [<server>]]

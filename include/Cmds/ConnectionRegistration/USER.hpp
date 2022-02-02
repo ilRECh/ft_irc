@@ -23,8 +23,6 @@ public:
         _Initiator->_ServerName = _Arguments[2];
         _Initiator->_RealName = ft::split(_Argument, ":")[1];
         _Initiator->_Registration.IsRegistered = true;
-		_Initiator->updateReplyMessage(RPL_MOTDSTART(_Server.getServerAddrInfo()));
-		_Initiator->updateReplyMessage(RPL_ENDOFMOTD);
         return 0;
     }
 };/*

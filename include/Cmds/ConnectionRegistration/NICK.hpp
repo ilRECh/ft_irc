@@ -34,6 +34,9 @@ public:
             }
         }
         _Initiator->_NickName = Nick;
+        _Initiator->updateReplyMessage(RPL_MOTDSTART(_Server.getServerAddrInfo()));
+        _Initiator->updateReplyMessage(RPL_MOTD(std::string("Privet peer")));
+        _Initiator->updateReplyMessage(RPL_ENDOFMOTD(_Initiator->getNickName()));
         return 0;
     }
 };/*
