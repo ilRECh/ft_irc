@@ -41,7 +41,7 @@ private:
 
 		for(icsChannel i = channels.begin(); i != channels.end(); ++i)
 			for(isCLient j = (*i)->_Clients.begin() ;j != (**i)._Clients.end(); ++j)
-				if (!(*i)->getModeIsExist((*j), "ps"))
+				if (!(*i)->getModeIsExist((*j), "s") && !(*i)->getModeIsExist((*j), "p"))
 					clients.insert(*j);
 		result << "+=================================================+" << "\r\n";
 		for(icsCLient i = clients.begin(); i != clients.end(); ++i){

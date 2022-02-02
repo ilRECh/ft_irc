@@ -58,7 +58,6 @@ private:
 		if (_Arguments.size() > 1 && std::tolower(_Arguments[1][0]) == 'o')
 		{			
 			posStar = _Arguments[0].find('*');
-			result << "+============================================+" << "\r\n";
 			if (posStar ==_Arguments[0].find_last_of('*'))
 				for (;start != finish; ++start)
 					result << "(" << shortByStar((*start)->_NickName, posStar) << ")" << ", ";
@@ -70,14 +69,12 @@ private:
 		{
 			for (;start != finish; ++start)
 			{
-				result << "+============================================+" << "\r\n";
 				result << "Nick name: " << (*start)->_NickName << "\r\n";
 				result << "Real name: " << (*start)->_RealName << "\r\n";
 				result << "IP: " << (*start)->getAddresIP() << "\r\n";
 				result << "Last activity: " << (*start)->getLastActivity().getTimeStrStarted() << "\r\n";
 			}
 		}
-		result << "+============================================+" << "\r\n";
 		return result.str();
 	}
 

@@ -60,7 +60,7 @@ void	Channel::addClient(Client *whom, Client *who) {
 			return ;
 		}
 	}
-	replyToAllMembers("joined", whom);
+	replyToAllMembers(whom, "joined");
 	_Clients.insert(whom);
 }
 
@@ -108,7 +108,7 @@ void Channel::addToBan(Client * toBanUser)
 	if (!isBanned(toBanUser))
 	{
 		_BanList.insert(toBanUser);
-		replyToAllMembers(toBanUser->_NickName + " banned");
+		replyToAllMembers("banned!", toBanUser);
 	}
 }
 void Channel::removeFromBan(Client * unBanUser)
@@ -116,7 +116,7 @@ void Channel::removeFromBan(Client * unBanUser)
 	if (isBanned(unBanUser))
 	{
 		_BanList.erase(unBanUser);
-		replyToAllMembers(unBanUser->_NickName + " unbanned");
+		replyToAllMembers("unbanned", unBanUser);
 	}
 }
 bool Channel::isBanned(Client * isBannedUser)

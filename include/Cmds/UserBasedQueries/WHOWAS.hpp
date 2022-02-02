@@ -19,10 +19,8 @@ private:
 			for (IsetClient j = clientsToShow[i].begin(); j != clientsToShow[i].end(); ++j)
 				if ((*j)->getLastActivity().hasTimePassed(MAY_BE_INACTIVE_seconds))
 					toSortVec.push_back(*j);
-		result << "+============================================+" << "\r\n";
 		for (size_t i = 0; i < toSortVec.size(); i++)
 			result << "Nick: " << toSortVec[i]->_NickName << " last activity: " << toSortVec[i]->getLastActivity().getTimeStrStarted() << "\r\n";
-		result << "+============================================+" << "\r\n";
 		return result.str();		
 	}
 public:
