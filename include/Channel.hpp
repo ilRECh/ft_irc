@@ -15,11 +15,13 @@ class Server;
 class Channel : public Modes {
 private:
 	friend class NAMES;
+	friend class JOIN;
+	uint _maxUserLimit;
 	std::string _ChannelName;
 	std::string _Key;
 	std::string _Topic;
 	std::set<Client *> _Clients;
-    int                _Limit;
+	std::set<Client *> _BanList;
 	Server *_Server;
 	//! typePrivateLevel
 	//* CHANNEL_PRIVATE могут приглашать только админы;
@@ -32,7 +34,8 @@ public:
 		std::string const & nameChannel,
 		Client *userAdmin,
 		Server *Server,
-		eChannelPrivateLevel const ePrivateLevel = CHANNEL_PUBLIC);
+		eChannelPrivateLevel const ePrivateLevel = CHANNEL_PUBLIC,
+		uint maxUserLimit = 1024);
 	~Channel() {}
 	
 	std::string const &getTopic() const;
@@ -48,6 +51,10 @@ public:
 	void	setChannelName(
 		Client *who,
 		std::string const & newNameChannel);
+	void replyToAllMembers(std::string msg, Client * sender = NULL);
+	void addToBan(Client * toBanUser);
+	void removeFromBan(Client * unBanUser);
+	bool isBanned(Client * isBannedUser);
     int getLimit() { return _Limit; }
     void setLimit(int limit) { _Limit = limit; }
     void setKey(std::string const & Key) { _Key = Key; }

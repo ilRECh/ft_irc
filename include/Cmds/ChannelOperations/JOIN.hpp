@@ -2,72 +2,171 @@
 #include "ACommand.hpp"
 
 class JOIN : public ACommand {
+	typedef std::string				str;
+	typedef str::iterator			istr;
+	typedef str::reverse_iterator	ristr;
+	typedef std::pair<str, str>		pStrStr;
+	typedef std::vector<str>		vecStr;
+	typedef vecStr::iterator		ivecStr;
+	typedef std::vector<pStrStr>	vpStrStr;
+	typedef vpStrStr::iterator		ivpStrStr;
 private:
     JOIN();
     JOIN(JOIN const &that);
     JOIN& operator=(JOIN const &that);
+	int	preparse(){
+		istr first, last;
+
+		first = _Argument.begin();
+		last = _Argument.end();
+		while
+		(
+			first != last && 
+			(
+				std::isalnum(*first)  ||
+				std::isspace(*first) ||
+				*first == '#' ||
+				*first == '&'
+			)
+		)
+			++first;
+		if (first != last)
+			_Argument = str(first, last);
+		return first != last;
+	}
+
+	vpStrStr smartSplit(){
+		vpStrStr result;
+		_Arguments = ft::split(_Argument, ",");
+		for (ivecStr i = _Arguments.begin(); i != _Arguments.end(); ++i)
+		{
+			*i = ft::strTrim(*i, SPACE_SYMBOLS);
+			if (i->empty())
+				continue ;
+			else if ((*i)[0] == '#')
+			{
+				str s = ft::strTrim(*i, std::string(SPACE_SYMBOLS) + "#");
+				if (s.empty())
+					continue ;
+				result.push_back(pStrStr(*i, str()));
+			}
+			else if ((*i)[0] == '&')
+			{
+				str s1 = ft::strTrim(*i, std::string(SPACE_SYMBOLS) + "&");
+				if (s1.empty())
+					continue ;
+				vecStr vstr = ft::split(*i, SPACE_SYMBOLS);
+				if (vstr.size() != 2)
+					return vpStrStr();
+				result.push_back(pStrStr(vstr.front(), vstr.back()));
+			}
+			else
+			{
+				_Initiator->updateReplyMessage(ERR_NOSUCHCHANNEL(str("null")));
+				return vpStrStr();
+			}
+		}
+	}
+	
+	int join(str & nameChannel, str & password){
+		std::set<Channel *> channels = _Server.getChannelsByName(nameChannel);
+		if (!channels.size())
+			return 1 + _Initiator->updateReplyMessage(ERR_NOSUCHCHANNEL(nameChannel));
+		Channel * chan = *channels.begin();
+		if (chan->_Clients.size() >= chan->_maxUserLimit)
+			return 1 + _Initiator->updateReplyMessage(ERR_CHANNELISFULL(chan->getChannelName()));
+		if (chan->getModeIsExist(chan, 'i'))
+		{
+			if (password.empty())
+				return 1 + _Initiator->updateReplyMessage(ERR_INVITEONLYCHAN(chan->getChannelName()));
+			else if (chan->_Key != password)
+				return 1 + _Initiator->updateReplyMessage(ERR_BADCHANNELKEY(chan->getChannelName()));
+		}
+		if (chan->isBanned(_Initiator))
+			return 1 + _Initiator->updateReplyMessage(ERR_BANNEDFROMCHAN(chan->getChannelName()));
+		chan->addClient(_Initiator);
+		return 0;
+	}
+
+	int	goJoinWithParse(){
+		vpStrStr args = smartSplit();
+		ivpStrStr first, last;
+		int	status = 0;
+
+		first = args.begin();
+		last = args.end();
+
+		if (first == last)
+			return 1;
+		while(first != last)
+			status |= join(first->first, first->second);
+		return status;
+	}
 public:
     JOIN(Server &Server) : ACommand("JOIN", Server) {}
     virtual ~JOIN() {}
     virtual int run(){
-        if (_Arguments.empty()) {
+        if (_Arguments.empty()) 
             return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            
-        }
-        //code
+		else if (preparse())
+			return 1 + _Initiator->updateReplyMessage(ERR_BADCHANMASK(_Argument));
+		else
+        	return goJoinWithParse();
     }
 };/*
-   Parameters: <channel>{,<channel>} [<key>{,<key>}]
+   4.2.1 Join-сообщение
 
-   The JOIN command is used by client to start listening a specific
-   channel. Whether or not a client is allowed to join a channel is
-   checked only by the server the client is connected to; all other
-   servers automatically add the user to the channel when it is received
-   from other servers.  The conditions which affect this are as follows:
+    Команда: JOIN
+  Параметры: <channel>{,<channel>} [<key>{,<key>}]
 
-           1.  the user must be invited if the channel is invite-only;
+  Команда JOIN используется клиентом для входа на канал. Так или иначе,
+  клиенту позволительно войти на канал, проверенным только сервером, к
+  которому подсоединен; все остальные серверы автоматически добавляют
+  пользователя на канал, когда получают уведомление от других серверов.
+  Условия выполнения все того, ниже:
 
-           2.  the user's nick/username/hostname must not match any
-               active bans;
+          1.  Пользователь может быть приглашен, если канал invite-only;
 
-           3.  the correct key (password) must be given if it is set.
+          2.  Никнейм/имя пользователя/имя хоста не должны быть
+              забанеными;
 
-   These are discussed in more detail under the MODE command (see
-   section 4.2.3 for more details).
+          3.  Если установлен пароль, но должен быть верным.
 
-   Once a user has joined a channel, they receive notice about all
-   commands their server receives which affect the channel.  This
-   includes MODE, KICK, PART, QUIT and of course PRIVMSG/NOTICE.  The
-   JOIN command needs to be broadcast to all servers so that each server
-   knows where to find the users who are on the channel.  This allows
-   optimal delivery of PRIVMSG/NOTICE messages to the channel.
+  Это обсуждается в разделе MODE-команды более подробно (см. 4.2.3).
+  Когда пользователи заходят на канал, они получат уведомление о всех
+  командах их сервера. Оно вмещает в себе MODE, KICK, PART, QUIT и,
+  конечно же, PRIVMSG/NOTICE. Команда JOIN требуется для сообщения всем
+  серверам, чтобы каждый сервер знал, где искать пользователей, которые
+  находятся на канале. Это позволяет оптимальную передачу сообщений
+  PRIVMSG/NOTICE в канал.
 
-   If a JOIN is successful, the user is then sent the channel's topic
-   (using RPL_TOPIC) and the list of users who are on the channel (using
-   RPL_NAMREPLY), which must include the user joining.
+  Если JOIN прошла хорошо, пользователь получает топик канала
+  (используя RPL_TOPIC) и список пользователей, которые находятся на канале
+  (используя RPL_NAMREPLY).
 
-   Numeric Replies:
+  Числовые ответы:
 
-           ERR_NEEDMOREPARAMS              ERR_BANNEDFROMCHAN
-           ERR_INVITEONLYCHAN              ERR_BADCHANNELKEY
-           ERR_CHANNELISFULL               ERR_BADCHANMASK
-           ERR_NOSUCHCHANNEL               ERR_TOOMANYCHANNELS
-           RPL_TOPIC
+          ERR_NEEDMOREPARAMS              ERR_BANNEDFROMCHAN
+          ERR_INVITEONLYCHAN              ERR_BADCHANNELKEY
+          ERR_CHANNELISFULL               ERR_BADCHANMASK
+          ERR_NOSUCHCHANNEL               ERR_TOOMANYCHANNELS
+          RPL_TOPIC
 
-   Examples:
+  Примеры:
 
-   JOIN #foobar                    ; join channel #foobar.
+  JOIN #foobar                    ; вход на канал #foobar.
 
-   JOIN &foo fubar                 ; join channel &foo using key "fubar".
+  JOIN &foo fubar                 ; вход на канал &foo, используя ключ "fubar".
 
-   JOIN #foo,&bar fubar            ; join channel #foo using key "fubar"
-                                   and &bar using no key.
+  JOIN #foo,&bar fubar            ; вход на канал #foo, используя ключ "fubar"
+                                  и на канал &bar без использования ключа.
 
-   JOIN #foo,#bar fubar,foobar     ; join channel #foo using key "fubar".
-                                   and channel #bar using key "foobar".
+  JOIN #foo,#bar fubar,foobar     ; вход на канал #foo, используя ключ "fubar".
+                                  и на канал #bar, используя ключ "foobar".
 
-   JOIN #foo,#bar                  ; join channels #foo and #bar.
+  JOIN #foo,#bar                  ; вход на каналы #foo и #bar.
 
-   :WiZ JOIN #Twilight_zone        ; JOIN message from WiZ
+  :WiZ JOIN #Twilight_zone        ; JOIN-сообщение от WiZ
+
 
 */

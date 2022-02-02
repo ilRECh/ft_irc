@@ -36,7 +36,7 @@ operators_s Server::_Operators[] = { {"admin", "admin"} };
 //* Domain can be AF_INET
 Server::Server(string const & Port, string const & Password)
     :   Modes(),
-        _Ip("127.0.0.1"),
+        _Ip("0"),
         _Port(Port),
         _Password(Password),
         _LoopListen(true),
@@ -52,8 +52,9 @@ Server::Server(string const & Port, string const & Password)
     _Commands.push_back(new OPER(*this));
     _Commands.push_back(new SQUIT(*this));
     _Commands.push_back(new PING(*this));
+	_Commands.push_back(new PRIVMSG(*this));
+	_Commands.push_back(new AWAY(*this));
     _Commands.push_back(new PONG(*this));
-    _Commands.push_back(new PRIVMSG(*this));
     _Commands.push_back(new MODE(*this));
     addrinfo hints;
 
@@ -142,12 +143,12 @@ void Server::run()
 
         //ReadPart
         int retSelect = 1;
-        fd_set fdsCopy = _FdsSet;
+		fd_set fdsCopy = _FdsSet;
         retSelect = select(_MaxFd + 1, &fdsCopy, NULL, NULL, &tm);
         if (retSelect > 0) {
             readerClient(fdsCopy);
         } else if (retSelect < 0) {
-            throw std::runtime_error("Error: Select");
+            throw std::runtime_error(std::string("Error: Select") + strerror(errno));
         }
 
         //Reply part
@@ -170,7 +171,10 @@ void Server::run()
                 }
                 ReplyMessage = (*User)->getReplyMessage();
             }
-            send((*User)->_Fd, ReplyMessage.c_str(), ReplyMessage.length(), 0);
+			if (not ReplyMessage.empty()) {
+				std::cout << ReplyMessage << std::endl;
+            	send((*User)->_Fd, ReplyMessage.c_str(), ReplyMessage.length(), 0);
+			}
         }
 
         //Erase part
@@ -235,19 +239,19 @@ void Server::processCmd(Client *Client)
 }
 
 void Server::proceedCmd(std::pair<std::string, std::string> Cmd, Client *User) {
-    for (std::vector<ACommand *>::iterator command = _Commands.begin();
-            command != _Commands.end(); ++command) {
-        try {
-            if (Cmd.first == (*command)->_Name) {
-                std::cout << (*command)->_Name << std::endl;
-                (*command)->setArgument(Cmd.second);
-                (*command)->setInitiator(User);
-                (*command)->run();
-                return ;
-            }
-        } catch (...) {}
-    }
-    User->updateReplyMessage(ERR_UNKNOWNCOMMAND(Cmd.first));
+    try {
+        for (std::vector<ACommand *>::iterator command = _Commands.begin();
+                command != _Commands.end(); ++command) {
+                if (Cmd.first == (*command)->_Name) {
+                    std::cout << (*command)->_Name << std::endl;
+                        (*command)->setArgument(Cmd.second);
+                        (*command)->setInitiator(User);
+                        (*command)->run();
+                    return ;
+                }
+        }
+        User->updateReplyMessage(ERR_UNKNOWNCOMMAND(Cmd.first));
+    } catch (...) {}
 }
 
 std::pair<std::string, std::string> Server::parseCmd(std::string &Cmd)

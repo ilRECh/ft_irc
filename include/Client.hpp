@@ -130,4 +130,5 @@ private:
 	friend class WHO;
 	friend class WHOIS;
 	friend class WHOWAS;
+	friend class Channel;
 };

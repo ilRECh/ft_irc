@@ -21,7 +21,7 @@ private:
 					toSortVec.push_back(*j);
 		result << "+============================================+" << "\r\n";
 		for (size_t i = 0; i < toSortVec.size(); i++)
-			result << "Nick: " << toSortVec[i]->getName() << " last activity: " << toSortVec[i]->getLastActivity().getTimeStrStarted() << "\r\n";
+			result << "Nick: " << toSortVec[i]->_NickName << " last activity: " << toSortVec[i]->getLastActivity().getTimeStrStarted() << "\r\n";
 		result << "+============================================+" << "\r\n";
 		return result.str();		
 	}

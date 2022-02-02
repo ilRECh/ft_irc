@@ -40,4 +40,5 @@ namespace ft {
         return ss.str();
     }
 	bool	wildcard(std::string wildcardExpression, std::string beingToCompare);
+	std::string	strTrim(std::string & str, std::string trimSymbol);
 } // namespace ft
