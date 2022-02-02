@@ -55,11 +55,7 @@ private:
 		std::stringstream result;
 
 		for (IsetClient	start = usersToShow.begin(); start != usersToShow.end(); ++start)
-		{
-			result << "+============================================+" << "\r\n";
-			result << "Name: " << (*start)->_NickName << ", ";
-		}
-		result << "+============================================+" << "\r\n";
+			result << (*start)->_NickName << " ";
 		return result.str();
 	}
 
