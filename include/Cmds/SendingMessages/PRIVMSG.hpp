@@ -41,7 +41,7 @@ public:
 //                    _Initiator->updateReplyMessage(ERR_CANNOTSENDTOCHAN(last_target->getName()));
             }
             else {
-                if (last_target->updateReplyMessage(_Argument))
+                if (last_target->updateReplyMessage(_Initiator->_NickName + " PRIVMSG " + last_target->_NickName + " :" + _Argument))
                     _Initiator->updateReplyMessage(RPL_AWAY(last_target->_Away,last_target->_NickName, _Initiator->getNickName()));
             }
         }

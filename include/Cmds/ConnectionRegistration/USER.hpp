@@ -30,9 +30,6 @@ public:
         } else {
             return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
         }
-        for (std::vector<std::string>::iterator i = _Arguments.begin(); i != _Arguments.end(); ++i) {
-            std::cout << *i << std::endl;
-        }
         _Initiator->_UserName = _Arguments[0];
         _Initiator->_HostName = _Arguments[1];
         _Initiator->_ServerName = _Arguments[2];
@@ -40,7 +37,7 @@ public:
         _Initiator->_Registration.IsRegistered = true;
         _Initiator->updateReplyMessage(RPL_MOTDSTART(_Server.getServerAddrInfo()));
         _Initiator->updateReplyMessage(RPL_MOTD(std::string("Privet peer")));
-        _Initiator->updateReplyMessage(RPL_ENDOFMOTD(_Initiator->getNickName()));
+        _Initiator->updateReplyMessage(RPL_ENDOFMOTD);
         return 0;
     }
 };/*
