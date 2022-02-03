@@ -60,7 +60,7 @@ void	Channel::addClient(Client *whom, Client *who) {
 			return ;
 		}
 	}
-	replyToAllMembers(whom, "joined");
+	replyToAllMembers("joined", whom);
 	_Clients.insert(whom);
 }
 

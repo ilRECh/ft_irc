@@ -66,6 +66,7 @@ private:
 				return vpStrStr();
 			}
 		}
+        return vpStrStr();
 	}
 	
 	int join(str & nameChannel, str & password){
@@ -85,7 +86,9 @@ private:
 		if (chan->isBanned(_Initiator))
 			return 1 + _Initiator->updateReplyMessage(ERR_BANNEDFROMCHAN(chan->getChannelName()));
 		chan->addClient(_Initiator);
-		return 0;
+		return 0 + _Initiator->updateReplyMessage(RPL_TOPIC(chan->getChannelName(), chan->getTopic())) \
+            + _Initiator->updateReplyMessage(RPL_NAMREPLY(chan->getChannelName())) \
+            + _Initiator->updateReplyMessage(RPL_ENDOFNAMES(chan->getChannelName()));
 	}
 
 	int	goJoinWithParse(){

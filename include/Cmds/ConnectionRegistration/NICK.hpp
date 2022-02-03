@@ -1,5 +1,12 @@
 #pragma once
 #include "ACommand.hpp"
+#include <algorithm>
+
+char asciitolower(char in) {
+    if (in <= 'Z' && in >= 'A')
+        return in - ('Z' - 'z');
+    return in;
+}
 
 class NICK : public ACommand {
 private:
@@ -33,6 +40,7 @@ public:
                 goto ErroneusNickNameGiven;
             }
         }
+        std::transform(Nick.begin(), Nick.end(), Nick.begin(), asciitolower);
         _Initiator->_NickName = Nick;
         _Initiator->updateReplyMessage(RPL_MOTDSTART(_Server.getServerAddrInfo()));
         _Initiator->updateReplyMessage(RPL_MOTD(std::string("Privet peer")));

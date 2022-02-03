@@ -401,7 +401,7 @@ respectively.
 query list.
 */
 
-#define RPL_AWAY(Away, Nick) ": 301 " + Nick + " :" + Away
+#define RPL_AWAY(Away, Nick, Target) "301 " + Nick + " " + Target + " " + Away
 /*
 "<nick> :<away message>"
 */
@@ -580,7 +580,7 @@ after processing each list item with <name> being
 the item.
 */
 
-#define	RPL_NAMREPLY		353 /*
+#define	RPL_NAMREPLY(Channel)		": 353 " + Channel /*
 "<channel> :[[@|+]<nick> [[@|+]<nick> [...]]]"
 */
 

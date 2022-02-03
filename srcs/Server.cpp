@@ -8,6 +8,7 @@
 #include "PART.hpp"
 #include "TOPIC.hpp"
 #include "MODE.hpp"
+#include "JOIN.hpp"
 
 // Connection Registration
 #include "PASS.hpp"
@@ -23,6 +24,7 @@
 
 // OPTIONALS
 #include "AWAY.hpp"
+#include "ISON.hpp"
 
 // Sending Messages
 #include "PRIVMSG.hpp"
@@ -63,6 +65,8 @@ Server::Server(string const & Port, string const & Password)
     _Commands.push_back(new WHO(*this));
     _Commands.push_back(new WHOIS(*this));
     _Commands.push_back(new WHOWAS(*this));
+    _Commands.push_back(new ISON(*this));
+    _Commands.push_back(new JOIN(*this));
     addrinfo hints;
 
     memset(&hints, 0, sizeof hints);
@@ -179,7 +183,9 @@ void Server::run()
                 ReplyMessage = (*User)->getReplyMessage();
             }
 			if (not ReplyMessage.empty()) {
-				std::cout << ReplyMessage << std::endl;
+                std::cout << "+=======================out=========================+" << std::endl;
+				std::cout << ReplyMessage;
+                std::cout << "+===================================================+" << std::endl;
             	send((*User)->_Fd, ReplyMessage.c_str(), ReplyMessage.length(), 0);
 			}
         }
@@ -250,7 +256,7 @@ void Server::proceedCmd(std::pair<std::string, std::string> Cmd, Client *User) {
         for (std::vector<ACommand *>::iterator command = _Commands.begin();
                 command != _Commands.end(); ++command) {
                 if (Cmd.first == (*command)->_Name) {
-                    std::cout << (*command)->_Name << std::endl;
+//                    std::cout << (*command)->_Name << std::endl;
                         (*command)->setArgument(Cmd.second);
                         (*command)->setInitiator(User);
                         (*command)->run();
@@ -280,13 +286,15 @@ std::pair<std::string, std::string> Server::parseCmd(std::string &Cmd)
         pair_Second = Cmd.substr(pos_WordEnd);
     }
     std::pair<std::string, std::string> Value(pair_First, pair_Second);
-    std::cout << '|' << Value.first << '|' << Value.second << '|' << '\n';
+//    std::cout << '|' << Value.first << '|' << Value.second << '|' << '\n';
     return Value;
 }
 
 void Server::serverLog(Client *That, std::string const & ReceivedMessage)
 {
-    std::cout << That->getNickName() << ": "<< ReceivedMessage << std::endl;
+    std::cout << "+========================in========================+" << std::endl;
+    std::cout << That->getNickName() << ": "<< ReceivedMessage;
+    std::cout << "+==================================================+" << std::endl;
 }
 
 std::set<Client *> const &Server::getUsers(){
