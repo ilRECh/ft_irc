@@ -401,7 +401,7 @@ respectively.
 query list.
 */
 
-#define RPL_AWAY(Away, Nick, Target) " 301 " + Nick + " " + Target + " " + Away
+#define RPL_AWAY(AwayMsg, NickAway) " 301 " + _Initiator->_NickName + " AWAY " + NickAway + " :" + AwayMsg
 /*
 "<nick> :<away message>"
 */
