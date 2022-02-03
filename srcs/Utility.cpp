@@ -37,6 +37,11 @@ std::vector<std::string> ft::splitByCmds(
         pos_start = pos_end + DelimiterWord.length();
         pos_end = tosplit.find(DelimiterWord, pos_start);
     }
+    if (ret.size() == 3 and ret[0].find("PASS") != ret[0].npos) {
+        std::string tmp = ret[1];
+        ret[1] = ret[2];
+        ret[2] = tmp;
+    }
     return ret;
 }
 

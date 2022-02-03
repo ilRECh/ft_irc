@@ -45,7 +45,6 @@ public:
         } else if (not _Initiator->_Registration.IsRegistered){
             bool IsPassProv = not _Initiator->_Password.empty();
             bool IsNickProv = not _Initiator->_NickName.empty();
-			bool IsUserProv = not _Initiator->_RealName.empty();
             bool IsPASS = _Name == "PASS";
             bool IsNICK = _Name == "NICK";
             bool IsUSER = _Name == "USER";
@@ -54,8 +53,8 @@ public:
                 throw("dummy");
             }
 
-            if ((IsUSER and not IsPassProv) or
-                (IsNICK and (not IsPassProv or not IsUserProv)) or
+            if ((IsNICK and not IsPassProv) or
+                (IsUSER and (not IsPassProv or not IsNickProv)) or
                 not (IsPASS or IsNICK or IsUSER)) {
                 _Initiator->updateReplyMessage(ERR_NOTREGISTERED);
                 throw("dummy");

@@ -12,17 +12,35 @@ public:
     virtual int run(){
         if (_Initiator->_Registration.IsRegistered == true) {
             return _Initiator->updateReplyMessage(ERR_ALREADYREGISTRED);
-        } else if (_Initiator->_Password.empty()) {
-            return 0;
-        } else if (_Arguments.size() < 4 or _Arguments[3].length() < 2 or
-        _Arguments[3][0] != ':') {
+        } else if (not _Argument.empty()) {
+            size_t scFound = _Argument.find(':');
+            if (scFound != _Argument.npos and scFound > 0 and _Argument[scFound + 1] != '\0') {
+                std::string left = _Argument.substr(0, scFound);
+                std::string right = _Argument.substr(scFound + 1);
+                std::vector<std::string> NewArguments = ft::split(left, " ");
+                if (NewArguments.size() == 3) {
+                    NewArguments.push_back(right);
+                    _Arguments = NewArguments;
+                } else {
+                    return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+                }
+            } else {
+                return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+            }
+        } else {
             return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+        }
+        for (std::vector<std::string>::iterator i = _Arguments.begin(); i != _Arguments.end(); ++i) {
+            std::cout << *i << std::endl;
         }
         _Initiator->_UserName = _Arguments[0];
         _Initiator->_HostName = _Arguments[1];
         _Initiator->_ServerName = _Arguments[2];
-        _Initiator->_RealName = ft::split(_Argument, ":")[1];
+        _Initiator->_RealName = _Argument[3];
         _Initiator->_Registration.IsRegistered = true;
+        _Initiator->updateReplyMessage(RPL_MOTDSTART(_Server.getServerAddrInfo()));
+        _Initiator->updateReplyMessage(RPL_MOTD(std::string("Privet peer")));
+        _Initiator->updateReplyMessage(RPL_ENDOFMOTD(_Initiator->getNickName()));
         return 0;
     }
 };/*
