@@ -12,8 +12,7 @@ public:
     virtual int run(){
         if (_Initiator->_Registration.IsRegistered == true) {
             return _Initiator->updateReplyMessage(ERR_ALREADYREGISTRED);
-        } else if (_Initiator->_Password.empty() or
-            _Initiator->_NickName.empty()) {
+        } else if (_Initiator->_Password.empty()) {
             return 0;
         } else if (_Arguments.size() < 4 or _Arguments[3].length() < 2 or
         _Arguments[3][0] != ':') {

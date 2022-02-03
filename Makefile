@@ -35,8 +35,8 @@ build:
 	@mkdir -p $(APP_DIR)
 	@mkdir -p $(OBJ_DIR)
 
-debug: CXXFLAGS += -g -fno-limit-debug-info
-debug: fclean all
+debug: CXXFLAGS += -g -fno-limit-debug-info -D GODMODE
+debug: all
 
 release: CXXFLAGS += -O2
 release: fclean all

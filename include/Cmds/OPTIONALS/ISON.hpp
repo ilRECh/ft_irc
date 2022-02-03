@@ -12,14 +12,18 @@ public:
     virtual int run(){
         if (_Arguments.empty()) {
             return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            
         }
-
-        for (std::set<Client *>::iterator it = _Clients.begin();
-             it != _Clients.end(); ++it)
-        {
-
+        std::string Reply = ":* 302 " + _Initiator->getNickName() + " :";
+        for (std::vector<std::string>::iterator i = _Arguments.begin(); i != _Arguments.end(); ++i) {
+            Client *FoundUser = _Server.getUserByNickName(*i);
+            if (FoundUser != NULL) {
+                Reply += FoundUser->_NickName;
+                if (i + 1 != _Arguments.end()) {
+                    Reply += " ";
+                }
+            }
         }
+        return _Initiator->updateReplyMessage(Reply);
     }
 };/*
         Parameters: <nickname>{<space><nickname>}

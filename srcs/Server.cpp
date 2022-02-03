@@ -7,6 +7,8 @@
 #include "NAMES.hpp"
 #include "PART.hpp"
 #include "TOPIC.hpp"
+#include "MODE.hpp"
+#include "JOIN.hpp"
 
 // Connection Registration
 #include "PASS.hpp"
@@ -22,6 +24,7 @@
 
 // OPTIONALS
 #include "AWAY.hpp"
+#include "ISON.hpp"
 
 // Sending Messages
 #include "PRIVMSG.hpp"
@@ -29,13 +32,17 @@
 
 // Server Queries And Commands
 
+// UserBasedQueries
+#include "WHO.hpp"
+#include "WHOIS.hpp"
+#include "WHOWAS.hpp"
 
 operators_s Server::_Operators[] = { {"admin", "admin"} };
 
 //* Domain can be AF_INET
 Server::Server(string const & Port, string const & Password)
     :   Modes(),
-        _Ip("127.0.0.1"),
+        _Ip("0"),
         _Port(Port),
         _Password(Password),
         _LoopListen(true),
@@ -51,7 +58,15 @@ Server::Server(string const & Port, string const & Password)
     _Commands.push_back(new OPER(*this));
     _Commands.push_back(new SQUIT(*this));
     _Commands.push_back(new PING(*this));
+	_Commands.push_back(new PRIVMSG(*this));
+	_Commands.push_back(new AWAY(*this));
     _Commands.push_back(new PONG(*this));
+    _Commands.push_back(new MODE(*this));
+    _Commands.push_back(new WHO(*this));
+    _Commands.push_back(new WHOIS(*this));
+    _Commands.push_back(new WHOWAS(*this));
+    _Commands.push_back(new ISON(*this));
+    _Commands.push_back(new JOIN(*this));
     addrinfo hints;
 
     memset(&hints, 0, sizeof hints);
@@ -82,7 +97,7 @@ Server::Server(string const & Port, string const & Password)
 }
 
 void Server::buryMe(std::string const & DyingMessage) {
-    _DyingMessage = DyingMessage;
+    _DyingMessage = DyingMessage + "\r\n";
     _LoopListen = false;
 }
 
@@ -144,7 +159,7 @@ void Server::run()
         if (retSelect > 0) {
             readerClient(fdsCopy);
         } else if (retSelect < 0) {
-            throw std::runtime_error("Error: Select");
+            throw std::runtime_error(std::string("Error: Select") + strerror(errno));
         }
 
         //Reply part
@@ -167,7 +182,12 @@ void Server::run()
                 }
                 ReplyMessage = (*User)->getReplyMessage();
             }
-            send((*User)->_Fd, ReplyMessage.c_str(), ReplyMessage.length(), 0);
+			if (not ReplyMessage.empty()) {
+                std::cout << "+=======================out=========================+" << std::endl;
+				std::cout << ReplyMessage;
+                std::cout << "+===================================================+" << std::endl;
+            	send((*User)->_Fd, ReplyMessage.c_str(), ReplyMessage.length(), 0);
+			}
         }
 
         //Erase part
@@ -236,7 +256,7 @@ void Server::proceedCmd(std::pair<std::string, std::string> Cmd, Client *User) {
         for (std::vector<ACommand *>::iterator command = _Commands.begin();
                 command != _Commands.end(); ++command) {
                 if (Cmd.first == (*command)->_Name) {
-                    std::cout << (*command)->_Name << std::endl;
+//                    std::cout << (*command)->_Name << std::endl;
                         (*command)->setArgument(Cmd.second);
                         (*command)->setInitiator(User);
                         (*command)->run();
@@ -266,13 +286,15 @@ std::pair<std::string, std::string> Server::parseCmd(std::string &Cmd)
         pair_Second = Cmd.substr(pos_WordEnd);
     }
     std::pair<std::string, std::string> Value(pair_First, pair_Second);
-    std::cout << '|' << Value.first << '|' << Value.second << '|' << '\n';
+//    std::cout << '|' << Value.first << '|' << Value.second << '|' << '\n';
     return Value;
 }
 
 void Server::serverLog(Client *That, std::string const & ReceivedMessage)
 {
-    std::cout << That->getNickName() << ": "<< ReceivedMessage << std::endl;
+    std::cout << "+========================in========================+" << std::endl;
+    std::cout << That->getNickName() << ": "<< ReceivedMessage;
+    std::cout << "+==================================================+" << std::endl;
 }
 
 std::set<Client *> const &Server::getUsers(){

@@ -2,15 +2,15 @@
 #include "ACommand.hpp"
 
 class WHOIS : public ACommand {
-	typedef typename std::set<Client *>		setClient;
-	typedef typename std::set<Channel *>	setChannel;
-	typedef typename setClient::iterator	IsetClient;
-	typedef typename setChannel::iterator	IsetChannel;
+	typedef std::set<Client *>		setClient;
+	typedef std::set<Channel *>	setChannel;
+	typedef setClient::iterator	IsetClient;
+	typedef setChannel::iterator	IsetChannel;
 	
-	typedef typename std::set<const Client *>	csetClient;
-	typedef typename std::set<const Channel *>	csetChannel;
-	typedef typename csetClient::iterator		IcsetClient;
-	typedef typename csetChannel::iterator		IcsetChannel;
+	typedef std::set<const Client *>	csetClient;
+	typedef std::set<const Channel *>	csetChannel;
+	typedef csetClient::iterator		IcsetClient;
+	typedef csetChannel::iterator		IcsetChannel;
 private:
 	WHOIS();
 	WHOIS(WHOIS const &that);

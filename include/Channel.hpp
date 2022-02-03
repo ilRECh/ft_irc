@@ -51,8 +51,12 @@ public:
 	void	setChannelName(
 		Client *who,
 		std::string const & newNameChannel);
-	void replyToAllMembers(Client * sender, std::string msg);
+	void replyToAllMembers(std::string msg, Client * sender = NULL);
 	void addToBan(Client * toBanUser);
 	void removeFromBan(Client * unBanUser);
 	bool isBanned(Client * isBannedUser);
+    uint getLimit() { return _maxUserLimit; }
+    void setLimit(int limit) { _maxUserLimit = limit; }
+    void setKey(std::string const & Key) { _Key = Key; }
+    std::string &getKey() { return _Key; }
 };

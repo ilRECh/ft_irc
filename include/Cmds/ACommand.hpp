@@ -39,11 +39,13 @@ public:
     }
     bool setInitiator(Client *User) {
         _Initiator = User;
+#ifndef GODMODE
         if (_Initiator->_Activity.WaitingForPONG and _Name not_eq "PONG") {
             throw("dummy");
         } else if (not _Initiator->_Registration.IsRegistered){
             bool IsPassProv = not _Initiator->_Password.empty();
             bool IsNickProv = not _Initiator->_NickName.empty();
+			bool IsUserProv = not _Initiator->_RealName.empty();
             bool IsPASS = _Name == "PASS";
             bool IsNICK = _Name == "NICK";
             bool IsUSER = _Name == "USER";
@@ -51,14 +53,15 @@ public:
             if (IsPASS and IsNickProv) {
                 throw("dummy");
             }
-            
-            if ((IsNICK and not IsPassProv) or
-                (IsUSER and (not IsPassProv or not IsNickProv)) or
+
+            if ((IsUSER and not IsPassProv) or
+                (IsNICK and (not IsPassProv or not IsUserProv)) or
                 not (IsPASS or IsNICK or IsUSER)) {
                 _Initiator->updateReplyMessage(ERR_NOTREGISTERED);
                 throw("dummy");
             }
         }
+#endif
         if (not _Initiator->_Activity.WaitingForPONG) {
             _Initiator->updateActivity();
         }

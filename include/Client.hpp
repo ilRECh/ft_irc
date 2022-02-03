@@ -2,8 +2,13 @@
 
 #include "ft.hpp"
 
+#ifndef GODMODE
 #define MAY_BE_UNREGISTERED_seconds 40
 #define MAY_BE_INACTIVE_seconds 100
+#else
+#define MAY_BE_UNREGISTERED_seconds 100000
+#define MAY_BE_INACTIVE_seconds 100000
+#endif
 
 using std::string;
 using std::vector;
