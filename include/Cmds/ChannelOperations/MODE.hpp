@@ -49,7 +49,7 @@ private:
                     if ((i + 1) > _Arguments.size())
                         return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
                     if (_Arguments[1][0] == '+'){
-                        targetChannel->setLimit(stoi(_Arguments[i + 1]));
+                        targetChannel->setLimit(std::atoi(_Arguments[i + 1].c_str()));
                         targetChannel->setMode(targetChannel, _Arguments[1][i]);
                     }
                     else {
