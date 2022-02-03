@@ -23,40 +23,20 @@ Channel::Channel(
 	_Clients.insert(userAdmin);
 }
 
-void	Channel::setLevelPrivate(
-	Client *who,
-	eChannelPrivateLevel const ePrivateLevel){
-	if (not getModeIsExist(who, 'o')) {
-		who->updateReplyMessage(ERR_CHANOPRIVSNEEDED(_ChannelName));
-		return ;
-	}
-	_ePrivateLevel = ePrivateLevel;
-}
-
-void Channel::setChannelName(
-	Client *who,
-	std::string const &newNameChannel) {
-	if (not getModeIsExist(who, 'o')) {
-		who->updateReplyMessage(ERR_CHANOPRIVSNEEDED(_ChannelName));
-		return ;
-	}
-	_ChannelName = newNameChannel;
-}
-
 bool Channel::isOnChannel(Client *whom) const {
 	return _Clients.find(whom) != _Clients.end();
 }
 
-void	Channel::addClient(Client *whom, Client *who) {
-	if (who != NULL and
+void	Channel::addClient(Client *whom, Client *_Initiator) {
+	if (_Initiator != NULL and
 		(_ePrivateLevel == CHANNEL_PRIVATE or _ePrivateLevel == CHANNEL_PROTECTED)) {
 		if (_Clients.size() >= _maxUserLimit)
 		{
-			who->updateReplyMessage(ERR_CHANNELISFULL(this->getChannelName()));
+			_Initiator->updateReplyMessage(ERR_CHANNELISFULL(this->getChannelName()));
 			return ;
 		}
-		if (not getModeIsExist(who, 'o')) {
-			who->updateReplyMessage(ERR_CHANOPRIVSNEEDED(_ChannelName));
+		if (not getModeIsExist(_Initiator, 'o')) {
+			_Initiator->updateReplyMessage(ERR_CHANOPRIVSNEEDED(_ChannelName));
 			return ;
 		}
 	}

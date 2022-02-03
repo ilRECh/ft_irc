@@ -4,7 +4,7 @@
 /*                               Error Replies.                               */
 /* -------------------------------------------------------------------------- */
 
-#define ERR_NOSUCHNICK(Initiator, NickName) "401 " + Initiator + " " + NickName + " :No such nick/channel"
+#define ERR_NOSUCHNICK(NickName) "401 " + _Initiator->_NickName + " " + NickName + " :No such nick/channel"
 /*
 "<nickname> :No such nick/channel"
 
@@ -12,21 +12,21 @@
 command is currently unused.
 */
 
-#define ERR_NOSUCHSERVER(Initiator, ServerName) "402 " + Initiator + " " + ServerName + " :No such server"
+#define ERR_NOSUCHSERVER(ServerName) "402 " + _Initiator->_NickName + " " + ServerName + " :No such server"
 /*"<server name> :No such server"
 
 - Used to indicate the server name given currently
 doesn`t exist.
 */
 
-#define ERR_NOSUCHCHANNEL(Initiator, ChannelName) "403 " + Initiator + " " + ChannelName + " :No such channel"
+#define ERR_NOSUCHCHANNEL(ChannelName) "403 " + _Initiator->_NickName + " " + ChannelName + " :No such channel"
 /*
 "<channel name> :No such channel"
 
 - Used to indicate the given channel name is invalid.
 */
 
-#define ERR_CANNOTSENDTOCHAN(Initiator, ChannelName) "404 " + Initiator + " " + ChannelName + " :Cannot send to channel"
+#define ERR_CANNOTSENDTOCHAN(ChannelName) "404 " + _Initiator->_NickName + " " + ChannelName + " :Cannot send to channel"
 /*
 "<channel name> :Cannot send to channel"
 
@@ -36,7 +36,7 @@ a channel which has mode +m set and is trying to send
 a PRIVMSG message to that channel.
 */
 
-#define ERR_TOOMANYCHANNELS(Initiator, ChannelName) "405 " + Initiator + " " + ChannelName + " :You have joined too many"
+#define ERR_TOOMANYCHANNELS(ChannelName) "405 " + _Initiator->_NickName + " " + ChannelName + " :You have joined too many"
 /*
 "<channel name> :You have joined too many \
 channels"
@@ -46,7 +46,7 @@ number of allowed channels and they try to join
 another channel.
 */
 
-#define ERR_WASNOSUCHNICK(Initiator, NickName) "406 " + Initiator + " " + NickName + " :There was no such nickname"
+#define ERR_WASNOSUCHNICK(NickName) "406 " + _Initiator->_NickName + " " + NickName + " :There was no such nickname"
 /*
 "<nickname> :There was no such nickname"
 
@@ -54,7 +54,7 @@ another channel.
 information for that nickname.
 */
 
-#define ERR_TOOMANYTARGETS(Initiator, Target) "407 " + Initiator + " " + Target + " :Duplicate recipients. No message \
+#define ERR_TOOMANYTARGETS(Target) "407 " + _Initiator->_NickName + " " + Target + " :Duplicate recipients. No message \
 delivered"
 
 /*
@@ -66,7 +66,7 @@ PRIVMSG/NOTICE using the user@host destination format
 and for a user@host which has several occurrences.
 */
 
-#define ERR_NOORIGIN (Initiator) "409 " + Initiator + " No origin specified"
+#define ERR_NOORIGIN "409 " + _Initiator->_NickName + " No origin specified"
 /*
 ":No origin specified"
 
@@ -75,22 +75,22 @@ which is required since these commands must work
 without valid prefixes.
 */
 
-#define ERR_NORECIPIENT(Initiator, Command) "411 " + Initiator + " No recipient given (" + Command + ")"
+#define ERR_NORECIPIENT(Command) "411 " + _Initiator->_NickName + " No recipient given (" + Command + ")"
 /*
 ":No recipient given (<command>)"
 */
 
-#define ERR_NOTEXTTOSEND (Initiator) "412 " + Initiator + " No text to send"
+#define ERR_NOTEXTTOSEND "412 " + _Initiator->_NickName + " No text to send"
 /*
 ":No text to send"
 */
 
-#define ERR_NOTOPLEVEL(Initiator, Mask) "413 " + Initiator + " " + Mask + " :No toplevel domain specified"
+#define ERR_NOTOPLEVEL(Mask) "413 " + _Initiator->_NickName + " " + Mask + " :No toplevel domain specified"
 /*
 "<mask> :No toplevel domain specified"
 */
 
-#define ERR_WILDTOPLEVEL(Initiator, Mask) "414 " + Initiator + " " + Mask + " :Wildcard in toplevel domain"
+#define ERR_WILDTOPLEVEL(Mask) "414 " + _Initiator->_NickName + " " + Mask + " :Wildcard in toplevel domain"
 /*
 "<mask> :Wildcard in toplevel domain"
 
@@ -109,14 +109,14 @@ are returned when an invalid use of
 command sent is unknown by the server.
 */
 
-#define ERR_NOMOTD (Initiator) "422 " + Initiator + " MOTD File is missing"
+#define ERR_NOMOTD "422 " + _Initiator->_NickName + " MOTD File is missing"
 /*
 ":MOTD File is missing"
 
 - Server`s MOTD file could not be opened by the server.
 */
 
-#define ERR_NOADMININFO(Initiator, Server) "423 " + Initiator + " " + Server + " :No administrative info available"
+#define ERR_NOADMININFO(Server) "423 " + _Initiator->_NickName + " " + Server + " :No administrative info available"
 /*
 "<server> :No administrative info available"
 
@@ -125,7 +125,7 @@ when there is an error in finding the appropriate
 information.
 */
 
-#define ERR_FILEERROR(Initiator, FileOp, File) "424 " + Initiator + " File error doing " + FileOp + " on " + File
+#define ERR_FILEERROR(FileOp, File) "424 " + _Initiator->_NickName + " File error doing " + FileOp + " on " + File
 /*
 ":File error doing <file op> on <file>"
 
@@ -133,7 +133,7 @@ information.
 operation during the processing of a message.
 */
 
-#define ERR_NONICKNAMEGIVEN (Initiator) "431 " + Initiator + " No nickname given"
+#define ERR_NONICKNAMEGIVEN "431 " + _Initiator->_NickName + " No nickname given"
 /*
 ":No nickname given"
 
@@ -141,7 +141,7 @@ operation during the processing of a message.
 command and isn`t found.
 */
 
-#define ERR_ERRONEUSNICKNAME(Initiator, Nick) "432 " + Initiator + " " + Nick + " :Erroneus nickname"
+#define ERR_ERRONEUSNICKNAME(Nick) "432 " + _Initiator->_NickName + " " + Nick + " :Erroneus nickname"
 /*
 "<nick> :Erroneus nickname"
 
@@ -150,7 +150,7 @@ characters which do not fall in the defined set.  See
 section x.x.x for details on valid nicknames.
 */
 
-#define ERR_NICKNAMEINUSE(Initiator, Nick) "433 " + Initiator + " " + Nick + " :Nickname is already in use"
+#define ERR_NICKNAMEINUSE(Nick) "433 " + _Initiator->_NickName + " " + Nick + " :Nickname is already in use"
 /*
 "<nick> :Nickname is already in use"
 
@@ -159,7 +159,7 @@ in an attempt to change to a currently existing
 nickname.
 */
 
-#define ERR_NICKCOLLISION(Initiator, Nick) "436 " + Initiator + " " + Nick + " :Nickname collision KILL"
+#define ERR_NICKCOLLISION(Nick) "436 " + _Initiator->_NickName + " " + Nick + " :Nickname collision KILL"
 /*
 "<nick> :Nickname collision KILL"
 
@@ -168,7 +168,7 @@ nickname collision (registered of a NICK that
 already exists by another server).
 */
 
-#define ERR_USERNOTINCHANNEL(Initiator, Nick, Channel) "441 " + Initiator + " " + Nick + Channel + " :They aren`t on that channel"
+#define ERR_USERNOTINCHANNEL(Nick, Channel) "441 " + _Initiator->_NickName + " " + Nick + Channel + " :They aren`t on that channel"
 /*
 "<nick> <channel> :They aren`t on that channel"
 
@@ -176,7 +176,7 @@ already exists by another server).
 user of the command is not on the given channel.
 */
 
-#define ERR_NOTONCHANNEL(Initiator, Channel) "442 " + Initiator + " " + Channel + " :You're not on that channel"
+#define ERR_NOTONCHANNEL(Channel) "442 " + _Initiator->_NickName + " " + Channel + " :You're not on that channel"
 /*
 "<channel> :You're not on that channel"
 
@@ -185,7 +185,7 @@ perform a channel effecting command for which the
 client isn`t a member.
 */
 
-#define ERR_USERONCHANNEL(Initiator, User, Channel) "443 " + Initiator + " " + User + Channel + " :is already on channel"
+#define ERR_USERONCHANNEL(User, Channel) "443 " + _Initiator->_NickName + " " + User + Channel + " :is already on channel"
 /*
 "<user> <channel> :is already on channel"
 
@@ -193,7 +193,7 @@ client isn`t a member.
 channel they are already on.
 */
 
-#define ERR_NOLOGIN(Initiator, User) "444 " + Initiator + " " + User + " :User not logged in"
+#define ERR_NOLOGIN(User) "444 " + _Initiator->_NickName + " " + User + " :User not logged in"
 /*
 "<user> :User not logged in"
 
@@ -202,7 +202,7 @@ user was unable to be performed since they were not
 logged in.
 */
 
-#define ERR_SUMMONDISABLED (Initiator) "445 " + Initiator + " SUMMON has been disabled"
+#define ERR_SUMMONDISABLED "445 " + _Initiator->_NickName + " SUMMON has been disabled"
 /*
 ":SUMMON has been disabled"
 
@@ -210,7 +210,7 @@ logged in.
 returned by any server which does not implement it.
 */
 
-#define ERR_USERSDISABLED (Initiator) "446 " + Initiator + " USERS has been disabled"
+#define ERR_USERSDISABLED "446 " + _Initiator->_NickName + " USERS has been disabled"
 /*
 ":USERS has been disabled"
 
@@ -218,7 +218,7 @@ returned by any server which does not implement it.
 returned by any server which does not implement it.
 */
 
-#define ERR_NOTREGISTERED (Initiator) "451 " + Initiator + " You have not registered"
+#define ERR_NOTREGISTERED "451 " + _Initiator->_NickName + " You have not registered"
 /*
 ":You have not registered"
 
@@ -227,7 +227,7 @@ must be registered before the server will allow it
 to be parsed in detail.
 */
 
-#define ERR_NEEDMOREPARAMS(Initiator, Command) "461 " + Initiator + " " + Command + " :Not enough parameters"
+#define ERR_NEEDMOREPARAMS(Command) "461 " + _Initiator->_NickName + " " + Command + " :Not enough parameters"
 /*
 "<command> :Not enough parameters"
 
@@ -236,7 +236,7 @@ indicate to the client that it didn`t supply enough
 parameters.
 */
 
-#define ERR_ALREADYREGISTRED (Initiator) "462 " + Initiator + " You may not reregister"
+#define ERR_ALREADYREGISTRED "462 " + _Initiator->_NickName + " You may not reregister"
 /*
 ":You may not reregister"
 
@@ -245,7 +245,7 @@ change part of the registered details (such as
 password or user details from second USER message).
 */
 
-#define ERR_NOPERMFORHOST (Initiator) "463 " + Initiator + " Your host isn`t among the privileged"
+#define ERR_NOPERMFORHOST "463 " + _Initiator->_NickName + " Your host isn`t among the privileged"
 /*
 ":Your host isn`t among the privileged"
 
@@ -255,7 +255,7 @@ connections from the host the attempted connection
 is tried.
 */
 
-#define ERR_PASSWDMISMATCH (Initiator) "464 " + Initiator + " Password incorrect"
+#define ERR_PASSWDMISMATCH "464 " + _Initiator->_NickName + " Password incorrect"
 /*
 ":Password incorrect"
 
@@ -264,7 +264,7 @@ a connection for which a password was required and
 was either not given or incorrect.
 */
 
-#define ERR_YOUREBANNEDCREEP (Initiator) "465 " + Initiator + " You are banned from this server"
+#define ERR_YOUREBANNEDCREEP "465 " + _Initiator->_NickName + " You are banned from this server"
 /*
 ":You are banned from this server"
 
@@ -273,42 +273,42 @@ yourself with a server which has been setup to
 explicitly deny connections to you.
 */
 
-#define ERR_KEYSET(Initiator, Channel) "467 " + Initiator + " " + Channel + " :Channel key already set"
+#define ERR_KEYSET(Channel) "467 " + _Initiator->_NickName + " " + Channel + " :Channel key already set"
 /*
 "<channel> :Channel key already set"
 */
 
-#define ERR_CHANNELISFULL(Initiator, Channel) "471 " + Initiator + " " + Channel + " :Cannot join channel (+l)"
+#define ERR_CHANNELISFULL(Channel) "471 " + _Initiator->_NickName + " " + Channel + " :Cannot join channel (+l)"
 /*
 "<channel> :Cannot join channel (+l)"
 */
 
-#define ERR_UNKNOWNMODE(Initiator, Char) "472 " + Initiator + " " + Char + " :is unknown mode char to me"
+#define ERR_UNKNOWNMODE(Char) "472 " + _Initiator->_NickName + " " + Char + " :is unknown mode char to me"
 /*
 "<char> :is unknown mode char to me"
 */
 
-#define ERR_INVITEONLYCHAN(Initiator, Channel) "473 " + Initiator + " " + Channel + " :Cannot join channel (+i)"
+#define ERR_INVITEONLYCHAN(Channel) "473 " + _Initiator->_NickName + " " + Channel + " :Cannot join channel (+i)"
 /*
 "<channel> :Cannot join channel (+i)"
 */
 
-#define ERR_BANNEDFROMCHAN(Initiator, Channel) "474 " + Initiator + " " + Channel + " :Cannot join channel (+b)"
+#define ERR_BANNEDFROMCHAN(Channel) "474 " + _Initiator->_NickName + " " + Channel + " :Cannot join channel (+b)"
 /*
 "<channel> :Cannot join channel (+b)"
 */
 
-#define ERR_BADCHANNELKEY(Initiator, Channel) "475 " + Initiator + " " + Channel + " :Cannot join channel (+k)"
+#define ERR_BADCHANNELKEY(Channel) "475 " + _Initiator->_NickName + " " + Channel + " :Cannot join channel (+k)"
 /*
 "<channel> :Cannot join channel (+k)"
 */
 
-#define ERR_BADCHANMASK(Initiator, Channel) "476 " + Initiator + " " + Channel + " :Bad parse, use"
+#define ERR_BADCHANMASK(Channel) "476 " + _Initiator->_NickName + " " + Channel + " :Bad parse, use"
 /*
 "<channel> :Bad parse & #"
 */
 
-#define ERR_NOPRIVILEGES (Initiator) "481 " + Initiator + " Permission Denied- You're not an IRC operator"
+#define ERR_NOPRIVILEGES "481 " + _Initiator->_NickName + " Permission Denied- You're not an IRC operator"
 /*
 ":Permission Denied- You're not an IRC operator"
 
@@ -317,7 +317,7 @@ must return this error to indicate the attempt was
 unsuccessful.
 */
 
-#define ERR_CHANOPRIVSNEEDED(Initiator, Channel) "482 " + Initiator + " " + Channel + " :You're not channel operator"
+#define ERR_CHANOPRIVSNEEDED(Channel) "482 " + _Initiator->_NickName + " " + Channel + " :You're not channel operator"
 /*
 "<channel> :You're not channel operator"
 
@@ -327,7 +327,7 @@ making the attempt is not a chanop on the specified
 channel.
 */
 
-#define ERR_CANTKILLSERVER (Initiator) "483 " + Initiator + " You cant kill a server!"
+#define ERR_CANTKILLSERVER "483 " + _Initiator->_NickName + " You cant kill a server!"
 /*
 ":You cant kill a server!"
 
@@ -336,7 +336,7 @@ are to be refused and this error returned directly
 to the client.
 */
 
-#define ERR_NOOPERHOST (Initiator) "491 " + Initiator + " No O-lines for your host"
+#define ERR_NOOPERHOST "491 " + _Initiator->_NickName + " No O-lines for your host"
 /*
 ":No O-lines for your host"
 
@@ -346,7 +346,7 @@ client`s host as an operator, this error must be
 returned.
 */
 
-#define ERR_UMODEUNKNOWNFLAG (Initiator) "501 " + Initiator + " Unknown MODE flag"
+#define ERR_UMODEUNKNOWNFLAG "501 " + _Initiator->_NickName + " Unknown MODE flag"
 /*
 ":Unknown MODE flag"
 
@@ -355,7 +355,7 @@ message was sent with a nickname parameter and that
 the a mode flag sent was not recognized.
 */
 
-#define ERR_USERSDONTMATCH (Initiator) "502 " + Initiator + " Cant change mode for other users"
+#define ERR_USERSDONTMATCH "502 " + _Initiator->_NickName + " Cant change mode for other users"
 /*
 ":Cant change mode for other users"
 
@@ -367,11 +367,11 @@ user mode for a user other than themselves.
 /*                             Command responses.                             */
 /* -------------------------------------------------------------------------- */
 
-#define	RPL_NONE	Initiator, 	300 /*
+#define	RPL_NONE		300 /*
 Dummy reply number. Not used.
 */
 
-#define RPL_USERHOST(Initiator, Reply1, Reply2) "302 " + Initiator + " " +                                         \
+#define RPL_USERHOST(Reply1, Reply2) "302 " + _Initiator->_NickName + " " +                                         \
 											 (not Reply1.empty() and not Reply2.empty()) \
 										 ? Reply1 + "{ " + Reply2 + "}"                  \
 										 : ""
@@ -390,7 +390,7 @@ whether the client has set an AWAY message or not
 respectively.
 */
 
-#define RPL_ISON(Initiator, Nick1, Nick2) "302 " + Initiator + " " +                                       \
+#define RPL_ISON(Nick1, Nick2) "302 " + _Initiator->_NickName + " " +                                       \
 									   (not Nick1.empty() and not Nick2.empty()) \
 								   ? Nick1 + " { " + Nick2 + "}"                 \
 								   : ""
@@ -401,17 +401,17 @@ respectively.
 query list.
 */
 
-#define RPL_AWAY(Initiator, Away, Nick, Target) "301 " + Nick + " " + Target + " " + Away
+#define RPL_AWAY(Away, Nick, Target) "301 " + Nick + " " + Target + " " + Away
 /*
 "<nick> :<away message>"
 */
 
-#define RPL_UNAWAY (Initiator) "305 " + Initiator + " You are no longer marked as being away"
+#define RPL_UNAWAY "305 " + _Initiator->_NickName + " You are no longer marked as being away"
 /*
 ":You are no longer marked as being away"
 */
 
-#define RPL_NOWAWAY (Initiator) "306 " + Initiator + " You have been marked as being away"
+#define RPL_NOWAWAY "306 " + _Initiator->_NickName + " You have been marked as being away"
 /*
 ":You have been marked as being away"
 
@@ -423,32 +423,32 @@ Replies RPL_UNAWAY and RPL_NOWAWAY are sent when the
 client removes and sets an AWAY message.
 */
 
-#define RPL_WHOISUSER(Initiator, Nick, User, Host, RealName) "311 " + Initiator + " " + Nick + " " + User + " " + Host + " * :" + RealName
+#define RPL_WHOISUSER(Nick, User, Host, RealName) "311 " + _Initiator->_NickName + " " + Nick + " " + User + " " + Host + " * :" + RealName
 /* 
 "<nick> <user> <host> * :<real name>"
 */
 
-#define RPL_WHOISSERVER(Initiator, Nick, Server, ServerInfo) "312 " + Initiator + " " + Nick + " " + Server + " :" + ServerInfo
+#define RPL_WHOISSERVER(Nick, Server, ServerInfo) "312 " + _Initiator->_NickName + " " + Nick + " " + Server + " :" + ServerInfo
 /*
 "<nick> <server> :<server info>"
 */
 
-#define RPL_WHOISOPERATOR(Initiator, Nick) "313 " + Initiator + " " + Nick + " :is an IRC operator"
+#define RPL_WHOISOPERATOR(Nick) "313 " + _Initiator->_NickName + " " + Nick + " :is an IRC operator"
 /*
 "<nick> :is an IRC operator"
 */
 
-#define RPL_WHOISIDLE(Initiator, Nick, Integer) "317 " + Initiator + " " + Nick + " " + Integer + " :seconds idle"
+#define RPL_WHOISIDLE(Nick, Integer) "317 " + _Initiator->_NickName + " " + Nick + " " + Integer + " :seconds idle"
 /*
 "<nick> <integer> :seconds idle"
 */
 
-#define RPL_ENDOFWHOIS(Initiator, Nick) "318 " + Initiator + " " + Nick + " :End of /WHOIS list"
+#define RPL_ENDOFWHOIS(Nick) "318 " + _Initiator->_NickName + " " + Nick + " :End of /WHOIS list"
 /*
 "<nick> :End of /WHOIS list"
 */
 
-#define RPL_WHOISCHANNELS(Initiator, Nick, Symbol, Channel) "319 " + Initiator + " " + Nick + " :{" + Symbol + Channel + " }"
+#define RPL_WHOISCHANNELS(Nick, Symbol, Channel) "319 " + _Initiator->_NickName + " " + Nick + " :{" + Symbol + Channel + " }"
 /*
 "<nick> :{[@|+]<channel><space>}"
 
@@ -468,12 +468,12 @@ channel.  The RPL_ENDOFWHOIS reply is used to mark
 the end of processing a WHOIS message.
 */
 
-#define RPL_WHOWASUSER(Initiator, Nick, User, Host, RealName) "314 " + Initiator + " " + Nick + " " + User + " " + Host + " * :" + RealName
+#define RPL_WHOWASUSER(Nick, User, Host, RealName) "314 " + _Initiator->_NickName + " " + Nick + " " + User + " " + Host + " * :" + RealName
 /*
 "<nick> <user> <host> * :<real name>"
 */
 
-#define RPL_ENDOFWHOWAS(Initiator, Nick) "369 " + Initiator + " " + Nick + " :End of WHOWAS"
+#define RPL_ENDOFWHOWAS(Nick) "369 " + _Initiator->_NickName + " " + Nick + " :End of WHOWAS"
 /*
 "<nick> :End of WHOWAS"
 
@@ -486,18 +486,18 @@ be RPL_ENDOFWHOWAS (even if there was only one reply
 and it was an error).
 */
 
-#define RPL_LISTSTART (Initiator) "321 " + Initiator + " " \
+#define RPL_LISTSTART "321 " + _Initiator->_NickName + " " \
 					  "Channel :Users  Name"
 /*
 "Channel :Users  Name"
 */
 
-#define RPL_LIST(Initiator, Channel, Visible, Topic) "322 " + Initiator + " " + Channel + " # " + Visible + " :" + Topic
+#define RPL_LIST(Channel, Visible, Topic) "322 " + _Initiator->_NickName + " " + Channel + " # " + Visible + " :" + Topic
 /*
 "<channel> <# visible> :<topic>"
 */
 
-#define RPL_LISTEND (Initiator) "323 " + Initiator + " End of /LIST"
+#define RPL_LISTEND "323 " + _Initiator->_NickName + " End of /LIST"
 /*
 ":End of /LIST"
 
@@ -508,17 +508,17 @@ no channels available to return, only the start
 and end reply must be sent.
 */
 
-#define RPL_CHANNELMODEIS(Initiator, Channel, Mode, ModeParams) "324 " + Initiator + " " + Channel + " " + Mode + " " + ModeParams
+#define RPL_CHANNELMODEIS(Channel, Mode, ModeParams) "324 " + _Initiator->_NickName + " " + Channel + " " + Mode + " " + ModeParams
 /*
 "<channel> <mode> <mode params>"
 */
 
-#define RPL_NOTOPIC(Initiator, Channel) "331 " + Initiator + " " + Channel + " :No topic is set"
+#define RPL_NOTOPIC(Channel) "331 " + _Initiator->_NickName + " " + Channel + " :No topic is set"
 /*
 "<channel> :No topic is set"
 */
 
-#define RPL_TOPIC(Initiator, Channel, Topic) "332 " + Initiator + " " + Channel + " :" + Topic
+#define RPL_TOPIC(Channel, Topic) "332 " + _Initiator->_NickName + " " + Channel + " :" + Topic
 /*
 "<channel> :<topic>"
 
@@ -528,7 +528,7 @@ the topic is set, RPL_TOPIC is sent back else
 RPL_NOTOPIC.
 */
 
-#define RPL_INVITING(Initiator, Channel, Nick) "341 " + Initiator + " " + Channel + " " + Nick
+#define RPL_INVITING(Channel, Nick) "341 " + _Initiator->_NickName + " " + Channel + " " + Nick
 /*
 "<channel> <nick>"
 
@@ -537,7 +537,7 @@ attempted INVITE message was successful and is
 being passed onto the end client.
 */
 
-#define RPL_SUMMONING(Initiator, User) "342 " + Initiator + " " + User + " :Summoning user to IRC"
+#define RPL_SUMMONING(User) "342 " + _Initiator->_NickName + " " + User + " :Summoning user to IRC"
 /*
 "<user> :Summoning user to IRC"
 
@@ -545,7 +545,7 @@ being passed onto the end client.
 indicate that it is summoning that user.
 */
 
-#define RPL_VERSION(Initiator, Version, Debuglevel, Server, Comments) "351 " + Initiator + " " + Version + "." + Debuglevel + " " + Server + " :" + Comments
+#define RPL_VERSION(Version, Debuglevel, Server, Comments) "351 " + _Initiator->_NickName + " " + Version + "." + Debuglevel + " " + Server + " :" + Comments
 /*
 "<version>.<debuglevel> <server> :<comments>"
 
@@ -560,14 +560,14 @@ The "comments" field may contain any comments about
 the version or further version details.
 */
 
-#define RPL_WHOREPLY(Initiator, Channel, User, Host, Server, Nick, H_or_G, optionalAsterisk, optional_At_or_Plus, Hopcount, RealName) \
+#define RPL_WHOREPLY(Channel, User, Host, Server, Nick, H_or_G, optionalAsterisk, optional_At_or_Plus, Hopcount, RealName) \
 	": 352 " + Channel + " " + Client + " " + Host + " " + Server + " " + Nick + "\n" + H_or_G + optionalAsterisk + optional_At_or_Plus + " :" + Hopcount + " " + RealName
 /*
 "<channel> <user> <host> <server> <nick> \
 <H|G>[*][@|+] :<hopcount> <real name>"
 */
 
-#define RPL_ENDOFWHO(Initiator, Name) "315 " + Initiator + " " + Name + " :End of /WHO list"
+#define RPL_ENDOFWHO(Name) "315 " + _Initiator->_NickName + " " + Name + " :End of /WHO list"
 /*
 "<name> :End of /WHO list"
 
@@ -580,11 +580,11 @@ after processing each list item with <name> being
 the item.
 */
 
-#define	RPL_NAMREPLY(Initiator, Channel)		": 353 " + Channel /*
+#define	RPL_NAMREPLY(Channel)		": 353 " + Channel /*
 "<channel> :[[@|+]<nick> [[@|+]<nick> [...]]]"
 */
 
-#define RPL_ENDOFNAMES(Initiator, Channel) "366 " + Initiator + " " + Channel + " :End of /NAMES list"
+#define RPL_ENDOFNAMES(Channel) "366 " + _Initiator->_NickName + " " + Channel + " :End of /NAMES list"
 /*
 "<channel> :End of /NAMES list"
 
@@ -599,12 +599,12 @@ RPL_NAMEREPLY messages with a RPL_ENDOFNAMES to mark
 the end.
 */
 
-#define RPL_LINKS(Initiator, Mask, Server, Hopcount, ServerInfo) "364 " + Initiator + " " + Mask + " " + Server + " :" + Hopcount + " " + ServerInfo
+#define RPL_LINKS(Mask, Server, Hopcount, ServerInfo) "364 " + _Initiator->_NickName + " " + Mask + " " + Server + " :" + Hopcount + " " + ServerInfo
 /*
 "<mask> <server> :<hopcount> <server info>"
 */
 
-#define RPL_ENDOFLINKS(Initiator, Mask) "365 " + Initiator + " " + Mask + " :End of /LINKS list"
+#define RPL_ENDOFLINKS(Mask) "365 " + _Initiator->_NickName + " " + Mask + " :End of /LINKS list"
 /*
 "<mask> :End of /LINKS list"
 
@@ -613,12 +613,12 @@ replies back using the RPL_LINKS numeric and mark the
 end of the list using an RPL_ENDOFLINKS reply.
 */
 
-#define RPL_BANLIST(Initiator, Channel, Banid) "367 " + Initiator + " " + Channel + " " + Banid
+#define RPL_BANLIST(Channel, Banid) "367 " + _Initiator->_NickName + " " + Channel + " " + Banid
 /*
 "<channel> <banid>"
 */
 
-#define RPL_ENDOFBANLIST(Initiator, Channel) "368 " + Initiator + " " + Channel + " :End of channel ban list"
+#define RPL_ENDOFBANLIST(Channel) "368 " + _Initiator->_NickName + " " + Channel + " :End of channel ban list"
 /*
 "<channel> :End of channel ban list"
 
@@ -630,12 +630,12 @@ banids have been listed (or if none present) a
 RPL_ENDOFBANLIST must be sent.
 */
 
-#define RPL_INFO(Initiator, String) "371 " + Initiator + " " + String
+#define RPL_INFO(String) "371 " + _Initiator->_NickName + " " + String
 /*
 ":<string>"
 */
 
-#define RPL_ENDOFINFO (Initiator) "374 " + Initiator + " End of /INFO list"
+#define RPL_ENDOFINFO "374 " + _Initiator->_NickName + " End of /INFO list"
 /*
 ":End of /INFO list"
 
@@ -645,17 +645,17 @@ with a RPL_ENDOFINFO reply to indicate the end of the
 replies.
 */
 
-#define	RPL_MOTDSTART(Initiator, Server) "375 " + Initiator + " - " + Server + " Message of the day - "
+#define	RPL_MOTDSTART(Server) "375 " + _Initiator->_NickName + " - " + Server + " Message of the day - "
 /*
 ":- <server> Message of the day - "
 */
 
-#define RPL_MOTD(Initiator, Text) "372 " + Initiator + " - " + Text
+#define RPL_MOTD(Text) "372 " + _Initiator->_NickName + " - " + Text
 /*
 ":- <text>"
 */
 
-#define	RPL_ENDOFMOTD(Initiator, Nick) "376 " + Initiator + " " + Nick + " End of /MOTD command"
+#define	RPL_ENDOFMOTD(Nick) "376 " + _Initiator->_NickName + " " + Nick + " End of /MOTD command"
 /*
 ":End of /MOTD command"
 
@@ -667,7 +667,7 @@ by a RPL_MOTDSTART (before the RPL_MOTDs) and an
 RPL_ENDOFMOTD (after).
 */
 
-#define RPL_YOUREOPER (Initiator) "381 " + Initiator + " You are now an IRC operator"
+#define RPL_YOUREOPER "381 " + _Initiator->_NickName + " You are now an IRC operator"
 /*
 ":You are now an IRC operator"
 
@@ -676,7 +676,7 @@ just successfully issued an OPER message and gained
 operator status.
 */
 
-#define RPL_REHASHING(Initiator, ConfigFile) "382 " + Initiator + " " + ConfigFile + " :Rehashing"
+#define RPL_REHASHING(ConfigFile) "382 " + _Initiator->_NickName + " " + ConfigFile + " :Rehashing"
 /*
 "<config file> :Rehashing"
 
@@ -685,7 +685,7 @@ a REHASH message, an RPL_REHASHING is sent back to
 the operator.
 */
 
-#define RPL_TIME(Initiator, Server, ServerLocalTime) "391 " + Initiator + " " + Server + " :" + ServerLocalTime
+#define RPL_TIME(Server, ServerLocalTime) "391 " + _Initiator->_NickName + " " + Server + " :" + ServerLocalTime
 /*
 "<server> :<string showing server`s local time>"
 
@@ -696,22 +696,22 @@ time there.  There is no further requirement for the
 time string.
 */
 
-#define RPL_USERSSTART (Initiator) "392 " + Initiator + " UserID   Terminal  Host"
+#define RPL_USERSSTART "392 " + _Initiator->_NickName + " UserID   Terminal  Host"
 /*
 ":UserID   Terminal  Host"
 */
 
-#define RPL_USERS (Initiator) "393 " + Initiator + " %-8s %-9s %-8s"
+#define RPL_USERS "393 " + _Initiator->_NickName + " %-8s %-9s %-8s"
 /*
 ":%-8s %-9s %-8s"
 */
 
-#define RPL_ENDOFUSERS (Initiator) "394 " + Initiator + " End of users"
+#define RPL_ENDOFUSERS "394 " + _Initiator->_NickName + " End of users"
 /*
 ":End of users"
 */
 
-#define RPL_NOUSERS (Initiator) "395 " + Initiator + " Nobody logged in"
+#define RPL_NOUSERS "395 " + _Initiator->_NickName + " Nobody logged in"
 /*
 ":Nobody logged in"
 
@@ -723,39 +723,39 @@ or a single RPL_NOUSER.  Following this is
 RPL_ENDOFUSERS.
 */
 
-#define RPL_TRACELINK(Initiator, VersionDebugLevel, Destination, NextServer) \
+#define RPL_TRACELINK(VersionDebugLevel, Destination, NextServer) \
 	": 200 Link " + VersionDebugLevel + " " + Destination + "\n" + NextServer
 /*
 "Link <version & debug level> <destination> \
 <next server>"
 */
 
-#define RPL_TRACECONNECTING(Initiator, Class, Server) "201 T + Initiator + " "ry. " + Class + " " + Server
+#define RPL_TRACECONNECTING(Class, Server) "201 T + _Initiator->_NickName + " "ry. " + Class + " " + Server
 /*
 "Try. <class> <server>"
 */
 
-#define RPL_TRACEHANDSHAKE(Initiator, Class, Server) "202 H + Initiator + " ".S. " + Class + " " + Server
+#define RPL_TRACEHANDSHAKE(Class, Server) "202 H + _Initiator->_NickName + " ".S. " + Class + " " + Server
 /*
 "H.S. <class> <server>"
 */
 
-#define RPL_TRACEUNKNOWN(Initiator, Class, Ip) "203 ? + Initiator + " "??? " + Class + not Ip.empty() ? " " + Ip : ""
+#define RPL_TRACEUNKNOWN(Class, Ip) "203 ? + _Initiator->_NickName + " "??? " + Class + not Ip.empty() ? " " + Ip : ""
 /*
 "???? <class> [<client IP address in dot form>]"
 */
 
-#define RPL_TRACEOPERATOR(Initiator, Class, Nick) "204 O + Initiator + " "per " + Class + " " + Nick
+#define RPL_TRACEOPERATOR(Class, Nick) "204 O + _Initiator->_NickName + " "per " + Class + " " + Nick
 /*
 "Oper <class> <nick>"
 */
 
-#define RPL_TRACEUSER(Initiator, Class, Nick) "205 U + Initiator + " "ser " + Class + " " + Nick
+#define RPL_TRACEUSER(Class, Nick) "205 U + _Initiator->_NickName + " "ser " + Class + " " + Nick
 /*
 "User <class> <nick>"
 */
 
-#define RPL_TRACESERVER(Initiator, Class, Int1, Int2, Server, NickUser, Host_or_server) \
+#define RPL_TRACESERVER(Class, Int1, Int2, Server, NickUser, Host_or_server) \
 	": 206 "                                                                 \
 	"Serv " +                                                                \
 		Class + " " + Int1 + "S " + Int2 + "C " + Server + "\n" + NickUser + "@" + Host_or_Server
@@ -764,12 +764,12 @@ RPL_ENDOFUSERS.
 <nick!user|*!*>@<host|server>"
 */
 
-#define RPL_TRACENEWTYPE(Initiator, Newtype, ClientName) "208 " + Initiator + " " + Newtype + " 0 " + ClientName
+#define RPL_TRACENEWTYPE(Newtype, ClientName) "208 " + _Initiator->_NickName + " " + Newtype + " 0 " + ClientName
 /*
 "<newtype> 0 <client name>"
 */
 
-#define RPL_TRACELOG(Initiator, Logfile, DebugLevel) "261 F + Initiator + " "ile " + Logfile + " " + DebugLevel
+#define RPL_TRACELOG(Logfile, DebugLevel) "261 F + _Initiator->_NickName + " "ile " + Logfile + " " + DebugLevel
 /*
 "File <logfile> <debug level>"
 
@@ -795,7 +795,7 @@ which does not fit in the other categories but is
 being displayed anyway.
 */
 
-#define RPL_STATSLINKINFO(Initiator, Linkname, Sendq, SentMessages, SentBytes, ReceivedMessages, ReceivedBytes, TimeOpen) \
+#define RPL_STATSLINKINFO(Linkname, Sendq, SentMessages, SentBytes, ReceivedMessages, ReceivedBytes, TimeOpen) \
 	": 211 " + Linkname + " " + Sendq + " " + SentMessages + " \n " + SentBytes + " " + ReceivedMessages + " \n " + ReceivedBytes + " " + TimeOpen
 /*
 "<linkname> <sendq> <sent messages> \
@@ -803,64 +803,64 @@ being displayed anyway.
 <received bytes> <time open>"
 */
 
-#define RPL_STATSCOMMANDS(Initiator, Command, Count) "212 " + Initiator + " " + Command + " " + Count
+#define RPL_STATSCOMMANDS(Command, Count) "212 " + _Initiator->_NickName + " " + Command + " " + Count
 /*
 "<command> <count>"
 */
 
-#define RPL_STATSCLINE(Initiator, Host, Name, Port, Class) "213 C + Initiator + " " " + Host + " * " + Name + " " + Port + " " + Class
+#define RPL_STATSCLINE(Host, Name, Port, Class) "213 C + _Initiator->_NickName + " " " + Host + " * " + Name + " " + Port + " " + Class
 /*
 "C <host> * <name> <port> <class>"
 */
 
-#define RPL_STATSNLINE(Initiator, Host, Name, Port, Class) "214 N + Initiator + " " " + Host + " * " + Name + " " + Port + " " + Class
+#define RPL_STATSNLINE(Host, Name, Port, Class) "214 N + _Initiator->_NickName + " " " + Host + " * " + Name + " " + Port + " " + Class
 /*
 "N <host> * <name> <port> <class>"
 */
 
-#define RPL_STATSILINE(Initiator, Host1, Host2, Port, Class) "215 I + Initiator + " " " + Host1 + " * " + Host2 + " " + Port + " " + Class
+#define RPL_STATSILINE(Host1, Host2, Port, Class) "215 I + _Initiator->_NickName + " " " + Host1 + " * " + Host2 + " " + Port + " " + Class
 /*
 "I <host> * <host> <port> <class>"
 */
 
-#define RPL_STATSKLINE(Initiator, Host, Username, Port, Class) "216 K + Initiator + " " " + Host + " * " + Username + " " + Port + " " + Class
+#define RPL_STATSKLINE(Host, Username, Port, Class) "216 K + _Initiator->_NickName + " " " + Host + " * " + Username + " " + Port + " " + Class
 /*
 "K <host> * <username> <port> <class>"
 */
 
-#define RPL_STATSYLINE(Initiator, Class, PingFrequency, ConnectFrequency, MaxSendq) \
+#define RPL_STATSYLINE(Class, PingFrequency, ConnectFrequency, MaxSendq) \
 	": 218 Y " + Class + " " + PingFrequency + " \n " + ConnectFrequency + " " + MaxSendq
 /*
 "Y <class> <ping frequency> <connect \
 frequency> <max sendq>"
 */
 
-#define RPL_ENDOFSTATS(Initiator, StatsLetter) "219 " + Initiator + " " + StatsLetter + " :End of /STATS report"
+#define RPL_ENDOFSTATS(StatsLetter) "219 " + _Initiator->_NickName + " " + StatsLetter + " :End of /STATS report"
 /*
 "<stats letter> :End of /STATS report"
 */
 
-#define RPL_STATSLLINE(Initiator, Hostmask, Servername, Maxdepth) "241 L + Initiator + " " " + Hostmask + " * " + Servername + " " + Maxdepth
+#define RPL_STATSLLINE(Hostmask, Servername, Maxdepth) "241 L + _Initiator->_NickName + " " " + Hostmask + " * " + Servername + " " + Maxdepth
 /*
 "L <hostmask> * <servername> <maxdepth>"
 */
 
-#define RPL_STATSUPTIME (Initiator) "242 " + Initiator + " Server Up %d days %d:%02d:%02d"
+#define RPL_STATSUPTIME "242 " + _Initiator->_NickName + " Server Up %d days %d:%02d:%02d"
 /*
 ":Server Up %d days %d:%02d:%02d"
 */
 
-#define RPL_STATSOLINE(Initiator, Hostmask, Name) "243 O + Initiator + " " " + Hostmask + " * " + Name
+#define RPL_STATSOLINE(Hostmask, Name) "243 O + _Initiator->_NickName + " " " + Hostmask + " * " + Name
 /*
 "O <hostmask> * <name>"
 */
 
-#define RPL_STATSHLINE(Initiator, Hostmask, Servername) "244 H + Initiator + " " " + Hostmask + " * " + Servername
+#define RPL_STATSHLINE(Hostmask, Servername) "244 H + _Initiator->_NickName + " " " + Hostmask + " * " + Servername
 /*
 "H <hostmask> * <servername>"
 */
 
-#define RPL_UMODEIS(Initiator, UserModeString) "221 " + Initiator + " " + UserModeString
+#define RPL_UMODEIS(UserModeString) "221 " + _Initiator->_NickName + " " + UserModeString
 /*
 "<user mode string>"
 
@@ -868,29 +868,29 @@ frequency> <max sendq>"
 RPL_UMODEIS is sent back.
 */
 
-#define RPL_LUSERCLIENT(Initiator, Integer1, Integer2, Integer3) \
+#define RPL_LUSERCLIENT(Integer1, Integer2, Integer3) \
 	": 251 :There are " + Integer1 + " users and " + Integer2 + " \n invisible on " + Integer3 + " servers"
 /*
 ":There are <integer> users and <integer> \
 invisible on <integer> servers"
 */
 
-#define RPL_LUSEROP(Initiator, Integer) "252 " + Initiator + " " + Integer + " :operator(s) online"
+#define RPL_LUSEROP(Integer) "252 " + _Initiator->_NickName + " " + Integer + " :operator(s) online"
 /*
 "<integer> :operator(s) online"
 */
 
-#define RPL_LUSERUNKNOWN(Initiator, Integer) "253 " + Initiator + " " + Integer + " :unknown connection(s)"
+#define RPL_LUSERUNKNOWN(Integer) "253 " + _Initiator->_NickName + " " + Integer + " :unknown connection(s)"
 /*
 "<integer> :unknown connection(s)"
 */
 
-#define RPL_LUSERCHANNELS(Initiator, Integer) "254 " + Initiator + " " + Integer + " :channels formed"
+#define RPL_LUSERCHANNELS(Integer) "254 " + _Initiator->_NickName + " " + Integer + " :channels formed"
 /*
 "<integer> :channels formed"
 */
 
-#define RPL_LUSERME(Initiator, Integer1, Integer2) "255 " + Initiator + " I have " + Integer1 + " clients and " + Integer2 + " \n servers"
+#define RPL_LUSERME(Integer1, Integer2) "255 " + _Initiator->_NickName + " I have " + Integer1 + " clients and " + Integer2 + " \n servers"
 /*
 ":I have <integer> clients and <integer> \
 servers"
@@ -905,22 +905,22 @@ replies are only sent back if a non-zero count
 is found for them.
 */
 
-#define RPL_ADMINME(Initiator, Server) "256 " + Initiator + " " + Server + " :Administrative info"
+#define RPL_ADMINME(Server) "256 " + _Initiator->_NickName + " " + Server + " :Administrative info"
 /*
 "<server> :Administrative info"
 */
 
-#define RPL_ADMINLOC1(Initiator, AdminInfo) "257 " + Initiator + " " + AdminInfo
+#define RPL_ADMINLOC1(AdminInfo) "257 " + _Initiator->_NickName + " " + AdminInfo
 /*
 ":<admin info>"
 */
 
-#define RPL_ADMINLOC2(Initiator, AdminInfo) "258 " + Initiator + " " + AdminInfo
+#define RPL_ADMINLOC2(AdminInfo) "258 " + _Initiator->_NickName + " " + AdminInfo
 /*
 ":<admin info>"
 */
 
-#define RPL_ADMINEMAIL(Initiator, AdminInfo) "259 " + Initiator + " " + AdminInfo
+#define RPL_ADMINEMAIL(AdminInfo) "259 " + _Initiator->_NickName + " " + AdminInfo
 /*
 ":<admin info>"
 
