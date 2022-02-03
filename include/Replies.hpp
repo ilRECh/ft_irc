@@ -109,7 +109,7 @@ are returned when an invalid use of
 command sent is unknown by the server.
 */
 
-#define ERR_NOMOTD "422 " + _Initiator->_NickName + " MOTD File is missing"
+#define ERR_NOMOTD "422 " + _Initiator->_NickName + " :MOTD File is missing"
 /*
 ":MOTD File is missing"
 
@@ -645,17 +645,17 @@ with a RPL_ENDOFINFO reply to indicate the end of the
 replies.
 */
 
-#define	RPL_MOTDSTART(Server) "375 " + _Initiator->_NickName + " - " + Server + " Message of the day - "
+#define	RPL_MOTDSTART(Server) "375 " + _Initiator->_NickName + " :- " + Server + " Message of the day - "
 /*
 ":- <server> Message of the day - "
 */
 
-#define RPL_MOTD(Text) "372 " + _Initiator->_NickName + " - " + Text
+#define RPL_MOTD(Text) "372 " + _Initiator->_NickName + " :- " + Text
 /*
 ":- <text>"
 */
 
-#define	RPL_ENDOFMOTD(Nick) "376 " + _Initiator->_NickName + " " + Nick + " End of /MOTD command"
+#define	RPL_ENDOFMOTD "376 " + _Initiator->_NickName + " :End of /MOTD command"
 /*
 ":End of /MOTD command"
 
