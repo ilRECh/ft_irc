@@ -21,6 +21,7 @@ private:
 	TimeStamp _time;
 	Client(Client& that);
 	Client& operator=(Client& that);
+	Channel *	_lastJoin;
 	std::set<Channel const *> _Channels;
 	std::string _Password;
 	std::string _UserName;
@@ -63,8 +64,7 @@ public:
 	TimeStamp const & getLastActivity() const;
 
 	//	* get|set Channels
-	void inviteToChannel(Channel const & channel);
-	void setChannel(Channel const * Channel);
+	void inviteToChannel(Channel * channel, Client * Iniciator = NULL);
 	std::set<Channel const *> const &getChannels() const;
 
 	//	* get Registered

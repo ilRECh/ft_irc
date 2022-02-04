@@ -4,44 +4,47 @@
 #include "Client.hpp"
 #include "Server.hpp"
 
-
-//! 	enum ePrivateLevel
-//* 	0 == CHANNEL_PRIVATE,
-//* 	1 == CHANNEL_PROTECTED,
-//* 	2 == CHANNEL_PUBLIC
 Channel::Channel(
 	string const & nameChannel,
 	Client * userAdmin,
 	Server *Server,
-	eChannelPrivateLevel const ePrivateLevel,
 	uint maxUserLimit)
 	:	Modes(this),
 		_maxUserLimit(maxUserLimit),
 		_ChannelName(nameChannel),
 		_Server(Server){
-	_ePrivateLevel = ePrivateLevel;
 	_Clients.insert(userAdmin);
+	setMode(userAdmin, 'o');
+
 }
 
 bool Channel::isOnChannel(Client *whom) const {
 	return _Clients.find(whom) != _Clients.end();
 }
 
-void	Channel::addClient(Client *whom, Client *_Initiator) {
-	if (_Initiator != NULL and
-		(_ePrivateLevel == CHANNEL_PRIVATE or _ePrivateLevel == CHANNEL_PROTECTED)) {
+int	Channel::addClient(Client *whom, Client *_Initiator) {
+	if (std::find(_Clients.begin(), _Clients.end(), whom) != _Clients.end())
+		return 0;
+	if (std::find(_BanList.begin(), _BanList.end(), whom) != _BanList.end())
+	{
+		(_Initiator ? _Initiator : whom)->updateReplyMessage(ERR_BANNEDFROMCHAN(_ChannelName));
+		return 1;
+	}
+	if (_Initiator != NULL)
+	{
 		if (_Clients.size() >= _maxUserLimit)
 		{
 			_Initiator->updateReplyMessage(ERR_CHANNELISFULL(this->getChannelName()));
-			return ;
+			return 1;
 		}
-		if (not getModeIsExist(_Initiator, 'o')) {
+		if (getModeIsExist(this, 'i') && not getModeIsExist(_Initiator, 'o')) {
 			_Initiator->updateReplyMessage(ERR_CHANOPRIVSNEEDED(_ChannelName));
-			return ;
+			return 1;
 		}
 	}
 	replyToAllMembers("joined", whom);
 	_Clients.insert(whom);
+	return 0;
 }
 
 std::string const &Channel::getTopic() const {
@@ -53,6 +56,7 @@ void Channel::setTopic(std::string const & Topic) {
 }
 
 void Channel::removeClient(Client *whom) {
+	//? Если был удален последний Админ, то передать полномочия другому юзеру
 	static bool ToRemove = false;
 	if (ToRemove) {
 		return ;

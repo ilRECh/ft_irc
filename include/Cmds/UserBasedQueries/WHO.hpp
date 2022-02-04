@@ -54,7 +54,32 @@ private:
 		std::stringstream result;
 
 		for (IsetClient	start = usersToShow.begin(); start != usersToShow.end(); ++start)
-			result << (*start)->_NickName << " ";
+		{
+			std::string serverName = _Server.getServerAddrInfo().substr(0, _Server.getServerAddrInfo().find(':'));
+			char H_G = (*start)->_Away.empty() ? 'H' : 'G';
+			std::string lastJoinChannel = "*";
+			std::string isAminInLastJoin;
+			if ((*start)->_lastJoin)
+			{
+				lastJoinChannel = (*start)->_lastJoin->getChannelName();
+				if ((*start)->_lastJoin->getModeIsExist(*start, 'o'))
+					isAminInLastJoin = '@';
+			}
+			result << RPL_WHOREPLY
+			(
+				lastJoinChannel, 
+				(*start)->_UserName,
+				(*start)->_HostName, 
+				serverName,
+				(*start)->_NickName,
+				H_G,
+				isAminInLastJoin,
+				"",
+				'0',
+				(*start)->_RealName
+			) << "\r\n";
+		}
+		result << RPL_ENDOFWHO(_Arguments[0]) << "\r\n";
 		return result.str();
 	}
 

@@ -393,6 +393,10 @@ OperatorStatus Server::canBeAutorized(
     return YOUREOPER;
 }
 
+bool Server::pushBack(Channel *Channel){
+    return _Channels.insert(Channel).second;
+}
+
 void Server::pushBackErase(Client *Client) {
     _ClientsToBeErased.push_front(Client);
 }
