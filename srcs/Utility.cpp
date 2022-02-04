@@ -18,6 +18,12 @@ std::vector<std::string> ft::split(
     return ret;
 }
 
+bool isNick(std::string const & value) {
+    return value.find("NICK") != value.npos;
+}
+bool isUser(std::string const & value) {
+    return value.find("USER") != value.npos;
+}
 std::vector<std::string> ft::splitByCmds(
         std::string const& tosplit,
         std::string const& DelimiterWord) {
@@ -37,10 +43,14 @@ std::vector<std::string> ft::splitByCmds(
         pos_start = pos_end + DelimiterWord.length();
         pos_end = tosplit.find(DelimiterWord, pos_start);
     }
-    if (ret.size() == 3 and ret[0].find("PASS") != ret[0].npos) {
-        std::string tmp = ret[1];
-        ret[1] = ret[2];
-        ret[2] = tmp;
+    if (ret.size() > 1 and std::find_if(ret.begin(), ret.end(), isNick) != ret.end()
+        and std::find_if(ret.begin(), ret.end(), isUser) != ret.end()
+        and std::find_if(ret.begin(), ret.end(), isNick) > std::find_if(ret.begin(), ret.end(), isUser)) {
+        std::vector<std::string>::iterator Nick = std::find_if(ret.begin(), ret.end(), isNick);
+        std::vector<std::string>::iterator User = std::find_if(ret.begin(), ret.end(), isUser);
+        std::string tmp = *Nick;
+        *Nick = *User;
+        *User = tmp;
     }
     return ret;
 }
