@@ -104,6 +104,7 @@ private:
 	friend class PASS;
 	friend class QUIT;
 	friend class SERVER;
+	friend class Server;
 	friend class SQUIT;
 	friend class USER;
 	friend class ERROR;

@@ -3,7 +3,7 @@
 #include "Channel.hpp"
 
 Client::Client(int const Fd)
-	:	_Fd(Fd), _lastJoin(NULL) {}
+	:	_lastJoin(NULL), _Fd(Fd) {}
 
 bool Client::operator==(const Client& that) const {
 	return _UserName == that._UserName;
