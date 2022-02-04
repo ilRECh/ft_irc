@@ -128,3 +128,18 @@ std::string	ft::strTrim(std::string & str, std::string trimSymbol){
 		return std::string(first, rfirst.base());
 	return std::string();
 }
+
+std::string ft::tolowerString(std::string toLowStr)
+{
+    std::string::iterator i, end;
+
+    i = toLowStr.begin();
+    end = toLowStr.end();
+    while(i not_eq end)
+    {
+        if ((*i) >= 'A' && (*i) <= 'Z')
+            (*i) += 'a' - 'A';
+        ++i;
+    }
+    return toLowStr;
+}

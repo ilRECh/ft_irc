@@ -71,9 +71,12 @@ private:
 	
 	int join(str & nameChannel, str & password){
 		std::set<Channel *> channels = _Server.getChannelsByName(nameChannel);
-		if (!channels.size())
-			return 1 + _Initiator->updateReplyMessage(ERR_NOSUCHCHANNEL(nameChannel));
 		Channel * chan = *channels.begin();
+		if (!channels.size())
+		{
+			chan = new Channel(nameChannel, _Initiator, &_Server);
+			_Server.pushBack(chan);
+		}
 		if (chan->_Clients.size() >= chan->_maxUserLimit)
 			return 1 + _Initiator->updateReplyMessage(ERR_CHANNELISFULL(chan->getChannelName()));
 		if (chan->getModeIsExist(chan, 'i'))

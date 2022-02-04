@@ -42,7 +42,7 @@ public:
             }
             else {
                 if (last_target->updateReplyMessage(_Initiator->_NickName + " PRIVMSG " + last_target->_NickName + " :" + _Argument))
-                    _Initiator->updateReplyMessage(RPL_AWAY(last_target->_Away,last_target->_NickName, _Initiator->getNickName()));
+                    _Initiator->updateReplyMessage(RPL_AWAY(last_target->_Away,last_target->_NickName));
             }
         }
         _Argument.erase();

@@ -401,7 +401,7 @@ respectively.
 query list.
 */
 
-#define RPL_AWAY(Away, Nick, Target) " 301 " + Nick + " " + Target + " " + Away
+#define RPL_AWAY(AwayMsg, NickAway) " 301 " + _Initiator->_NickName + " AWAY " + NickAway + " :" + AwayMsg
 /*
 "<nick> :<away message>"
 */
@@ -560,8 +560,8 @@ The "comments" field may contain any comments about
 the version or further version details.
 */
 
-#define RPL_WHOREPLY(Channel, User, Host, Server, Nick, H_or_G, optionalAsterisk, optional_At_or_Plus, Hopcount, RealName) \
-	": 352 " + Channel + " " + Client + " " + Host + " " + Server + " " + Nick + "\n" + H_or_G + optionalAsterisk + optional_At_or_Plus + " :" + Hopcount + " " + RealName
+#define RPL_WHOREPLY(_Channel, _User, Host, _Server, _Nick, H_or_G, optionalAsterisk, optional_At_or_Plus, Hopcount, RealName) \
+	" 352 " + _Initiator->_NickName + " " + _Channel + " " + _User + " " + Host + " " + _Server + " " + _Nick + "\n" + H_or_G + optionalAsterisk + optional_At_or_Plus + " :" + Hopcount + " " + RealName
 /*
 "<channel> <user> <host> <server> <nick> \
 <H|G>[*][@|+] :<hopcount> <real name>"
