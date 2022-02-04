@@ -50,7 +50,7 @@ Server::Server(string const & Port, string const & Password)
         _ServInfo(NULL),
         _Socklen(0),
         _FdsSet(),
-        _MaxFd(0) {
+        _MaxFd(0){
     _Commands.push_back(new PASS(*this));
     _Commands.push_back(new NICK(*this));
     _Commands.push_back(new USER(*this));

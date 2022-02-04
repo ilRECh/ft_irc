@@ -70,6 +70,7 @@ void Channel::removeClient(Client *whom) {
 		ToRemove = true;
 		_Server->pushBackErase(this);
 	}
+	replyToAllMembers("leaved", whom);
 }
 
 void Channel::replyToAllMembers(std::string msg, Client * sender) {

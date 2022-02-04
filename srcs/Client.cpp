@@ -3,7 +3,7 @@
 #include "Channel.hpp"
 
 Client::Client(int const Fd)
-	:	_Fd(Fd) {}
+	:	_Fd(Fd), _lastJoin(NULL) {}
 
 bool Client::operator==(const Client& that) const {
 	return _UserName == that._UserName;
@@ -78,6 +78,12 @@ void Client::inviteToChannel(Channel * channel, Client * Iniciator){
 	_lastJoin = channel;
 	if (std::find(_Channels.begin(), _Channels.end(), channel) != _Channels.end())
 		_Channels.insert(channel);
+}
+
+void Client::leaveFromChannel(Channel * channel)
+{
+	channel->removeClient(this);
+	_Channels.erase(channel);
 }
 
 std::set<Channel const *> const & Client::getChannels() const {
