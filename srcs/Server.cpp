@@ -181,7 +181,7 @@ void Server::readerClients()
 				throw std::runtime_error(std::string("recv: ") + strerror(errno));
 			} else if (ReadByte == 0) {
 				QUIT q(*this);
-				q.setInitiator(*Client);
+				q.setQuitInitiator(*Client);
 				q.setArgument(std::string(":Is dead. Just dead. People die, ya know?"));
 			} else {
 				(*Client)->getIncomingBuffer() += Buffer;
@@ -257,14 +257,14 @@ void Server::replyToClients() {
 		std::string ReplyMessage = (*User)->getReplyMessage();
 		if (ReplyMessage.empty()) {
 			QUIT q(*this);
-			q.setInitiator(*User);
+			q.setQuitInitiator(*User);
 			if ((*User)->inactiveShouldDie()) {
 				q.isNeedToBeSentToInitiator();
-				q.setArgument("Smells Like He's Spirit. B-gone, ghosts.");
+				q.setArgument(":Smells Like He's Spirit. B-gone, ghosts.");
 				q.run();
 			} else if ((*User)->unregisteredShouldDie()) {
 				q.isNeedToBeSentToInitiatorOnly();
-				q.setArgument("Are not as fast, are ya? Bye then, champ.");
+				q.setArgument(":Are not as fast, are ya? Bye then, champ.");
 				q.run();
 			}
 			ReplyMessage = (*User)->getReplyMessage();

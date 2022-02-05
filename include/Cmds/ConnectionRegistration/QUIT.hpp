@@ -20,13 +20,17 @@ public:
         } else {
             _Argument = _Initiator->_NickName;
         }
-        for (std::set<Client *>::iterator ClientOnServer = _Server._Clients.begin();
-            ClientOnServer != _Server._Clients.end(); ++ClientOnServer) {
-            if ((*ClientOnServer != _Initiator and not _Server.getModeIsExist(*ClientOnServer, 'i')) or
-                (*ClientOnServer == _Initiator and _ToInitiator)) {
-                (*ClientOnServer)->updateReplyMessage(_Initiator->_NickName + " QUIT " +
-                    (*ClientOnServer)->_NickName + " :" + _Argument);
+        if (not _ToInitiatorOnly){
+            for (std::set<Client *>::iterator ClientOnServer = _Server._Clients.begin();
+                ClientOnServer != _Server._Clients.end(); ++ClientOnServer) {
+                if ((*ClientOnServer != _Initiator and not _Server.getModeIsExist(*ClientOnServer, 'i')) or
+                    (*ClientOnServer == _Initiator and _ToInitiator)) {
+                    (*ClientOnServer)->updateReplyMessage(_Initiator->_NickName + " QUIT " +
+                        (*ClientOnServer)->_NickName + " :" + _Argument);
+                }
             }
+        } else {
+            _Initiator->updateReplyMessage(_Initiator->_NickName + " QUIT " + _Initiator->_NickName + " :" + _Argument);
         }
         _Server.pushBackErase(_Initiator);
         return 0;
@@ -36,6 +40,9 @@ public:
     }
     void isNeedToBeSentToInitiatorOnly() {
         _ToInitiatorOnly = true;
+    }
+    void setQuitInitiator(Client *Initiator) {
+        _Initiator = Initiator;
     }
 };/*
    Parameters: [<Quit message>]
