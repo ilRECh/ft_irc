@@ -15,7 +15,7 @@ public:
         }
         //code
     }
-};/*
+};/*м
    Parameters: <nickname> <channel>
 
    The INVITE message is used to invite users to a channel.  The
