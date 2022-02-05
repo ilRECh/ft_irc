@@ -67,6 +67,7 @@ Server::Server(string const & Port, string const & Password)
 	_Commands.push_back(new WHOWAS(*this));
 	_Commands.push_back(new ISON(*this));
 	_Commands.push_back(new JOIN(*this));
+	_Commands.push_back(new NAMES(*this));
 	addrinfo hints;
 
 	memset(&hints, 0, sizeof hints);
@@ -344,6 +345,11 @@ std::set<Client *> Server::getClientsByName(std::string Name){
 				result.insert(*istart);
 	}
 	return result;
+}
+
+std::set<Channel *> const &Server::getChannels() const
+{
+	return _Channels;
 }
 
 std::set<Channel *> Server::getChannelsByName(std::string Name){
