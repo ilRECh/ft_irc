@@ -561,13 +561,15 @@ the version or further version details.
 */
 
 #define RPL_WHOREPLY(_Channel, _User, Host, _Server, _Nick, H_or_G, optionalAsterisk, optional_At_or_Plus, Hopcount, RealName) \
-	" 352 " + _Initiator->_NickName + " " + _Channel + " " + _User + " " + Host + " " + _Server + " " + _Nick + "\n" + H_or_G + optionalAsterisk + optional_At_or_Plus + " :" + Hopcount + " " + RealName
+	" 352 " + _Initiator->_NickName + " " + _Channel + " " + _User + " " + Host + " " + _Server + " " + _Nick + " " + H_or_G + optionalAsterisk + optional_At_or_Plus + " :" + Hopcount + " " + RealName
+// #define RPL_WHOREPLY(_Channel, _User, Host, _Server, _Nick, H_or_G, optionalAsterisk, optional_At_or_Plus, Hopcount, RealName) \
+// 	" 352 " + _Initiator->_NickName + " " + _Channel + " " + _User + " " + Host + " " + _Server + " " + _Nick + " " + H_or_G + optionalAsterisk + optional_At_or_Plus + " :" + Hopcount + " " + RealName
 /*
 "<channel> <user> <host> <server> <nick> \
 <H|G>[*][@|+] :<hopcount> <real name>"
 */
 
-#define RPL_ENDOFWHO(Name) " 315 " + _Initiator->_NickName + " " + Name + " :End of /WHO list"
+#define RPL_ENDOFWHO " 315 " + _Initiator->_NickName + " :End of /WHO list"
 /*
 "<name> :End of /WHO list"
 

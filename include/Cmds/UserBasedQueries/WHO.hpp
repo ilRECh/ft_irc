@@ -41,58 +41,103 @@ private:
 		return some.substr(0, some.find(_Arguments[0].substr(1))) + "..";
 	}
 
-	std::string getResult(std::set<Client *> & usersToShow){
-		std::stringstream result;
+	void getResult(std::set<std::pair< Channel *, Client *> > & usersToShow){
+		std::set<std::pair< Channel *, Client *> >::iterator start = usersToShow.begin();
+		std::set<std::pair< Channel *, Client *> >::iterator finish = usersToShow.end();
+		uint hopCount = 0;
 
-		for (std::set<Client *>::iterator	start = usersToShow.begin(); start != usersToShow.end(); ++start)
+		for(;start != finish; ++start)
 		{
-			std::string serverName = _Server.getServerAddrInfo().substr(0, _Server.getServerAddrInfo().find(':'));
-			char H_G = (*start)->_Away.empty() ? 'H' : 'G';
-			std::string lastJoinChannel = "*";
-			std::string isAminInLastJoin;
-			if ((*start)->_lastJoin)
+			std::string serverName = "127.0.0.1";// _Server.getServerAddrInfo().substr(0, _Server.getServerAddrInfo().find(':'));
+			char H_G = start->second->_Away.empty() ? 'H' : 'G';
+			std::string channelName = "*";
+			std::string isAminInLastJoin = "+";
+			if (start->first)
 			{
-				lastJoinChannel = (*start)->_lastJoin->getChannelName();
-				if ((*start)->_lastJoin->getModeIsExist(*start, 'o'))
-					isAminInLastJoin = '@';
+				channelName = "#" + start->first->getChannelName();
+				if (start->first->getModeIsExist(start->second, 'o'))
+					isAminInLastJoin = "@";
 			}
-			result << RPL_WHOREPLY
+			_Initiator->updateReplyMessage(RPL_WHOREPLY
 			(
-				lastJoinChannel, 
-				(*start)->_UserName,
-				(*start)->_HostName, 
+				channelName, 
+				start->second->_UserName,
+				start->second->_HostName, 
 				serverName,
-				(*start)->_NickName,
+				start->second->_NickName,
 				H_G,
+				"*",
 				isAminInLastJoin,
-				"",
-				'0',
-				(*start)->_RealName
-			) << "\r\n";
+				ft::to_string(hopCount++),
+				start->second->_RealName
+			));
 		}
-		result << RPL_ENDOFWHO(_Arguments[0]) << "\r\n";
-		return result.str();
+		_Initiator->updateReplyMessage(RPL_ENDOFWHO);
 	}
 
 public:
 	WHO(Server & Server) : ACommand("WHO", Server) {}
 	virtual ~WHO() {}
 	virtual int run(){
-		std::set<Client *> clients = _Server.getClientsByName("*");
-		std::set<Client *> users_To_Show;
+		std::set<Client *> clients;
+		std::set<std::pair< Channel *, Client *> > users_set_pair;
+		std::pair< Channel *, Client *>				user_pair_el;
+		std::set<Client *>::iterator begin_client, end_client;
 
 		if (_Arguments.empty() || !isRespondRequireTreeAlpha())
 		{
 			clients = _Arguments.empty() ? _Server.getClientsByName("*") : _Server.getClientsByName(_Arguments[0]);
-			for (std::set<Client *>::iterator i = clients.begin(); i != clients.end(); ++i)
-				if (isAcceptToShow(*i))
-					users_To_Show.insert(*i);
+			for (std::set<Client *>::iterator i = clients.begin(); i != clients.end(); ++i){
+				if (isAcceptToShow(*i)){
+					user_pair_el.first = NULL;
+					user_pair_el.second = *i;
+					users_set_pair.insert(user_pair_el);
+				}
+			}
 		}
 		else
 		{
-			users_To_Show = _Server.getClientsByName(_Arguments[0]);
+			for(uint i = 0; i < _Arguments.size(); ++i)
+			{
+				ft::deleteSpaces(_Arguments[i], SPACE_SYMBOLS);
+				if (_Arguments[i].empty())
+					continue ;
+				if (_Arguments[i].find_first_of(std::string("#&")) != _Arguments[i].npos)
+				{
+					std::string nameChanNoSharp = _Arguments[i];
+					ft::deleteSpaces(nameChanNoSharp, std::string() + SPACE_SYMBOLS + "&#");
+
+					Channel * chan =_Server.getChannelByChannelName(nameChanNoSharp);
+					if (!chan)
+					{
+						_Initiator->updateReplyMessage(ERR_NOSUCHCHANNEL(_Arguments[i]));
+						continue ;
+					}
+					clients = chan->_Clients;
+					begin_client = clients.begin();
+					end_client = clients.end();
+					for(;begin_client != end_client; ++begin_client)
+					{
+						user_pair_el.first = chan;
+						user_pair_el.second = *begin_client;
+						users_set_pair.insert(user_pair_el);
+					}
+				}
+				else
+				{
+					clients = _Server.getClientsByName(_Arguments[i]);
+					begin_client = clients.begin();
+					end_client = clients.end();
+					for(;begin_client != end_client; ++begin_client)
+					{
+						user_pair_el.first = NULL;
+						user_pair_el.second = *begin_client;
+						users_set_pair.insert(user_pair_el);
+					}
+				}
+			}
 		}
-		_Initiator->updateReplyMessage(getResult(users_To_Show));
+		getResult(users_set_pair);
 		return 0;
 	}
 };

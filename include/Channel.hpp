@@ -10,6 +10,7 @@ class Channel : public Modes {
 private:
 	friend class NAMES;
 	friend class JOIN;
+	friend class WHO;
 	uint _maxUserLimit;
 	std::string _ChannelName;
 	std::string _Key;
