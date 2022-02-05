@@ -57,13 +57,14 @@ private:
 	static operators_s _Operators[1];
 
 	// Insights
-	void readerClient(fd_set & fdsCpy);
+	void readerClients();
+	void replyToClients();
+	void eraseClients();
 	void processCmd(Client *User);
 	std::pair<std::string, std::string> parseCmd(std::string &Cmd);
 	void proceedCmd(std::pair<std::string, std::string> Cmd, Client *User);
     void serverLog(Client *that, std::string const & ReceivedMessage);
     void sendMsg(Client *From, Client *To);
-	std::set<Client *> const &getUsers();
 
 public:
 	Server(string const & Port, std::string const & Password);
@@ -85,4 +86,6 @@ public:
 	void pushBackErase(Client *Client);
 	void pushBackErase(Channel *Channel);
 	void buryMe(std::string const & DyingMessage);
+private:
+	friend class QUIT;
 };

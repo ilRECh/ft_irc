@@ -124,12 +124,9 @@ Server::~Server(void)
 
 void Server::run()
 {
-	timeval tm = {0, 10000};
-
 	std::cout << "Waiting for a connection..." << '\n';
 	while (_LoopListen)
 	{
-
 		//GetConnectionPart
 		int const UserFd = accept(_Sockfd, _ServInfo->ai_addr, &_Socklen);
 		if (UserFd >= 0) {
@@ -138,99 +135,59 @@ void Server::run()
 			}
 			fcntl(UserFd, F_SETFD, fcntl(UserFd, F_GETFD) | O_NONBLOCK);
 			FD_SET(UserFd, &_FdsSet);
-			send(UserFd, "=> Server connected!\n", 22, 0);
 #ifdef __linux__
 	sockaddr_in AddrUser = {0,0,{0},{0}};
 #elif __APPLE__
 	sockaddr_in AddrUser = {0,0,0,{0},{0}};
 #endif
 			socklen_t Socklen = sizeof(AddrUser);
-			std::cout << "status: " << getpeername(UserFd, (sockaddr *) &AddrUser, &Socklen) << '\n'; //* Выяняем кто подключился
-			std::cout << "<<<<<<< " << inet_ntoa(AddrUser.sin_addr) << '\n'; // Left for testing, remove if Release
+			getpeername(UserFd, (sockaddr *) &AddrUser, &Socklen);
+			std::cout << "+====================CONNECTED======================+" << '\n';
+			std::cout << "<<<<<<< " << inet_ntoa(AddrUser.sin_addr) << '\n';
+			std::cout << "+===================================================+" << std::endl;
 			_Clients.insert(new Client(UserFd));
 		} else if (UserFd < 0 && errno != EAGAIN) {
 			throw std::runtime_error("Fatal. Accepting the " + ft::to_string(UserFd) + " failed.\n" + strerror(errno));
 		}
 
 		//ReadPart
-		int retSelect = 1;
-		fd_set fdsCopy = _FdsSet;
-		retSelect = select(_MaxFd + 1, &fdsCopy, NULL, NULL, &tm);
-		if (retSelect > 0) {
-			readerClient(fdsCopy);
-		} else if (retSelect < 0) {
-			throw std::runtime_error(std::string("Error: Select") + strerror(errno));
-		}
+		readerClients();
 
 		//Reply part
-		for (std::set<Client *>::iterator User = _Clients.begin(); User != _Clients.end(); ++User) {
-			if ((*User)->ServerNeedToPING()) {
-				PING ping(*this);
-				ping.setTarget(*User);
-				ping.run();
-			}
-			std::string ReplyMessage = (*User)->getReplyMessage();
-			if (ReplyMessage.empty()) {
-				QUIT q(*this);
-				q.setTarget(*User);
-				if ((*User)->inactiveShouldDie()) {
-					q.setArgument("QUIT: Smells Like Thees Spirit. B-gone, ghost.");
-					q.run();
-				} else if ((*User)->unregisteredShouldDie()) {
-					q.setArgument("QUIT: Are not as fast, are ya? Bye then, champ.");
-					q.run();
-				}
-				ReplyMessage = (*User)->getReplyMessage();
-			}
-			if (not ReplyMessage.empty()) {
-				std::cout << "+=======================out=========================+" << std::endl;
-				std::cout << ReplyMessage;
-				std::cout << "+===================================================+" << std::endl;
-				send((*User)->_Fd, ReplyMessage.c_str(), ReplyMessage.length(), 0);
-			}
-		}
+		replyToClients();
 
-		//Erase part
-		while (not _ClientsToBeErased.empty()) {
-			std::set<Client *>::iterator ToBeErased = _Clients.find(_ClientsToBeErased.front());
-			FD_CLR((*ToBeErased)->_Fd, &_FdsSet);
-			close((*ToBeErased)->_Fd);
-			delete (*ToBeErased);
-			eraseClientFromModes(*ToBeErased);
-			_Clients.erase(ToBeErased);
-			_ClientsToBeErased.pop_front();
-		}
-
-		while (not _ChannelsToBeErased.empty()) {
-			std::set<Channel *>::iterator ToBeErased = _Channels.find(_ChannelsToBeErased.front());
-			delete (*ToBeErased);
-			_Channels.erase(ToBeErased);
-			_ChannelsToBeErased.pop_front();
-		}
+		//Erase dead clients
+		eraseClients();
 	}
 }
 
-void Server::readerClient(fd_set & fdsCpy)
+void Server::readerClients()
 {
+	timeval tm = {0, 10000};
+	fd_set fdsCopy = _FdsSet;
+	if (select(_MaxFd + 1, &fdsCopy, NULL, NULL, &tm) < 0) {
+		throw std::runtime_error(std::string("Error: Select") + strerror(errno));
+	}
 	for (std::set<Client *>::iterator Client = _Clients.begin();
 		 Client != _Clients.end(); ++Client)
 	{
-		if (FD_ISSET((*Client)->_Fd, &fdsCpy) > 0)
+		if (FD_ISSET((*Client)->_Fd, &fdsCopy) > 0)
 		{
-			FD_CLR((*Client)->_Fd, &fdsCpy);
+			FD_CLR((*Client)->_Fd, &fdsCopy);
 			char Buffer[SIZE] = { 0 };
 			ssize_t ReadByte = 0;
 			ReadByte = recv((*Client)->_Fd, Buffer, SIZE, 0);
 			if (ReadByte < 0 && errno != EAGAIN) {
 				throw std::runtime_error(std::string("recv: ") + strerror(errno));
 			} else if (ReadByte == 0) {
-				FD_CLR((*Client)->_Fd, &_FdsSet);
-				_Clients.erase(Client);
-				return ;
+				QUIT q(*this);
+				q.setInitiator(*Client);
+				q.setArgument(std::string(":Is dead. Just dead. People die, ya know?"));
+			} else {
+				(*Client)->getIncomingBuffer() += Buffer;
+				serverLog(*Client, (*Client)->getIncomingBuffer());
+				processCmd(*Client);
 			}
-			(*Client)->getIncomingBuffer() += Buffer;
-			serverLog(*Client, (*Client)->getIncomingBuffer());
-			processCmd(*Client);
 		}
 	}
 }
@@ -287,8 +244,57 @@ std::pair<std::string, std::string> Server::parseCmd(std::string &Cmd)
 		pair_Second = Cmd.substr(pos_WordEnd);
 	}
 	std::pair<std::string, std::string> Value(pair_First, pair_Second);
-//    std::cout << '|' << Value.first << '|' << Value.second << '|' << '\n';
 	return Value;
+}
+
+void Server::replyToClients() {
+	for (std::set<Client *>::iterator User = _Clients.begin(); User != _Clients.end(); ++User) {
+		if ((*User)->ServerNeedToPING()) {
+			PING ping(*this);
+			ping.setTarget(*User);
+			ping.run();
+		}
+		std::string ReplyMessage = (*User)->getReplyMessage();
+		if (ReplyMessage.empty()) {
+			QUIT q(*this);
+			q.setInitiator(*User);
+			if ((*User)->inactiveShouldDie()) {
+				q.isNeedToBeSentToInitiator();
+				q.setArgument("Smells Like He's Spirit. B-gone, ghosts.");
+				q.run();
+			} else if ((*User)->unregisteredShouldDie()) {
+				q.isNeedToBeSentToInitiatorOnly();
+				q.setArgument("Are not as fast, are ya? Bye then, champ.");
+				q.run();
+			}
+			ReplyMessage = (*User)->getReplyMessage();
+		}
+		if (not ReplyMessage.empty()) {
+			std::cout << "+=======================out=========================+" << std::endl;
+			std::cout << ReplyMessage;
+			std::cout << "+===================================================+" << std::endl;
+			send((*User)->_Fd, ReplyMessage.c_str(), ReplyMessage.length(), 0);
+		}
+	}
+}
+
+void Server::eraseClients() {
+	while (not _ClientsToBeErased.empty()) {
+		std::set<Client *>::iterator ToBeErased = _Clients.find(_ClientsToBeErased.front());
+		FD_CLR((*ToBeErased)->_Fd, &_FdsSet);
+		close((*ToBeErased)->_Fd);
+		delete (*ToBeErased);
+		eraseClientFromModes(*ToBeErased);
+		_Clients.erase(ToBeErased);
+		_ClientsToBeErased.pop_front();
+	}
+
+	while (not _ChannelsToBeErased.empty()) {
+		std::set<Channel *>::iterator ToBeErased = _Channels.find(_ChannelsToBeErased.front());
+		delete (*ToBeErased);
+		_Channels.erase(ToBeErased);
+		_ChannelsToBeErased.pop_front();
+	}
 }
 
 void Server::serverLog(Client *That, std::string const & ReceivedMessage)
@@ -296,10 +302,6 @@ void Server::serverLog(Client *That, std::string const & ReceivedMessage)
 	std::cout << "+========================in========================+" << std::endl;
 	std::cout << That->getNickName() << ": "<< ReceivedMessage;
 	std::cout << "+==================================================+" << std::endl;
-}
-
-std::set<Client *> const &Server::getUsers(){
-	return _Clients;
 }
 
 Client *Server::getUserByNickName(std::string const & NickName){
@@ -331,12 +333,8 @@ std::set<Client *> Server::getClientsByName(std::string Name){
 	{
 		for(;istart != ifinish; ++istart)
 		{
-			if (
-				// ft::wildcard(Name, (*istart)->_UserName) ||
-				ft::wildcard(ft::tolowerString(Name), ft::tolowerString((*istart)->_NickName))
-				// ft::wildcard(Name, (*istart)->_RealName) 
-				)
-					result.insert(*istart);
+			if (ft::wildcard(ft::tolowerString(Name), ft::tolowerString((*istart)->_NickName)))
+				result.insert(*istart);
 		}
 	}
 	else
