@@ -423,7 +423,7 @@ Replies RPL_UNAWAY and RPL_NOWAWAY are sent when the
 client removes and sets an AWAY message.
 */
 
-#define RPL_WHOISUSER(User, Host, RealName) " 311 " + _Initiator->_NickName + " " + User + " " + Host + " * :" + RealName
+#define RPL_WHOISUSER(Nick, User, Host, RealName) " 311 " + Nick + " " + User + " " + Host + " * :" + RealName
 /* 
 "<nick> <user> <host> * :<real name>"
 */
@@ -433,12 +433,12 @@ client removes and sets an AWAY message.
 "<nick> <server> :<server info>"
 */
 
-#define RPL_WHOISOPERATOR(Nick) " 313 " + _Initiator->_NickName + " " + Nick + " :is an IRC operator"
+#define RPL_WHOISOPERATOR(Nick) " 313 " + _Initiator->_NickName + " :" + Nick + " :is an IRC operator"
 /*
 "<nick> :is an IRC operator"
 */
 
-#define RPL_WHOISIDLE(Nick, Integer) " 317 " + _Initiator->_NickName + " " + Nick + " " + Integer + " :seconds idle"
+#define RPL_WHOISIDLE(Nick, Integer) " 317 " + _Initiator->_NickName + " :" + Nick + " " + Integer + " :seconds idle"
 /*
 "<nick> <integer> :seconds idle"
 */

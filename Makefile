@@ -1,6 +1,6 @@
 TARGET		:= ircserv
 CXX			:= clang++
-CXXFLAGS	:= -pedantic-errors -Wall -Wextra -Werror -std=c++98 -pedantic -g -D_GLIBCXX_DEBUG
+CXXFLAGS	:= -pedantic-errors -Wall -Wextra -Werror -std=c++98 -pedantic -g -D_GLIBCXX_DEBUG -fdiagnostics-color=always
 LDFLAGS		:= -L/usr/lib -lstdc++ -lm
 BUILD		:= ./build
 OBJ_DIR		:= $(BUILD)/objects

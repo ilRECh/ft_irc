@@ -53,22 +53,22 @@ private:
 		return some.substr(0, some.find(_Arguments[0].substr(1))) + "..";
 	}
 
-	std::string getResult(setClient & usersToShow){
+	void getResult(setClient & usersToShow){
 		IsetClient beg_clnt = usersToShow.begin();
 		IsetClient end_clnt = usersToShow.end();
 		IcsetChannel beg_chan;
 		IcsetChannel end_chan;
-		std::stringstream result;
 		if (beg_clnt != end_clnt)
 		{
 			for (;beg_clnt != end_clnt; ++beg_clnt)
 			{
-				result << RPL_WHOISUSER
+				_Initiator->updateReplyMessage(RPL_WHOISUSER
 				(
+					(*beg_clnt)->_NickName, 
 					(*beg_clnt)->_UserName, 
 					(*beg_clnt)->_HostName, 
 					(*beg_clnt)->_RealName
-				) << "\r\n";
+				));
 				if (not (*beg_clnt)->getChannels().empty())
 				{
 					beg_chan = (*beg_clnt)->getChannels().begin();
@@ -76,20 +76,20 @@ private:
 					for(;beg_chan != end_chan; ++beg_chan)
 					{
 						char status_in_channel = (*beg_chan)->getModeIsExist((*beg_clnt), 'o') ? '@' : '+';
-						result << RPL_WHOISCHANNELS
+						_Initiator->updateReplyMessage(RPL_WHOISCHANNELS
 						(
 							(*beg_clnt)->_NickName, 
 							status_in_channel, 
 							(*beg_chan)->getChannelName()
-						);
+						));
 					}
 				}
+				_Initiator->updateReplyMessage(RPL_ENDOFWHOIS((*beg_clnt)->_NickName));
 			}
-			result << RPL_ENDOFWHOIS((*(--beg_clnt))->_NickName);
+			// _Initiator->updateReplyMessage(RPL_ENDOFWHOIS((*(--beg_clnt))->_NickName));
 		}
 		else
-			result << RPL_ENDOFWHOIS(" ");
-
+			_Initiator->updateReplyMessage(RPL_ENDOFWHOIS(" "));
 		// if (_Arguments.size() > 1 && std::tolower(_Arguments[1][0]) == 'o')
 		// {
 		// 	posStar = _Arguments[0].find('*');
@@ -104,7 +104,6 @@ private:
 		// else
 		// {
 		// }
-		return result.str();
 	}
 
 public:
@@ -127,7 +126,7 @@ public:
 		{
 			users_to_show = _Server.getClientsByName(_Arguments[0]);
 		}
-		_Initiator->updateReplyMessage(getResult(users_to_show));
+		getResult(users_to_show);
 		return 0;
 	}
 };
