@@ -15,7 +15,7 @@ private:
 	WHOIS();
 	WHOIS(WHOIS const &that);
 	WHOIS& operator=(WHOIS const &that);
-	bool	isAcceptToShow(Client *user_another)
+	bool	isAcceptToShowClient(Client *user_another)
 	{
 		csetChannel &two = user_another->_Channels;
 		csetChannel &one = _Initiator->_Channels;
@@ -31,6 +31,10 @@ private:
 			if (!(*i)->getModeIsExist(user_another, 'i'))
 				return true;
 		return false;
+	}
+
+	bool isAccenpToShowChannel(Channel * channel){
+		 return not channel->getModeIsExist(channel, 'p') or channel->isOnChannel(_Initiator);
 	}
 
 	bool	isRespondRequireTreeAlpha(){
@@ -50,31 +54,56 @@ private:
 	}
 
 	std::string getResult(setClient & usersToShow){
-		IsetClient start = usersToShow.begin();
-		IsetClient finish = usersToShow.end();
-		std::string::size_type posStar;
+		IsetClient beg_clnt = usersToShow.begin();
+		IsetClient end_clnt = usersToShow.end();
+		IcsetChannel beg_chan;
+		IcsetChannel end_chan;
 		std::stringstream result;
-
-		if (_Arguments.size() > 1 && std::tolower(_Arguments[1][0]) == 'o')
-		{			
-			posStar = _Arguments[0].find('*');
-			if (posStar ==_Arguments[0].find_last_of('*'))
-				for (;start != finish; ++start)
-					result << "(" << shortByStar((*start)->_NickName, posStar) << ")" << ", ";
-			else
-				for (;start != finish; ++start)
-					result << (*start)->_NickName << ", ";
+		if (beg_clnt != end_clnt)
+		{
+			for (;beg_clnt != end_clnt; ++beg_clnt)
+			{
+				result << RPL_WHOISUSER
+				(
+					(*beg_clnt)->_UserName, 
+					(*beg_clnt)->_HostName, 
+					(*beg_clnt)->_RealName
+				) << "\r\n";
+				if (not (*beg_clnt)->getChannels().empty())
+				{
+					beg_chan = (*beg_clnt)->getChannels().begin();
+					end_chan = (*beg_clnt)->getChannels().end();
+					for(;beg_chan != end_chan; ++beg_chan)
+					{
+						char status_in_channel = (*beg_chan)->getModeIsExist((*beg_clnt), 'o') ? '@' : '+';
+						result << RPL_WHOISCHANNELS
+						(
+							(*beg_clnt)->_NickName, 
+							status_in_channel, 
+							(*beg_chan)->getChannelName()
+						);
+					}
+				}
+			}
+			result << RPL_ENDOFWHOIS((*(--beg_clnt))->_NickName);
 		}
 		else
-		{
-			for (;start != finish; ++start)
-			{
-				result << "Nick name: " << (*start)->_NickName << "\r\n";
-				result << "Real name: " << (*start)->_RealName << "\r\n";
-				result << "IP: " << (*start)->getAddresIP() << "\r\n";
-				result << "Last activity: " << (*start)->getLastActivity().getTimeStrStarted() << "\r\n";
-			}
-		}
+			result << RPL_ENDOFWHOIS(" ");
+
+		// if (_Arguments.size() > 1 && std::tolower(_Arguments[1][0]) == 'o')
+		// {
+		// 	posStar = _Arguments[0].find('*');
+		// 	bool is_one_star_in_arg = posStar == _Arguments[0].find_last_of('*');
+		// 	if (is_one_star_in_arg)
+		// 		for (;beg_client != end_client; ++beg_client)
+		// 			result << "(" << shortByStar((*beg_client)->_NickName, posStar) << ")" << ", ";
+		// 	else
+		// 		for (;beg_client != end_client; ++beg_client)
+		// 			result << (*beg_client)->_NickName << ", ";
+		// }
+		// else
+		// {
+		// }
 		return result.str();
 	}
 
@@ -82,70 +111,67 @@ public:
 	WHOIS(Server &Server) : ACommand("WHOIS", Server) {setArguments(_Argument);}
 	virtual ~WHOIS() {}
 	virtual int run(){
-		setClient usersToShow;
-		setClient _Clients;
-		std::stringstream result;
+		setClient	clients;
+		setClient	users_to_show;
+		setChannel	channels;
 
 		if (_Arguments.empty() || !isRespondRequireTreeAlpha())
 		{
-			_Clients = _Arguments.empty() ? _Server.getClientsByName("*") : _Server.getClientsByName(_Arguments[0]);
-			for (IsetClient i = _Clients.begin(); i != _Clients.end(); ++i)
-				if (isAcceptToShow(*i))
-					usersToShow.insert(*i);
+			clients = _Arguments.empty() ? _Server.getClientsByName("*") : _Server.getClientsByName(_Arguments[0]);
+			channels = _Arguments.empty() ? _Server.getChannelsByName("*") : _Server.getChannelsByName(_Arguments[0]);
+			for (IsetClient i = clients.begin(); i != clients.end(); ++i)
+				if (isAcceptToShowClient(*i))
+					users_to_show.insert(*i);
 		}
 		else
 		{
-			usersToShow = _Server.getClientsByName(_Arguments[0]);
+			users_to_show = _Server.getClientsByName(_Arguments[0]);
 		}
-		_Initiator->updateReplyMessage(getResult(usersToShow));
+		_Initiator->updateReplyMessage(getResult(users_to_show));
 		return 0;
 	}
 };
 /*
 
-		WHOIS
-		Синтаксис:
+4.5.2 Whois-запрос
 
-		WHOIS [<сервер>] <имена пользователей>
-		Возвращает информацию о пользователях,
-		определённых в разделенном запятыми списке 
-		<имена пользователей>.
-		[51] Если определен параметр <сервер>, команда передается ему для обработки.
+	Команда: WHOIS
+  Параметры: [<server>] <nickmask>[,<nickmask>[,...]]
 
-		Определена в RFC 1459
+  Это сообщение используется для запроса информации об отдельном
+  пользователе. Сервер будет отвечать на это сообщением различными
+  числовыми сообщениями, указывая разность положений каждого пользователя,
+  который попал под маску (если вы указали ее). Если в <nickmask> не
+  указана никакая информация о том, какой никнейм опросить, вы получите
+  информацию о всех доступных никнеймах. Запятая разделяет список
+  никнеймов.
 
+  Предыдущая версия отправляла запрос на указанный сервер. Это полезно,
+  если хотите знать как долго опрашиваемый пользователь будет
+  бездействовать , как только локальный сервер (т.е, пользователь
+  напрямую соединен с сервером) узнает эту информацию.
 
-        Parameters: [<server>] <nickmask>[,<nickmask>[,...]]
-
-        Это сообщение используется для запроса информации о конкретном пользователе.
-		The server will answer this message with several numeric messages
-        indicating different statuses of each user which matches the nickmask
-        (if you are entitled to see them).  If no wildcard is present in the
-        <nickmask>, any information about that nick which you are allowed to
-        see is presented.  A comma (',') separated list of nicknames may be
-        given.
-
-        The latter version sends the query to a specific server.  It is
-        useful if you want to know how long the user in question has been
-        idle as only local server (ie. the server the user is directly
-        connected to) knows that information, while everything else is
-        globally known.
-
-        Numeric Replies:
-
-           ERR_NOSUCHSERVER                ERR_NONICKNAMEGIVEN
-           RPL_WHOISUSER                   RPL_WHOISCHANNELS
-           RPL_WHOISCHANNELS               RPL_WHOISSERVER
-           RPL_AWAY                        RPL_WHOISOPERATOR
-           RPL_WHOISIDLE                   ERR_NOSUCHNICK
-           RPL_ENDOFWHOIS
-
-        Examples:
-
-        WHOIS wiz                       ; return available user information
-                                        about nick WiZ
-
-        WHOIS eff.org trillian          ; ask server eff.org for user
-                                        information about trillian
+  Числовые ответы:
+	ERR_NOSUCHSERVER
+		"<server name> :No such server"
+?	ERR_NONICKNAMEGIVEN
+*		":No nickname given"
+?	RPL_WHOISUSER
+*		"<nick> <user> <host> * :<real name>"
+! here
+?	RPL_WHOISCHANNELS
+*		"<nick> :{[@|+]<channel><space>}"
+	RPL_WHOISSERVER
+		"<nick> <server> :<server info>"
+?	RPL_AWAY
+*		"<nick> :<away message>"
+?	RPL_WHOISOPERATOR
+*		"<nick> :is an IRC operator"
+?	RPL_WHOISIDLE
+*		"<nick> <integer> :seconds idle"
+?	ERR_NOSUCHNICK
+*		"<nickname> :No such nick/channel"
+?	RPL_ENDOFWHOIS
+*		"<nick> :End of /WHOIS list"
 
 */
