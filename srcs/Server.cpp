@@ -31,6 +31,7 @@
 #include "NOTICE.hpp"
 
 // Server Queries And Commands
+#include "ADMIN.hpp"
 
 // UserBasedQueries
 #include "WHO.hpp"
@@ -54,34 +55,32 @@ Server::Server(string const & Port, string const & Password)
 	_Commands.push_back(new PASS(*this));
 	_Commands.push_back(new NICK(*this));
 	_Commands.push_back(new USER(*this));
-	_Commands.push_back(new QUIT(*this));
 	_Commands.push_back(new OPER(*this));
+	_Commands.push_back(new QUIT(*this));
 	_Commands.push_back(new SQUIT(*this));
 	_Commands.push_back(new PING(*this));
+	_Commands.push_back(new PONG(*this));
 	_Commands.push_back(new PRIVMSG(*this));
 	_Commands.push_back(new AWAY(*this));
-	_Commands.push_back(new PONG(*this));
 	_Commands.push_back(new MODE(*this));
 	_Commands.push_back(new WHO(*this));
 	_Commands.push_back(new WHOIS(*this));
 	_Commands.push_back(new WHOWAS(*this));
+	_Commands.push_back(new PART(*this));
 	_Commands.push_back(new ISON(*this));
+	_Commands.push_back(new TOPIC(*this));
 	_Commands.push_back(new JOIN(*this));
+	_Commands.push_back(new ADMIN(*this));
 	addrinfo hints;
-
 	memset(&hints, 0, sizeof hints);
 	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_PASSIVE;
-
-
 	if (getaddrinfo(_Ip.c_str(), _Port.c_str(), &hints, &_ServInfo))
 		throw std::runtime_error(
 				string("getaddrinfo error: ") + gai_strerror(errno));
 	if (1024 > std::atoi(_Port.c_str()) || std::atoi(_Port.c_str()) > 49151)
 		throw std::runtime_error("wrong _Port! min 1024, max 49151,");
-
-
 	std::cout << "Server will be bound to _Port: " << _Port << '\n';
 	_Sockfd = socket(AF_INET, SOCK_STREAM/* | SOCK_NONBLOCK*/, 0);
 	if (_Sockfd < 0)
@@ -346,29 +345,29 @@ std::set<Client *> Server::getClientsByName(std::string Name){
 	return result;
 }
 
-std::set<Channel *> Server::getChannelsByName(std::string Name){
+std::set<Channel *> Server::getChannelsByChannelName(std::string ChannelName){
 	std::set<Channel *>::iterator istart = _Channels.begin();
 	std::set<Channel *>::iterator ifinish = _Channels.end();
 	std::set<Channel *> result;
 
-	for(uint i = Name.size(); true;)
+	for(uint i = ChannelName.size(); true;)
 	{
-		if (Name[--i] != '*')
+		if (ChannelName[--i] != '*')
 			break;
 		if (!i)
 			return _Channels;
 	}
 
-	if (Name.find('*') == std::string::npos)
+	if (ChannelName.find('*') == std::string::npos)
 	{
 		for(;istart != ifinish; ++istart)
-			if (ft::wildcard(Name, (*istart)->getChannelName()))
+			if (ft::wildcard(ChannelName, (*istart)->getChannelName()))
 				result.insert(*istart);
 	}
 	else
 	{
 		for(;istart != ifinish; ++istart)
-			if ((*istart)->getChannelName() == Name)
+			if ((*istart)->getChannelName() == ChannelName)
 				result.insert(*istart);
 	}
 	return result;

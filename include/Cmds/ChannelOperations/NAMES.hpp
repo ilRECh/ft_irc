@@ -28,7 +28,7 @@ private:
 
 		for(;start != finish; ++start)
 		{
-			sChannel tmp = _Server.getChannelsByName(*start);
+			sChannel tmp = _Server.getChannelsByChannelName(*start);
 			for(isChannel i = tmp.begin(); i != tmp.end(); ++i)
 				channels.insert(*i);
 		}

@@ -40,20 +40,20 @@ private:
 		_Arguments = ft::split(_Argument, ",");
 		for (ivecStr i = _Arguments.begin(); i != _Arguments.end(); ++i)
 		{
-			*i = ft::strTrim(*i, SPACE_SYMBOLS);
+			ft::deleteSpaces(*i, SPACE_SYMBOLS);
 			if (i->empty())
 				continue ;
 			else if ((*i)[0] == '#')
 			{
-				str s = ft::strTrim(*i, std::string(SPACE_SYMBOLS) + "#");
-				if (s.empty())
+				ft::deleteSpaces(*i, SPACE_SYMBOLS "#");
+				if (i->empty())
 					continue ;
 				result.push_back(pStrStr(*i, str()));
 			}
 			else if ((*i)[0] == '&')
 			{
-				str s1 = ft::strTrim(*i, std::string(SPACE_SYMBOLS) + "&");
-				if (s1.empty())
+				ft::deleteSpaces(*i, SPACE_SYMBOLS "&");
+				if (i->empty())
 					continue ;
 				vecStr vstr = ft::split(*i, SPACE_SYMBOLS);
 				if (vstr.size() != 2)
@@ -66,16 +66,18 @@ private:
 				return vpStrStr();
 			}
 		}
-        return vpStrStr();
+        return result;
 	}
 	
 	int join(str & nameChannel, str & password){
-		std::set<Channel *> channels = _Server.getChannelsByName(nameChannel);
-		Channel * chan = *channels.begin();
-		if (!channels.size())
+		std::set<Channel *> channels = _Server.getChannelsByChannelName(nameChannel);
+		Channel * chan;
+		if (channels.empty())
 		{
 			chan = new Channel(nameChannel, _Initiator, &_Server);
 			_Server.pushBack(chan);
+		} else {
+			chan = *channels.begin();
 		}
 		if (chan->_Clients.size() >= chan->_maxUserLimit)
 			return 1 + _Initiator->updateReplyMessage(ERR_CHANNELISFULL(chan->getChannelName()));
@@ -89,23 +91,22 @@ private:
 		if (chan->isBanned(_Initiator))
 			return 1 + _Initiator->updateReplyMessage(ERR_BANNEDFROMCHAN(chan->getChannelName()));
 		chan->addClient(_Initiator);
-		return 0 + _Initiator->updateReplyMessage(RPL_TOPIC(chan->getChannelName(), chan->getTopic())) \
-            + _Initiator->updateReplyMessage(RPL_NAMREPLY(chan->getChannelName())) \
-            + _Initiator->updateReplyMessage(RPL_ENDOFNAMES(chan->getChannelName()));
+		_Initiator->updateReplyMessage(_Initiator->_NickName + " JOIN :#" + chan->getChannelName());
+		_Initiator->updateReplyMessage("Server " RPL_NAMREPLY("= #", chan->getChannelName()) + " :" + _Initiator->_RealName);
+		_Initiator->updateReplyMessage("Server " RPL_ENDOFNAMES(" #", chan->getChannelName()));
+		return 0;
 	}
 
 	int	goJoinWithParse(){
 		vpStrStr args = smartSplit();
-		ivpStrStr first, last;
 		int	status = 0;
 
-		first = args.begin();
-		last = args.end();
-
-		if (first == last)
+		if (args.begin() == args.end()) {
 			return 1;
-		while(first != last)
-			status |= join(first->first, first->second);
+		}
+		for (ivpStrStr i = args.begin(); i != args.end(); ++i) {
+			status |= join(i->first, i->second);
+		}
 		return status;
 	}
 public:
