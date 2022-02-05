@@ -55,12 +55,16 @@ std::vector<std::string> ft::splitByCmds(
     return ret;
 }
 
-void ft::deleteSpaces(std::string &string)
+void ft::deleteSpaces(std::string &string, std::string const &symbolsToDelete)
 {
-    size_t strBegin = string.find_first_not_of(' ');
-    size_t strEnd = string.find_last_not_of(' ');
-    string.erase(strEnd+1, string.size() - strEnd);
-    string.erase(0, strBegin);
+    size_t strBegin = string.find_first_not_of(symbolsToDelete);
+    if (strBegin != string.npos) {
+        string.erase(0, strBegin);
+    }
+    size_t strEnd = string.find_last_not_of(symbolsToDelete);
+    if (strEnd != string.npos and strEnd + 1 < string.length()) {
+        string.erase(strEnd+1, string.length() - strEnd);
+    } 
 }
 
 std::string ft::SplitOneTimes(std::string &str, std::string delimiter)
@@ -118,25 +122,6 @@ bool ft::wildcard(std::string wExpression, std::string toCompare)
 					--i;
 	}
 	return true;
-}
-
-std::string	ft::strTrim(std::string & str, std::string trimSymbol){
-	std::string::iterator first, end;
-	std::string::reverse_iterator rfirst, rend;
-
-	end = str.end();
-	rend = str.rend();
-	first = str.begin();
-	rfirst = str.rend();
-	while(std::find_first_of(first, first + 1, trimSymbol.begin(), trimSymbol.end()) == first)
-		if (++first == end)
-			break ;
-	while(std::find_first_of(rfirst, rfirst + 1, trimSymbol.begin(), trimSymbol.end()) == rfirst)
-		if (++rfirst == rend)
-			break ;
-	if (first < rfirst.base())
-		return std::string(first, rfirst.base());
-	return std::string();
 }
 
 std::string ft::tolowerString(std::string toLowStr)

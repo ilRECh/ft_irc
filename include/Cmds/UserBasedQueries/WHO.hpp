@@ -2,32 +2,23 @@
 #include "ACommand.hpp"
 
 class WHO : public ACommand {
-	typedef std::set<Client *>		setClient;
-	typedef std::set<Channel *>	setChannel;
-	typedef setClient::iterator	IsetClient;
-	typedef setChannel::iterator	IsetChannel;
-
-	typedef std::set<const Client *>	csetClient;
-	typedef std::set<const Channel *>	csetChannel;
-	typedef csetClient::iterator		IcsetClient;
-	typedef csetChannel::iterator		IcsetChannel;
 private:
 	WHO();
 	WHO(WHO const &that);
 	WHO& operator=(WHO const &that);
 	bool	isAcceptToShow(Client *user_another)
 	{
-		csetChannel &two = user_another->_Channels;
-		csetChannel &one = _Initiator->_Channels;
-		csetChannel common;
+		std::set<const Channel *> &two = user_another->_Channels;
+		std::set<const Channel *> &one = _Initiator->_Channels;
+		std::set<const Channel *> common;
 
 		if (std::find_first_of(one.begin(), one.end(), two.begin(), two.end()) == one.end())
 			return false;
-		for(IcsetChannel i = one.begin(); i != one.end(); ++i)
-			for(IcsetChannel j = two.begin(); j != two.end(); ++j)
+		for(std::set<const Channel *>::iterator i = one.begin(); i != one.end(); ++i)
+			for(std::set<const Channel *>::iterator j = two.begin(); j != two.end(); ++j)
 				if (*i == *j)
 					common.insert(*i);
-		for(IcsetChannel i = common.begin(); i != common.end(); ++i)
+		for(std::set<const Channel *>::iterator i = common.begin(); i != common.end(); ++i)
 			if (!(*i)->getModeIsExist(user_another, 'i'))
 				return true;
 		return false;
@@ -50,10 +41,10 @@ private:
 		return some.substr(0, some.find(_Arguments[0].substr(1))) + "..";
 	}
 
-	std::string getResult(setClient & usersToShow){
+	std::string getResult(std::set<Client *> & usersToShow){
 		std::stringstream result;
 
-		for (IsetClient	start = usersToShow.begin(); start != usersToShow.end(); ++start)
+		for (std::set<Client *>::iterator	start = usersToShow.begin(); start != usersToShow.end(); ++start)
 		{
 			std::string serverName = _Server.getServerAddrInfo().substr(0, _Server.getServerAddrInfo().find(':'));
 			char H_G = (*start)->_Away.empty() ? 'H' : 'G';
@@ -87,13 +78,13 @@ public:
 	WHO(Server & Server) : ACommand("WHO", Server) {}
 	virtual ~WHO() {}
 	virtual int run(){
-		setClient clients = _Server.getClientsByName("*");
-		setClient users_To_Show;
+		std::set<Client *> clients = _Server.getClientsByName("*");
+		std::set<Client *> users_To_Show;
 
 		if (_Arguments.empty() || !isRespondRequireTreeAlpha())
 		{
 			clients = _Arguments.empty() ? _Server.getClientsByName("*") : _Server.getClientsByName(_Arguments[0]);
-			for (IsetClient i = clients.begin(); i != clients.end(); ++i)
+			for (std::set<Client *>::iterator i = clients.begin(); i != clients.end(); ++i)
 				if (isAcceptToShow(*i))
 					users_To_Show.insert(*i);
 		}

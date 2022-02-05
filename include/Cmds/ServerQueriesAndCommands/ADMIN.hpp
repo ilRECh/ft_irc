@@ -10,11 +10,16 @@ public:
     ADMIN(Server &Server) : ACommand("ADMIN", Server) {}
     virtual ~ADMIN() {}
     virtual int run(){
-        if (_Arguments.empty()) {
-            return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            
+        if (not _Argument.empty()) {
+            return _Initiator->updateReplyMessage(ERR_NOSUCHSERVER(_Argument));
         }
-        //code
+        _Initiator->updateReplyMessage(RPL_ADMINME);
+        _Initiator->updateReplyMessage(RPL_ADMINLOC1("Russia, Kazan"));
+        _Initiator->updateReplyMessage(RPL_ADMINLOC2("School 21"));
+        _Initiator->updateReplyMessage(RPL_ADMINEMAIL("vcobbler@student.21-school.ru, "
+                                                    "csamuro@student.21-school.ru, "
+                                                    "caugusta@student.21-school.ru"));
+        return 0;
     }
 };/*
    Parameters: [<server>]

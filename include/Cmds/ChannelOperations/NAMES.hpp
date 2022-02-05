@@ -20,7 +20,7 @@ private:
 
 		for(;start != finish; ++start)
 		{
-			std::set<Channel *> tmp = _Server.getChannelsByName(*start);
+			std::set<Channel *> tmp = _Server.getChannelsByChannelName(*start);
 			for(std::set<Channel *>::iterator i = tmp.begin(); i != tmp.end(); ++i)
 				channels.insert(*i);
 		}
@@ -66,14 +66,14 @@ public:
 							_Initiator->updateReplyMessage(RPL_NAMREPLY((*client_begin)->_NickName));
 					}
 				}
-				_Initiator->updateReplyMessage(RPL_ENDOFNAMES((*(--_Server.getChannels().end()))->_ChannelName));
+				_Initiator->updateReplyMessage(RPL_ENDOFNAMES("#",(*(--_Server.getChannels().end()))->getChannelName()));
 			}
         }
 		else
 		{
 			for(uint i = 0; i < _Arguments.size(); ++i)
 			{
-				std::set<Channel *> channels = _Server.getChannelsByName(_Arguments[i]);
+				std::set<Channel *> channels = _Server.getChannelsByChannelName(_Arguments[i]);
 				channel_begin = channels.begin();
 				if (channel_begin != channels.end())
 				{
@@ -86,7 +86,7 @@ public:
 							_Initiator->updateReplyMessage(RPL_NAMREPLY((*client_begin)->_NickName));
 
 					}
-					_Initiator->updateReplyMessage(RPL_ENDOFNAMES((*(--channel_begin))->_ChannelName));
+					_Initiator->updateReplyMessage(RPL_ENDOFNAMES("#", (*(--channel_begin))->_ChannelName));
 				}
 			}
 		}

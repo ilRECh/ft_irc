@@ -15,7 +15,6 @@ Channel::Channel(
 		_Server(Server){
 	_Clients.insert(userAdmin);
 	setMode(userAdmin, 'o');
-
 }
 
 bool Channel::isOnChannel(Client *whom) const {

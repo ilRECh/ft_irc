@@ -580,12 +580,12 @@ after processing each list item with <name> being
 the item.
 */
 
-#define	RPL_NAMREPLY(Channel)		": 353 " + Channel 
+#define	RPL_NAMREPLY(Channel)		" 353 " + Channel 
 /*
 "<channel> :[[@|+]<nick> [[@|+]<nick> [...]]]"
 */
 
-#define RPL_ENDOFNAMES(Channel) " 366 " + _Initiator->_NickName + " " + Channel + " :End of /NAMES list"
+#define RPL_ENDOFNAMES(ChannelSymbol, Channel) " 366 " + _Initiator->_NickName + " " + Channel + " :End of NAMES list."
 /*
 "<channel> :End of /NAMES list"
 
@@ -906,22 +906,22 @@ replies are only sent back if a non-zero count
 is found for them.
 */
 
-#define RPL_ADMINME(Server) " 256 " + _Initiator->_NickName + " " + Server + " :Administrative info"
+#define RPL_ADMINME "Server 256 " + _Initiator->_NickName + " :Administrative info"
 /*
 "<server> :Administrative info"
 */
 
-#define RPL_ADMINLOC1(AdminInfo) " 257 " + _Initiator->_NickName + " " + AdminInfo
+#define RPL_ADMINLOC1(AdminInfo) "Server 257 " + _Initiator->_NickName + " :" AdminInfo
 /*
 ":<admin info>"
 */
 
-#define RPL_ADMINLOC2(AdminInfo) " 258 " + _Initiator->_NickName + " " + AdminInfo
+#define RPL_ADMINLOC2(AdminInfo) "Server 258 " + _Initiator->_NickName + " :" AdminInfo
 /*
 ":<admin info>"
 */
 
-#define RPL_ADMINEMAIL(AdminInfo) " 259 " + _Initiator->_NickName + " " + AdminInfo
+#define RPL_ADMINEMAIL(AdminInfo) "Server 259 " + _Initiator->_NickName + " :" AdminInfo
 /*
 ":<admin info>"
 

@@ -97,7 +97,7 @@ public:
 		if (_Arguments.empty() || !isRespondRequireTreeAlpha())
 		{
 			clients = _Arguments.empty() ? _Server.getClientsByName("*") : _Server.getClientsByName(_Arguments[0]);
-			channels = _Arguments.empty() ? _Server.getChannelsByName("*") : _Server.getChannelsByName(_Arguments[0]);
+			channels = _Arguments.empty() ? _Server.getChannelsByChannelName("*") : _Server.getChannelsByChannelName(_Arguments[0]);
 			for (std::set<Client *>::iterator i = clients.begin(); i != clients.end(); ++i)
 				if (isAcceptToShowClient(*i))
 					users_to_show.insert(*i);
