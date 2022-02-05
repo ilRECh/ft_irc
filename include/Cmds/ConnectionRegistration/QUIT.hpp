@@ -6,19 +6,36 @@ private:
     QUIT();
     QUIT(QUIT const &that);
     QUIT& operator=(QUIT const &that);
-    Client *_Target;
+    bool _ToInitiator;
+    bool _ToInitiatorOnly;
 public:
-    QUIT(Server &Server) : ACommand("QUIT", Server) {}
+    QUIT(Server &Server)
+        :   ACommand("QUIT", Server),
+            _ToInitiator(false),
+            _ToInitiatorOnly(false) {}
     virtual ~QUIT() {}
     virtual int run(){
-        Client *ClientToErase = _Initiator != NULL ? _Initiator : _Target;
-        std::string Reply = _Argument.empty() ? ClientToErase->_NickName : _Argument;
-        ClientToErase->updateReplyMessage(Reply);
-        _Server.pushBackErase(ClientToErase);
+        if (_Argument.find(':') != _Argument.npos and _Argument[_Argument.find(':') + 1]) {
+            _Argument = _Argument.substr(_Argument.find(':') + 1);
+        } else {
+            _Argument = _Initiator->_NickName;
+        }
+        for (std::set<Client *>::iterator ClientOnServer = _Server._Clients.begin();
+            ClientOnServer != _Server._Clients.end(); ++ClientOnServer) {
+            if ((*ClientOnServer != _Initiator and not _Server.getModeIsExist(*ClientOnServer, 'i')) or
+                (*ClientOnServer == _Initiator and _ToInitiator)) {
+                (*ClientOnServer)->updateReplyMessage(_Initiator->_NickName + " QUIT " +
+                    (*ClientOnServer)->_NickName + " :" + _Argument);
+            }
+        }
+        _Server.pushBackErase(_Initiator);
         return 0;
     }
-    void setTarget(Client *Target) {
-        _Target = Target;
+    void isNeedToBeSentToInitiator() {
+        _ToInitiator = true;
+    }
+    void isNeedToBeSentToInitiatorOnly() {
+        _ToInitiatorOnly = true;
     }
 };/*
    Parameters: [<Quit message>]
