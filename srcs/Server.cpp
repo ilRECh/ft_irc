@@ -333,8 +333,6 @@ std::set<Client *> Server::getClientsByName(std::string Name){
 	{
 		for(;istart != ifinish; ++istart)
 		{
-			Client * clie = *istart;
-			(void)clie;
 			if (ft::wildcard(ft::tolowerString(Name), ft::tolowerString((*istart)->_NickName)))
 				result.insert(*istart);
 		}
@@ -342,7 +340,7 @@ std::set<Client *> Server::getClientsByName(std::string Name){
 	else
 	{
 		for(;istart != ifinish; ++istart)
-			if ((*istart)->getUserName() == Name)
+			if (ft::tolowerString((*istart)->getNickName()) == ft::tolowerString(Name))
 				result.insert(*istart);
 	}
 	return result;
