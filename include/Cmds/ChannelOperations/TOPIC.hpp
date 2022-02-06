@@ -10,7 +10,7 @@ public:
     TOPIC(Server &Server) : ACommand("TOPIC", Server) {}
     virtual ~TOPIC() {}
     virtual int run(){
-        if (_Arguments.empty() or (_Arguments[0][0] != '#' and _Arguments[0][0] != '&')) {
+        if (_Arguments.empty() or (_Arguments[0][0] != '#')) {
             return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
         }
         std::string ChannelName = _Arguments[0];

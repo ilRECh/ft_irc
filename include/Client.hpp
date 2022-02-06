@@ -21,6 +21,7 @@ private:
 	TimeStamp _time;
 	Client(Client& that);
 	Client& operator=(Client& that);
+	Channel *	_lastJoin;
 	std::set<Channel const *> _Channels;
 	std::string _Password;
 	std::string _UserName;
@@ -57,15 +58,17 @@ public:
 
 	// Names get|set
 	string const & getNickName() const;
+	string const & getAwayMessage() const { return _Away; }
 	
 	// * get time
 	TimeStamp const & getTime() const;
 	TimeStamp const & getLastActivity() const;
 
-	//	* get|set Channels
-	void inviteToChannel(Channel const & channel);
-	void setChannel(Channel const * Channel);
+	//	* get|set  invite Channels
+	void inviteToChannel(Channel * channel, Client * Iniciator = NULL);
+	void leaveFromChannel(Channel * channel);
 	std::set<Channel const *> const &getChannels() const;
+	bool isOnChannel(const Channel * channel);
 
 	//	* get Registered
 	bool isRegistered() const;
@@ -103,6 +106,7 @@ private:
 	friend class PASS;
 	friend class QUIT;
 	friend class SERVER;
+	friend class Server;
 	friend class SQUIT;
 	friend class USER;
 	friend class ERROR;

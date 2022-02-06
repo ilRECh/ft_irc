@@ -2,32 +2,23 @@
 #include "ACommand.hpp"
 
 class WHO : public ACommand {
-	typedef std::set<Client *>		setClient;
-	typedef std::set<Channel *>	setChannel;
-	typedef setClient::iterator	IsetClient;
-	typedef setChannel::iterator	IsetChannel;
-
-	typedef std::set<const Client *>	csetClient;
-	typedef std::set<const Channel *>	csetChannel;
-	typedef csetClient::iterator		IcsetClient;
-	typedef csetChannel::iterator		IcsetChannel;
 private:
 	WHO();
 	WHO(WHO const &that);
 	WHO& operator=(WHO const &that);
 	bool	isAcceptToShow(Client *user_another)
 	{
-		csetChannel &two = user_another->_Channels;
-		csetChannel &one = _Initiator->_Channels;
-		csetChannel common;
+		std::set<const Channel *> &two = user_another->_Channels;
+		std::set<const Channel *> &one = _Initiator->_Channels;
+		std::set<const Channel *> common;
 
 		if (std::find_first_of(one.begin(), one.end(), two.begin(), two.end()) == one.end())
 			return false;
-		for(IcsetChannel i = one.begin(); i != one.end(); ++i)
-			for(IcsetChannel j = two.begin(); j != two.end(); ++j)
+		for(std::set<const Channel *>::iterator i = one.begin(); i != one.end(); ++i)
+			for(std::set<const Channel *>::iterator j = two.begin(); j != two.end(); ++j)
 				if (*i == *j)
 					common.insert(*i);
-		for(IcsetChannel i = common.begin(); i != common.end(); ++i)
+		for(std::set<const Channel *>::iterator i = common.begin(); i != common.end(); ++i)
 			if (!(*i)->getModeIsExist(user_another, 'i'))
 				return true;
 		return false;
@@ -50,33 +41,103 @@ private:
 		return some.substr(0, some.find(_Arguments[0].substr(1))) + "..";
 	}
 
-	std::string getResult(setClient & usersToShow){
-		std::stringstream result;
+	void getResult(std::set<std::pair< Channel *, Client *> > & usersToShow){
+		std::set<std::pair< Channel *, Client *> >::iterator start = usersToShow.begin();
+		std::set<std::pair< Channel *, Client *> >::iterator finish = usersToShow.end();
+		uint hopCount = 0;
 
-		for (IsetClient	start = usersToShow.begin(); start != usersToShow.end(); ++start)
-			result << (*start)->_NickName << " ";
-		return result.str();
+		for(;start != finish; ++start)
+		{
+			std::string serverName = "127.0.0.1";// _Server.getServerAddrInfo().substr(0, _Server.getServerAddrInfo().find(':'));
+			char H_G = start->second->_Away.empty() ? 'H' : 'G';
+			std::string channelName = "*";
+			std::string isAminInLastJoin = "+";
+			if (start->first)
+			{
+				channelName = "#" + start->first->getChannelName();
+				if (start->first->getModeIsExist(start->second, 'o'))
+					isAminInLastJoin = "@";
+			}
+			_Initiator->updateReplyMessage(RPL_WHOREPLY
+			(
+				channelName, 
+				start->second->_UserName,
+				start->second->_HostName, 
+				serverName,
+				start->second->_NickName,
+				H_G,
+				"*",
+				isAminInLastJoin,
+				ft::to_string(hopCount++),
+				start->second->_RealName
+			));
+		}
+		_Initiator->updateReplyMessage(RPL_ENDOFWHO);
 	}
 
 public:
 	WHO(Server & Server) : ACommand("WHO", Server) {}
 	virtual ~WHO() {}
 	virtual int run(){
-		setClient clients = _Server.getClientsByName("*");
-		setClient users_To_Show;
+		std::set<Client *> clients;
+		std::set<std::pair< Channel *, Client *> > users_set_pair;
+		std::pair< Channel *, Client *>				user_pair_el;
+		std::set<Client *>::iterator begin_client, end_client;
 
 		if (_Arguments.empty() || !isRespondRequireTreeAlpha())
 		{
 			clients = _Arguments.empty() ? _Server.getClientsByName("*") : _Server.getClientsByName(_Arguments[0]);
-			for (IsetClient i = clients.begin(); i != clients.end(); ++i)
-				if (isAcceptToShow(*i))
-					users_To_Show.insert(*i);
+			for (std::set<Client *>::iterator i = clients.begin(); i != clients.end(); ++i){
+				if (isAcceptToShow(*i)){
+					user_pair_el.first = NULL;
+					user_pair_el.second = *i;
+					users_set_pair.insert(user_pair_el);
+				}
+			}
 		}
 		else
 		{
-			users_To_Show = _Server.getClientsByName(_Arguments[0]);
+			for(uint i = 0; i < _Arguments.size(); ++i)
+			{
+				ft::deleteSpaces(_Arguments[i], SPACE_SYMBOLS);
+				if (_Arguments[i].empty())
+					continue ;
+				if (_Arguments[i].find_first_of(std::string("#&")) != _Arguments[i].npos)
+				{
+					std::string nameChanNoSharp = _Arguments[i];
+					ft::deleteSpaces(nameChanNoSharp, std::string() + SPACE_SYMBOLS + "&#");
+
+					Channel * chan =_Server.getChannelByChannelName(nameChanNoSharp);
+					if (!chan)
+					{
+						_Initiator->updateReplyMessage(ERR_NOSUCHCHANNEL(_Arguments[i]));
+						continue ;
+					}
+					clients = chan->_Clients;
+					begin_client = clients.begin();
+					end_client = clients.end();
+					for(;begin_client != end_client; ++begin_client)
+					{
+						user_pair_el.first = chan;
+						user_pair_el.second = *begin_client;
+						users_set_pair.insert(user_pair_el);
+					}
+				}
+				else
+				{
+					clients = _Server.getClientsByName(_Arguments[i]);
+					begin_client = clients.begin();
+					end_client = clients.end();
+					for(;begin_client != end_client; ++begin_client)
+					{
+						user_pair_el.first = NULL;
+						user_pair_el.second = *begin_client;
+						users_set_pair.insert(user_pair_el);
+					}
+				}
+			}
 		}
-		_Initiator->updateReplyMessage(getResult(users_To_Show));
+		getResult(users_set_pair);
 		return 0;
 	}
 };

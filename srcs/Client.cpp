@@ -3,7 +3,7 @@
 #include "Channel.hpp"
 
 Client::Client(int const Fd)
-	:	_Fd(Fd) {}
+	:	_lastJoin(NULL), _Fd(Fd) {}
 
 bool Client::operator==(const Client& that) const {
 	return _UserName == that._UserName;
@@ -11,10 +11,6 @@ bool Client::operator==(const Client& that) const {
 
 bool Client::operator!=(const Client& that) const {
 	return _UserName != that._UserName;
-}
-
-void Client::inviteToChannel(Channel const & channel) {
-	_Channels.insert(&channel);
 }
 
 string const & Client::getNickName() const { return _NickName; }
@@ -74,15 +70,28 @@ TimeStamp const & Client::getLastActivity() const{
 	return std::max(_Activity.LastResponse, _Activity.LastPING);
 }
 
-void Client::setChannel(Channel const * channel){
+void Client::inviteToChannel(Channel * channel, Client * Iniciator){
 	std::set<Channel *>::iterator first, last;
 
+	if (channel->addClient(this, Iniciator ? Iniciator : this))
+		return ;
+	_lastJoin = channel;
 	if (std::find(_Channels.begin(), _Channels.end(), channel) != _Channels.end())
 		_Channels.insert(channel);
 }
 
+void Client::leaveFromChannel(Channel * channel)
+{
+	channel->removeClient(this);
+	_Channels.erase(channel);
+}
+
 std::set<Channel const *> const & Client::getChannels() const {
 	return _Channels;
+}
+
+bool Client::isOnChannel(const Channel * channel){
+	return _Channels.find(channel) != _Channels.end();
 }
 
 bool Client::updateReplyMessage(std::string const & Msg ) {

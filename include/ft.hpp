@@ -30,7 +30,7 @@ namespace ft {
     std::vector<std::string> splitByCmds(
         std::string const& tosplit,
         std::string const& DelimiterWord);
-    void deleteSpaces(std::string &string);
+    void deleteSpaces(std::string &string, std::string const &symbols = std::string(" "));
     std::string SplitOneTimes(std:: string &str, std::string delimiter);
 
     template <typename T>
@@ -40,5 +40,5 @@ namespace ft {
         return ss.str();
     }
 	bool	wildcard(std::string wildcardExpression, std::string beingToCompare);
-	std::string	strTrim(std::string & str, std::string trimSymbol);
+    std::string tolowerString(std::string toLowStr);
 } // namespace ft

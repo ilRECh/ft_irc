@@ -3,19 +3,36 @@
 
 class INVITE : public ACommand {
 private:
-    INVITE();
-    INVITE(INVITE const &that);
-    INVITE& operator=(INVITE const &that);
+	INVITE();
+	INVITE(INVITE const &that);
+	INVITE& operator=(INVITE const &that);
 public:
-    INVITE(Server &Server) : ACommand("INVITE", Server) {}
-    virtual ~INVITE() {}
-    virtual int run(){
-        if (_Arguments.empty()) {
-            return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-        }
-        //code
-    }
-};/*
+	INVITE(Server &Server) : ACommand("INVITE", Server) {}
+	virtual ~INVITE() {}
+	virtual int run(){
+		if (_Arguments.size() < 2) {
+			return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+		}
+		ft::deleteSpaces(_Arguments[0], SPACE_SYMBOLS);
+		ft::deleteSpaces(_Arguments[1], SPACE_SYMBOLS);
+		Client * client = _Server.getUserByNickName(_Arguments[0]);
+		Channel * channel = _Server.getChannelByChannelName(_Arguments[1]);
+
+		if (!client)
+			return _Initiator->updateReplyMessage(ERR_NOSUCHNICK(_Arguments[0]));
+		if (!channel)
+			return _Initiator->updateReplyMessage(ERR_NOSUCHCHANNEL (_Arguments[1]));
+		if (client->isOnChannel(channel) && channel->isOnChannel(client))
+			return _Initiator->updateReplyMessage(ERR_USERONCHANNEL(client->_NickName, channel->getChannelName()));
+		if (!_Initiator->isOnChannel(channel) && !channel->isOnChannel(_Initiator))
+			return _Initiator->updateReplyMessage(ERR_NOTONCHANNEL(channel->getChannelName()));
+		if (!channel->getModeIsExist(_Initiator, 'o'))
+			return _Initiator->updateReplyMessage(ERR_CHANOPRIVSNEEDED(channel->getChannelName()));
+		_Initiator->updateReplyMessage(RPL_INVITING(_Arguments[1], client->_NickName));
+		client->inviteToChannel(channel, _Initiator);
+		return 0;
+	}
+};/*м
    Parameters: <nickname> <channel>
 
    The INVITE message is used to invite users to a channel.  The
@@ -28,17 +45,17 @@ public:
 
    Numeric Replies:
 
-           ERR_NEEDMOREPARAMS              ERR_NOSUCHNICK
-           ERR_NOTONCHANNEL                ERR_USERONCHANNEL
-           ERR_CHANOPRIVSNEEDED
-           RPL_INVITING                    RPL_AWAY
+		   ERR_NEEDMOREPARAMS              ERR_NOSUCHNICK
+		   ERR_NOTONCHANNEL                ERR_USERONCHANNEL
+		   ERR_CHANOPRIVSNEEDED
+		   RPL_INVITING                    RPL_AWAY
 
    Examples:
 
    :Angel INVITE Wiz #Dust         ; User Angel inviting WiZ to channel
-                                   #Dust
+								   #Dust
 
    INVITE Wiz #Twilight_Zone       ; Command to invite WiZ to
-                                   #Twilight_zone
+								   #Twilight_zone
 
 */

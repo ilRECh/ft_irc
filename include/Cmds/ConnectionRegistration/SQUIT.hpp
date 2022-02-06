@@ -19,7 +19,6 @@ public:
             return _Initiator->updateReplyMessage(ERR_NOPRIVILEGES);
         }
         ft::SplitOneTimes(_Argument, " :");
-//        std::vector<std::string> Reply = ft::split(_Argument, " :");
         _Server.buryMe(_Argument);
         return 0;
     }

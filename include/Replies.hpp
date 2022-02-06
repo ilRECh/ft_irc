@@ -303,7 +303,7 @@ explicitly deny connections to you.
 "<channel> :Cannot join channel (+k)"
 */
 
-#define ERR_BADCHANMASK(Channel) " 476 " + _Initiator->_NickName + " " + Channel + " :Bad parse, use"
+#define ERR_BADCHANMASK(Channel) " 476 " + _Initiator->_NickName + " " + Channel + " :Bad parse, use & #"
 /*
 "<channel> :Bad parse & #"
 */
@@ -560,14 +560,16 @@ The "comments" field may contain any comments about
 the version or further version details.
 */
 
-#define RPL_WHOREPLY(Channel, User, Host, Server, Nick, H_or_G, optionalAsterisk, optional_At_or_Plus, Hopcount, RealName) \
-	" 352 " + _Initiator->_NickName + Channel + " " + Client + " " + Host + " " + Server + " " + Nick + "\n" + H_or_G + optionalAsterisk + optional_At_or_Plus + " :" + Hopcount + " " + RealName
+#define RPL_WHOREPLY(_Channel, _User, Host, _Server, _Nick, H_or_G, optionalAsterisk, optional_At_or_Plus, Hopcount, RealName) \
+	" 352 " + _Initiator->_NickName + " " + _Channel + " " + _User + " " + Host + " " + _Server + " " + _Nick + " " + H_or_G + optionalAsterisk + optional_At_or_Plus + " :" + Hopcount + " " + RealName
+// #define RPL_WHOREPLY(_Channel, _User, Host, _Server, _Nick, H_or_G, optionalAsterisk, optional_At_or_Plus, Hopcount, RealName) \
+// 	" 352 " + _Initiator->_NickName + " " + _Channel + " " + _User + " " + Host + " " + _Server + " " + _Nick + " " + H_or_G + optionalAsterisk + optional_At_or_Plus + " :" + Hopcount + " " + RealName
 /*
 "<channel> <user> <host> <server> <nick> \
 <H|G>[*][@|+] :<hopcount> <real name>"
 */
 
-#define RPL_ENDOFWHO(Name) " 315 " + _Initiator->_NickName + " " + Name + " :End of /WHO list"
+#define RPL_ENDOFWHO " 315 " + _Initiator->_NickName + " :End of /WHO list"
 /*
 "<name> :End of /WHO list"
 
@@ -580,11 +582,12 @@ after processing each list item with <name> being
 the item.
 */
 
-#define	RPL_NAMREPLY(Channel)		" 353 " + _Initiator->_NickName + " " + Channel /*
+#define	RPL_NAMREPLY(Channel) " 353 " + _Initiator->_NickName + " " + Channel
+/*
 "<channel> :[[@|+]<nick> [[@|+]<nick> [...]]]"
 */
 
-#define RPL_ENDOFNAMES(Channel) " 366 " + _Initiator->_NickName + " " + Channel + " :End of /NAMES list"
+#define RPL_ENDOFNAMES(ChannelSymbol, Channel) " 366 " + _Initiator->_NickName + " " + Channel + " :End of NAMES list."
 /*
 "<channel> :End of /NAMES list"
 
@@ -905,22 +908,22 @@ replies are only sent back if a non-zero count
 is found for them.
 */
 
-#define RPL_ADMINME(Server) " 256 " + _Initiator->_NickName + " " + Server + " :Administrative info"
+#define RPL_ADMINME "Server 256 " + _Initiator->_NickName + " :Administrative info"
 /*
 "<server> :Administrative info"
 */
 
-#define RPL_ADMINLOC1(AdminInfo) " 257 " + _Initiator->_NickName + " " + AdminInfo
+#define RPL_ADMINLOC1(AdminInfo) "Server 257 " + _Initiator->_NickName + " :" AdminInfo
 /*
 ":<admin info>"
 */
 
-#define RPL_ADMINLOC2(AdminInfo) " 258 " + _Initiator->_NickName + " " + AdminInfo
+#define RPL_ADMINLOC2(AdminInfo) "Server 258 " + _Initiator->_NickName + " :" AdminInfo
 /*
 ":<admin info>"
 */
 
-#define RPL_ADMINEMAIL(AdminInfo) " 259 " + _Initiator->_NickName + " " + AdminInfo
+#define RPL_ADMINEMAIL(AdminInfo) "Server 259 " + _Initiator->_NickName + " :" AdminInfo
 /*
 ":<admin info>"
 

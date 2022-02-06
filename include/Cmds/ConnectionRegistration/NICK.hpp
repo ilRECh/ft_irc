@@ -40,11 +40,7 @@ public:
                 goto ErroneusNickNameGiven;
             }
         }
-        std::transform(Nick.begin(), Nick.end(), Nick.begin(), asciitolower);
         _Initiator->_NickName = Nick;
-        _Initiator->updateReplyMessage(RPL_MOTDSTART(_Server.getServerAddrInfo()));
-        _Initiator->updateReplyMessage(RPL_MOTD(std::string("Privet peer")));
-        _Initiator->updateReplyMessage(RPL_ENDOFMOTD);
         return 0;
     }
 };/*

@@ -57,13 +57,14 @@ private:
 	static operators_s _Operators[1];
 
 	// Insights
-	void readerClient(fd_set & fdsCpy);
+	void readerClients();
+	void replyToClients();
+	void eraseClients();
 	void processCmd(Client *User);
 	std::pair<std::string, std::string> parseCmd(std::string &Cmd);
 	void proceedCmd(std::pair<std::string, std::string> Cmd, Client *User);
     void serverLog(Client *that, std::string const & ReceivedMessage);
     void sendMsg(Client *From, Client *To);
-	std::set<Client *> const &getUsers();
 
 public:
 	Server(string const & Port, std::string const & Password);
@@ -76,13 +77,17 @@ public:
 	//* now it support find by wildcard
 	std::set<Client *> getClientsByName(std::string Name);
 	std::set<Client *> const &getClients();
-	std::set<Channel *>getChannelsByName(std::string Name);
+	std::set<Channel *> const &getChannels() const;
+	std::set<Channel *> getChannelsByChannelName(std::string Name);
 	Channel *getChannelByChannelName(std::string const & NameChannel);
 	OperatorStatus canBeAutorized(
 		std::string const & Name,
 		std::string const & Password);
-	void pushBack(Channel *Channel);
+	bool pushBack(Channel *Channel);
 	void pushBackErase(Client *Client);
 	void pushBackErase(Channel *Channel);
 	void buryMe(std::string const & DyingMessage);
+private:
+	friend class QUIT;
+	friend class INVITE;
 };

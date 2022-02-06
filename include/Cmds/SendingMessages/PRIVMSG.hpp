@@ -12,8 +12,8 @@ public:
     virtual ~PRIVMSG() {}
     virtual int run(){
         std::string targets = ft::SplitOneTimes(_Argument, ":");
-        ft::deleteSpaces(targets);
-        ft::deleteSpaces(_Argument);
+        ft::deleteSpaces(targets, SPACE_SYMBOLS);
+        ft::deleteSpaces(_Argument, SPACE_SYMBOLS);
         if (targets.empty()) {
             return _Initiator->updateReplyMessage(ERR_NORECIPIENT(_Name));
         }
@@ -28,24 +28,31 @@ public:
                 _Initiator->updateReplyMessage(ERR_TOOMANYTARGETS(last_target));
             }
         }
-        Client *last_target = NULL;
-        for (std::set<std::string>::iterator it = recipients.begin();
-            it != recipients.end(); ++it)
-        {
-            last_target = _Server.getUserByNickName(*it);
-            if (last_target == NULL){
-//                last_target = _Server.getChannelByName(*it);
-//                if (last_target == NULL)
-                _Initiator->updateReplyMessage(ERR_NOSUCHNICK(*it));
-//                else if (last_target->updateReplyMessage(_Argument))
-//                    _Initiator->updateReplyMessage(ERR_CANNOTSENDTOCHAN(last_target->getName()));
-            }
-            else {
-                if (last_target->updateReplyMessage(_Initiator->_NickName + " PRIVMSG " + last_target->_NickName + " :" + _Argument))
-                    _Initiator->updateReplyMessage(RPL_AWAY(last_target->_Away,last_target->_NickName));
+        std::set<Client *> ClientsToReply;
+        std::set<Channel *> ChannelsToReply;
+        for (std::set<std::string>::iterator it = recipients.begin(); it != recipients.end(); ++it) {
+            if ((*it)[0] != '#') {
+                ClientsToReply = _Server.getClientsByName(*it);
+                if (ClientsToReply.empty()) {
+                    _Initiator->updateReplyMessage(ERR_NOSUCHNICK(*it));
+                    continue ;
+                }
+                for (std::set<Client *>::iterator CurClient = ClientsToReply.begin(); CurClient != ClientsToReply.end(); ++CurClient) {
+                    if ((*CurClient)->updateReplyMessage(_Initiator->_NickName + " PRIVMSG " + (*CurClient)->_NickName + " :" + _Argument)) {
+                        _Initiator->updateReplyMessage(RPL_AWAY((*CurClient)->_Away, (*CurClient)->_NickName));
+                    }
+                }
+            } else {
+                ChannelsToReply = _Server.getChannelsByChannelName(*it);
+                if (ChannelsToReply.empty()) {
+                    _Initiator->updateReplyMessage(ERR_NOSUCHCHANNEL(*it));
+                    continue ;
+                }
+                for (std::set<Channel *>::iterator CurChannel = ChannelsToReply.begin(); CurChannel != ChannelsToReply.end(); ++CurChannel) {
+                    (*CurChannel)->replyToAllMembers(_Initiator->_NickName + " PRIVMSG " + (*CurChannel)->getChannelName() + " :" + _Argument, _Initiator);
+                }
             }
         }
-        _Argument.erase();
         return 0;
 /*          if ()
             return ERR_NOTOPLEVEL
