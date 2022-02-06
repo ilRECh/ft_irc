@@ -26,7 +26,7 @@ ClientJoined:
 			_Initiator->_Channels.insert(chan);
 			chan->_Clients.insert(_Initiator);
 			_Initiator->updateReplyMessage(_Initiator->_NickName + " JOIN :" + chan->getChannelName());
-			_Initiator->updateReplyMessage("Server " RPL_NAMREPLY("= ", chan->getChannelName()) + " :" + _Initiator->_RealName);
+			_Initiator->updateReplyMessage("Server " RPL_NAMREPLY(chan->getChannelName()) + " :" + _Initiator->_RealName);
 			_Initiator->updateReplyMessage("Server " RPL_ENDOFNAMES(" ", chan->getChannelName()));
 		} else if (chan->getModeIsExist(chan, 'p') or chan->getModeIsExist(chan, 's')) {
 			_NoSuchChannel.push_back(nameChannel);

@@ -68,6 +68,7 @@ public:
 	void inviteToChannel(Channel * channel, Client * Iniciator = NULL);
 	void leaveFromChannel(Channel * channel);
 	std::set<Channel const *> const &getChannels() const;
+	bool isOnChannel(const Channel * channel);
 
 	//	* get Registered
 	bool isRegistered() const;

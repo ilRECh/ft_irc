@@ -77,7 +77,8 @@ public:
 	//* now it support find by wildcard
 	std::set<Client *> getClientsByName(std::string Name);
 	std::set<Client *> const &getClients();
-	std::set<Channel *>getChannelsByChannelName(std::string Name);
+	std::set<Channel *> const &getChannels() const;
+	std::set<Channel *> getChannelsByChannelName(std::string Name);
 	Channel *getChannelByChannelName(std::string const & NameChannel);
 	OperatorStatus canBeAutorized(
 		std::string const & Name,
@@ -88,4 +89,5 @@ public:
 	void buryMe(std::string const & DyingMessage);
 private:
 	friend class QUIT;
+	friend class INVITE;
 };
