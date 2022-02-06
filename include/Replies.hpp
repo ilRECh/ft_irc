@@ -569,7 +569,7 @@ the version or further version details.
 <H|G>[*][@|+] :<hopcount> <real name>"
 */
 
-#define RPL_ENDOFWHO " 315 " + _Initiator->_NickName + " :End of /WHO list"
+#define RPL_ENDOFWHO(ChannelName) " 315 " + _Initiator->_NickName + " " + ChannelName + " :End of /WHO list."
 /*
 "<name> :End of /WHO list"
 

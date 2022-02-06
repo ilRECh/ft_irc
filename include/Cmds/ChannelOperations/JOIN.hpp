@@ -25,9 +25,9 @@ ClientJoined:
 			// chan->addClient(_Initiator);
 			_Initiator->_Channels.insert(chan);
 			chan->_Clients.insert(_Initiator);
-			_Initiator->updateReplyMessage(_Initiator->_NickName + " JOIN :" + chan->getChannelName());
-			_Initiator->updateReplyMessage("Server " RPL_NAMREPLY(chan->getChannelName()) + " :" + _Initiator->_RealName);
-			_Initiator->updateReplyMessage("Server " RPL_ENDOFNAMES(" ", chan->getChannelName()));
+			_Initiator->updateReplyMessage(" JOIN :" + chan->getChannelName(), _Initiator->_NickName);
+			_Initiator->updateReplyMessage(RPL_NAMREPLY(chan->getChannelName()) + " :" + _Initiator->_RealName);
+			_Initiator->updateReplyMessage(RPL_ENDOFNAMES(" ", chan->getChannelName()));
 		} else if (chan->getModeIsExist(chan, 'p') or chan->getModeIsExist(chan, 's')) {
 			_NoSuchChannel.push_back(nameChannel);
 		} else if (chan->_Clients.size() >= chan->_maxUserLimit) {

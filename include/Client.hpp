@@ -86,7 +86,7 @@ public:
 	void PINGisSent();
 
 	// ReplyMessage
-	bool updateReplyMessage(std::string const & Msg);
+	bool updateReplyMessage(std::string const & Msg, std::string const & From = std::string("irc.WIP.ru"));
 	std::string const getReplyMessage();
 
 	// Incoming buffer

@@ -94,9 +94,8 @@ bool Client::isOnChannel(const Channel * channel){
 	return _Channels.find(channel) != _Channels.end();
 }
 
-bool Client::updateReplyMessage(std::string const & Msg ) {
-	// _ReplyMessage += _time.getTimeStrCurrent() + " " + Msg + "\r\n";
-	_ReplyMessage += ":" + Msg + "\r\n";
+bool Client::updateReplyMessage(std::string const & Msg, std::string const & From) {
+	_ReplyMessage += ":" + From + Msg + "\r\n";
     if (!_Away.empty()){
         return 1;
 	}

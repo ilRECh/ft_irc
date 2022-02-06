@@ -44,17 +44,16 @@ private:
 	void getResult(std::set<std::pair< Channel *, Client *> > & usersToShow){
 		std::set<std::pair< Channel *, Client *> >::iterator start = usersToShow.begin();
 		std::set<std::pair< Channel *, Client *> >::iterator finish = usersToShow.end();
-		uint hopCount = 0;
 
+		std::string channelName = "*";
 		for(;start != finish; ++start)
 		{
 			std::string serverName = "127.0.0.1";// _Server.getServerAddrInfo().substr(0, _Server.getServerAddrInfo().find(':'));
 			char H_G = start->second->_Away.empty() ? 'H' : 'G';
-			std::string channelName = "*";
 			std::string isAminInLastJoin = "+";
 			if (start->first)
 			{
-				channelName = "#" + start->first->getChannelName();
+				channelName = start->first->getChannelName();
 				if (start->first->getModeIsExist(start->second, 'o'))
 					isAminInLastJoin = "@";
 			}
@@ -62,17 +61,17 @@ private:
 			(
 				channelName, 
 				start->second->_UserName,
-				start->second->_HostName, 
-				serverName,
+				"127.0.0.1",//start->second->_HostName, 
+				"irc.WIP.ru", //serverName,
 				start->second->_NickName,
 				H_G,
-				"*",
-				isAminInLastJoin,
-				ft::to_string(hopCount++),
+				"",// "*",
+				"",// isAminInLastJoin,
+				"0",
 				start->second->_RealName
 			));
 		}
-		_Initiator->updateReplyMessage(RPL_ENDOFWHO);
+		_Initiator->updateReplyMessage(RPL_ENDOFWHO(channelName));
 	}
 
 public:
@@ -105,7 +104,7 @@ public:
 				if (_Arguments[i].find_first_of(std::string("#&")) != _Arguments[i].npos)
 				{
 					std::string nameChanNoSharp = _Arguments[i];
-					ft::deleteSpaces(nameChanNoSharp, std::string() + SPACE_SYMBOLS + "&#");
+					ft::deleteSpaces(nameChanNoSharp, std::string() + SPACE_SYMBOLS);
 
 					Channel * chan =_Server.getChannelByChannelName(nameChanNoSharp);
 					if (!chan)

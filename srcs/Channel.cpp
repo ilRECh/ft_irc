@@ -84,14 +84,12 @@ void Channel::replyToAllMembers(std::string msg, Client * sender) {
 	if (sender != NULL) {
 		for (std::set<Client *>::iterator i = _Clients.begin(); i != _Clients.end(); ++i) {
 			if (*i != sender) {
-				if ((*i)->updateReplyMessage(Reply)) {
-					(*i)->updateReplyMessage(" 301 " + sender->getNickName() + " AWAY " + (*i)->getNickName() + " :" + (*i)->getAwayMessage());
-				}
+				(*i)->updateReplyMessage(Reply, "");
 			}
 		}
 	} else {
 		for (std::set<Client *>::iterator i = _Clients.begin(); i != _Clients.end(); ++i) {
-			(*i)->updateReplyMessage(Reply);
+			(*i)->updateReplyMessage(Reply, "");
 		}
 	}
 }
