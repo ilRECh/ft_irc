@@ -194,8 +194,8 @@ void Server::readerClients()
 void Server::processCmd(Client *Client)
 {
 	if (Client->getIncomingBuffer().end()[-1] != '\n' or
-		Client->getIncomingBuffer() == "\n" or
-		Client->getIncomingBuffer() == "\r\n") {
+		Client->getIncomingBuffer().find_first_not_of("\r\n") == Client->getIncomingBuffer().npos) {
+		Client->getIncomingBuffer().clear();
 		return ;
 	}
 	std::vector<std::string> Cmds = ft::splitByCmds(Client->getIncomingBuffer(), "\r\n");

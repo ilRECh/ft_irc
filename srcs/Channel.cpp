@@ -21,30 +21,13 @@ bool Channel::isOnChannel(Client *whom) const {
 	return _Clients.find(whom) != _Clients.end();
 }
 
-int	Channel::addClient(Client *whom, Client *_Initiator) {
-	if (std::find(_Clients.begin(), _Clients.end(), whom) != _Clients.end())
-		return 0;
-	if (std::find(_BanList.begin(), _BanList.end(), whom) != _BanList.end())
-	{
-		(_Initiator ? _Initiator : whom)->updateReplyMessage(ERR_BANNEDFROMCHAN(_ChannelName));
-		return 1;
-	}
-	if (_Initiator != NULL)
-	{
-		if (_Clients.size() >= _maxUserLimit)
-		{
-			_Initiator->updateReplyMessage(ERR_CHANNELISFULL(this->getChannelName()));
-			return 1;
-		}
-		if (getModeIsExist(this, 'i') && not getModeIsExist(_Initiator, 'o')) {
-			_Initiator->updateReplyMessage(ERR_CHANOPRIVSNEEDED(_ChannelName));
-			return 1;
-		}
-	}
-	replyToAllMembers("joined", whom);
-	_Clients.insert(whom);
-	return 0;
-}
+// int	Channel::addClient(Client *_Initiator) {
+// 	if (std::find(_Clients.begin(), _Clients.end(), _Initiator) != _Clients.end())
+// 		return 0;
+// 	replyToAllMembers("joined", _Initiator);
+// 	_Clients.insert(_Initiator);
+// 	return 0;
+// }
 
 std::string const &Channel::getTopic() const {
 	return _Topic;
@@ -62,8 +45,8 @@ void Channel::removeClient(Client *whom) {
 	}
 	std::set<Client *>::iterator i = find(_Clients.begin(), _Clients.end(), whom);
 	if (i != _Clients.end()) {
-		_Clients.erase(i);
 		eraseClientFromModes(*i);
+		_Clients.erase(i);
 	}
 	if (_Clients.empty()) {
 		ToRemove = true;
@@ -73,17 +56,19 @@ void Channel::removeClient(Client *whom) {
 }
 
 void Channel::replyToAllMembers(std::string msg, Client * sender) {
-	std::string Reply = this->getChannelName() +  " :" + msg;
+	std::string Reply = msg;//_ChannelName +  " :" + msg;
 	if (sender != NULL) {
-		Reply = sender->_NickName + " " + Reply;
 		for (std::set<Client *>::iterator i = _Clients.begin(); i != _Clients.end(); ++i) {
 			if (*i != sender) {
-				(*i)->updateReplyMessage(Reply);
+				if ((*i)->updateReplyMessage(Reply)) {
+					(*i)->updateReplyMessage(" 301 " + sender->getNickName() + " AWAY " + (*i)->getNickName() + " :" + (*i)->getAwayMessage());
+				}
 			}
 		}
-	}
-	for (std::set<Client *>::iterator i = _Clients.begin(); i != _Clients.end(); ++i) {
-		(*i)->updateReplyMessage(Reply);
+	} else {
+		for (std::set<Client *>::iterator i = _Clients.begin(); i != _Clients.end(); ++i) {
+			(*i)->updateReplyMessage(Reply);
+		}
 	}
 }
 
@@ -117,53 +102,3 @@ bool Channel::isBanned(Client * isBannedUser)
 	}
 	return false;
 }
-
-
-// void	Channel::removeUser(Client & who, Client & whom){
-// 	if (_ePrivateLevel == CHANNEL_PRIVATE || _ePrivateLevel == CHANNEL_PROTECTED) {
-// 		if (not isAdmin(who) && not isOwner(who)) {
-// 			who.updateReplyMessage(ERR_CHANOPRIVSNEEDED(_ChannelName));
-// 			return ;
-// 		}
-// 	}
-// 	std::set<Client const *>::iterator it = find(_Admins.begin(), _Admins.end(), &whom);
-// 	if (it != _Admins.end())
-// 		removeAdmin(who, whom);
-// 	it = find(_Clients.begin(), _Clients.end(), &whom);
-// 	if (it == _Clients.end()) {
-// 		who.updateReplyMessage(ERR_NOSUCHNICK(whom.getNickName()));
-// 		return ;
-// 	}
-// 	_Clients.erase(it);
-// }
-
-// void	Channel::addAdmin(Client const & whom){
-// 	std::set<Client const *>::iterator beg = _Admins.begin();
-// 	std::set<Client const *>::iterator end = _Admins.end();
-
-// 	while(beg != end)
-// 		if (**beg == whom)
-// 			return ;
-// 	_Admins.insert(&whom);
-// }
-
-// void	Channel::removeAdmin(Client & who, Client & whom){
-
-// 	if (not isAdmin(who)) {
-// 		who.updateReplyMessage(ERR_CHANOPRIVSNEEDED(_ChannelName));
-// 		return ;
-// 	}
-// 	if (_Admins.size() == 1){
-// 		if (_Clients.size() > 0) {
-// 			who.updateReplyMessage(ft::to_string(__LINE__) + " in Channel is need to set appropriate message");
-// 			return ;
-// 		}
-// 		delete this; //Is it appropriate here?
-// 	}
-// 	std::set<Client const *>::iterator it = find(_Admins.begin(), _Admins.end(), &whom);
-// 	if (it == _Admins.end()) {
-// 		who.updateReplyMessage(ERR_NOSUCHNICK(whom.getNickName()));
-// 		return ;
-// 	}
-// 	_Admins.erase(it);
-// }

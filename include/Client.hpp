@@ -58,6 +58,7 @@ public:
 
 	// Names get|set
 	string const & getNickName() const;
+	string const & getAwayMessage() const { return _Away; }
 	
 	// * get time
 	TimeStamp const & getTime() const;

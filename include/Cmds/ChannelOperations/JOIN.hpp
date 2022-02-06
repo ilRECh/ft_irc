@@ -1,124 +1,125 @@
 #pragma once
 #include "ACommand.hpp"
+#define MAX_NUMBER_OF_CHANNELS 10
 
 class JOIN : public ACommand {
-	typedef std::string				str;
-	typedef str::iterator			istr;
-	typedef str::reverse_iterator	ristr;
-	typedef std::pair<str, str>		pStrStr;
-	typedef std::vector<str>		vecStr;
-	typedef vecStr::iterator		ivecStr;
-	typedef std::vector<pStrStr>	vpStrStr;
-	typedef vpStrStr::iterator		ivpStrStr;
 private:
     JOIN();
     JOIN(JOIN const &that);
     JOIN& operator=(JOIN const &that);
-	int	preparse(){
-		istr first, last;
-
-		first = _Argument.begin();
-		last = _Argument.end();
-		while
-		(
-			first != last && 
-			(
-				std::isalnum(*first)  ||
-				std::isspace(*first) ||
-				*first == '#' ||
-				*first == '&'
-			)
-		)
-			++first;
-		if (first != last)
-			_Argument = str(first, last);
-		return first != last;
-	}
-
-	vpStrStr smartSplit(){
-		vpStrStr result;
-		_Arguments = ft::split(_Argument, ",");
-		for (ivecStr i = _Arguments.begin(); i != _Arguments.end(); ++i)
-		{
-			ft::deleteSpaces(*i, SPACE_SYMBOLS);
-			if (i->empty())
-				continue ;
-			else if ((*i)[0] == '#')
-			{
-				ft::deleteSpaces(*i, SPACE_SYMBOLS "#");
-				if (i->empty())
-					continue ;
-				result.push_back(pStrStr(*i, str()));
-			}
-			else if ((*i)[0] == '&')
-			{
-				ft::deleteSpaces(*i, SPACE_SYMBOLS "&");
-				if (i->empty())
-					continue ;
-				vecStr vstr = ft::split(*i, SPACE_SYMBOLS);
-				if (vstr.size() != 2)
-					return vpStrStr();
-				result.push_back(pStrStr(vstr.front(), vstr.back()));
-			}
-			else
-			{
-				_Initiator->updateReplyMessage(ERR_NOSUCHCHANNEL(str("null")));
-				return vpStrStr();
-			}
-		}
-        return result;
-	}
+	std::list<std::string> _NoSuchChannel;
+	std::list<std::string> _BadChannelMask;
+	std::list<std::string> _BadChannelKey;
+	std::list<std::string> _BannedFromChannel;
+	std::list<std::string> _InviteOnlyChannel;
+	std::list<std::string> _ChannelIsFull;
+	std::list<std::string> _TooManyChannels;
+	std::list< std::pair<std::string, std::string> > _NamesWithKeys;
 	
-	int join(str & nameChannel, str & password){
-		std::set<Channel *> channels = _Server.getChannelsByChannelName(nameChannel);
-		Channel * chan;
-		if (channels.empty())
-		{
+	void join(std::string & nameChannel, std::string & key){
+		Channel * chan = _Server.getChannelByChannelName(nameChannel);
+		if (not chan) {
 			chan = new Channel(nameChannel, _Initiator, &_Server);
 			_Server.pushBack(chan);
+ClientJoined:
+			// chan->addClient(_Initiator);
+			_Initiator->_Channels.insert(chan);
+			chan->_Clients.insert(_Initiator);
+			_Initiator->updateReplyMessage(_Initiator->_NickName + " JOIN :" + chan->getChannelName());
+			_Initiator->updateReplyMessage("Server " RPL_NAMREPLY("= ", chan->getChannelName()) + " :" + _Initiator->_RealName);
+			_Initiator->updateReplyMessage("Server " RPL_ENDOFNAMES(" ", chan->getChannelName()));
+		} else if (chan->getModeIsExist(chan, 'p') or chan->getModeIsExist(chan, 's')) {
+			_NoSuchChannel.push_back(nameChannel);
+		} else if (chan->_Clients.size() >= chan->_maxUserLimit) {
+			_ChannelIsFull.push_back(nameChannel);
+		} else if (chan->getModeIsExist(chan, 'i')) {
+			_InviteOnlyChannel.push_back(nameChannel);
+		} else if (not key.empty() and chan->_Key != key) {
+			_BadChannelKey.push_back(nameChannel);
+		} else if (chan->isBanned(_Initiator)) {
+			_BannedFromChannel.push_back(nameChannel);
 		} else {
-			chan = *channels.begin();
+			goto ClientJoined;
 		}
-		if (chan->_Clients.size() >= chan->_maxUserLimit)
-			return 1 + _Initiator->updateReplyMessage(ERR_CHANNELISFULL(chan->getChannelName()));
-		if (chan->getModeIsExist(chan, 'i'))
-		{
-			if (password.empty())
-				return 1 + _Initiator->updateReplyMessage(ERR_INVITEONLYCHAN(chan->getChannelName()));
-			else if (chan->_Key != password)
-				return 1 + _Initiator->updateReplyMessage(ERR_BADCHANNELKEY(chan->getChannelName()));
-		}
-		if (chan->isBanned(_Initiator))
-			return 1 + _Initiator->updateReplyMessage(ERR_BANNEDFROMCHAN(chan->getChannelName()));
-		chan->addClient(_Initiator);
-		_Initiator->updateReplyMessage(_Initiator->_NickName + " JOIN :#" + chan->getChannelName());
-		_Initiator->updateReplyMessage("Server " RPL_NAMREPLY("= #", chan->getChannelName()) + " :" + _Initiator->_RealName);
-		_Initiator->updateReplyMessage("Server " RPL_ENDOFNAMES(" #", chan->getChannelName()));
-		return 0;
-	}
-
-	int	goJoinWithParse(){
-		vpStrStr args = smartSplit();
-		int	status = 0;
-
-		if (args.begin() == args.end()) {
-			return 1;
-		}
-		for (ivpStrStr i = args.begin(); i != args.end(); ++i) {
-			status |= join(i->first, i->second);
-		}
-		return status;
 	}
 public:
     JOIN(Server &Server) : ACommand("JOIN", Server) {}
     virtual ~JOIN() {}
     virtual int run(){
-        if (_Arguments.empty()) 
+        if (_Argument.empty() or _Argument.find_first_not_of(SPACE_SYMBOLS) == _Argument.npos) {
             return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-		else if (preparse())
-			return 1 + _Initiator->updateReplyMessage(ERR_BADCHANMASK(_Argument));
-		else
-        	return goJoinWithParse();
+		}
+		std::vector<std::string> InputNamesAndKeys = ft::split(_Argument, " ");
+		std::vector<std::string> Names = ft::split(InputNamesAndKeys[0], ",");
+		std::vector<std::string> Keys;
+		if (InputNamesAndKeys.size() == 2) {
+			Keys = ft::split(InputNamesAndKeys[1], ",");
+		}
+		std::vector<std::string>::iterator Name = Names.begin();
+		std::vector<std::string>::iterator Key = Keys.begin();
+		for(; Name != Names.end(); ++Name) {
+			if ((*Name)[0] != '#') {
+				_BadChannelMask.push_back(*Name);
+				continue ;
+			} else if ((*Name).length() > 200 or
+				Name->find_first_of("\007 ,") != Name->npos) {
+				_NoSuchChannel.push_back(*Name);
+				continue ;
+			}
+			_NamesWithKeys.push_back(std::pair<std::string, std::string>(*Name, Key != Keys.end() ? *Key++ : ""));
+		}
+		for (std::list< std::pair<std::string, std::string> >::iterator i = _NamesWithKeys.begin();
+			i != _NamesWithKeys.end(); ++i) {
+			if (_Initiator->_Channels.size() < MAX_NUMBER_OF_CHANNELS) {
+				join(i->first, i->second);
+			} else {
+				_TooManyChannels.push_back(i->first);
+			}
+		}
+		std::list<std::string>::iterator ErrorNames = _NoSuchChannel.begin();
+		while (ErrorNames != _NoSuchChannel.end()) {
+			_Initiator->updateReplyMessage(ERR_NOSUCHCHANNEL(*ErrorNames));
+			++ErrorNames;
+		}
+		ErrorNames = _BadChannelMask.begin();
+		while (ErrorNames != _BadChannelMask.end()) {
+			_Initiator->updateReplyMessage(ERR_BADCHANMASK(*ErrorNames));
+			++ErrorNames;
+		}
+		ErrorNames = _BadChannelKey.begin();
+		while (ErrorNames != _BadChannelKey.end()) {
+			_Initiator->updateReplyMessage(ERR_BADCHANNELKEY(*ErrorNames));
+			++ErrorNames;
+		}
+		ErrorNames = _BannedFromChannel.begin();
+		while (ErrorNames != _BannedFromChannel.end()) {
+			_Initiator->updateReplyMessage(ERR_BANNEDFROMCHAN(*ErrorNames));
+			++ErrorNames;
+		}
+		ErrorNames = _InviteOnlyChannel.begin();
+		while (ErrorNames != _InviteOnlyChannel.end()) {
+			_Initiator->updateReplyMessage(ERR_INVITEONLYCHAN(*ErrorNames));
+			++ErrorNames;
+		}
+		ErrorNames = _ChannelIsFull.begin();
+		while (ErrorNames != _ChannelIsFull.end()) {
+			_Initiator->updateReplyMessage(ERR_CHANNELISFULL(*ErrorNames));
+			++ErrorNames;
+		}
+		ErrorNames = _TooManyChannels.begin();
+		while (ErrorNames != _TooManyChannels.end()) {
+			_Initiator->updateReplyMessage(ERR_TOOMANYCHANNELS(*ErrorNames));
+			++ErrorNames;
+		}
+		_NoSuchChannel.clear();
+		_BadChannelMask.clear();
+		_BadChannelKey.clear();
+		_BannedFromChannel.clear();
+		_InviteOnlyChannel.clear();
+		_ChannelIsFull.clear();
+		_TooManyChannels.clear();
+		_NamesWithKeys.clear();
+		return 0;
     }
 };/*
    4.2.1 Join-сообщение
