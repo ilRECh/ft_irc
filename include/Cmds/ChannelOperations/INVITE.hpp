@@ -45,10 +45,10 @@ public:
 
    Numeric Replies:
 
-		   _ERR_NEEDMOREPARAMS              _ERR_NOSUCHNICK
-		   _ERR_NOTONCHANNEL                _ERR_USERONCHANNEL
-		   _ERR_CHANOPRIVSNEEDED
-		   _RPL_INVITING                    RPL_AWAY
+		   ERR_NEEDMOREPARAMS              ERR_NOSUCHNICK
+		   ERR_NOTONCHANNEL                ERR_USERONCHANNEL
+		   ERR_CHANOPRIVSNEEDED
+		   RPL_INVITING                    RPL_AWAY
 
    Examples:
 
