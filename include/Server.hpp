@@ -89,4 +89,5 @@ public:
 	void buryMe(std::string const & DyingMessage);
 private:
 	friend class QUIT;
+	friend class INVITE;
 };

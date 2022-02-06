@@ -4,6 +4,7 @@
 #include "Channel.hpp"
 
 // Channel Operations
+#include "INVITE.hpp"
 #include "NAMES.hpp"
 #include "PART.hpp"
 #include "TOPIC.hpp"
@@ -72,6 +73,7 @@ Server::Server(string const & Port, string const & Password)
 	_Commands.push_back(new JOIN(*this));
 	_Commands.push_back(new NAMES(*this));
 	_Commands.push_back(new ADMIN(*this));
+	_Commands.push_back(new INVITE(*this));
 	addrinfo hints;
 	memset(&hints, 0, sizeof hints);
 	hints.ai_family = AF_INET;
@@ -310,7 +312,7 @@ Client *Server::getUserByNickName(std::string const & NickName){
 	last = _Clients.end();
 
 	for (;first != last; ++first)
-		if ((*first)->getNickName() == NickName)
+		if (ft::tolowerString((*first)->getNickName()) == ft::tolowerString(NickName))
 			return *first;
 	return NULL;
 }
@@ -385,7 +387,7 @@ Channel *Server::getChannelByChannelName(std::string const & NameChannel){
 	first = _Channels.begin();
 	last = _Channels.end();
 	for(;first != last; ++first)
-		if ((*first)->getChannelName() == NameChannel)
+		if (ft::tolowerString((*first)->getChannelName()) == ft::tolowerString(NameChannel))
 			return *first;
 	return NULL;
 }

@@ -12,8 +12,8 @@ public:
     virtual ~PRIVMSG() {}
     virtual int run(){
         std::string targets = ft::SplitOneTimes(_Argument, ":");
-        ft::deleteSpaces(targets);
-        ft::deleteSpaces(_Argument);
+        ft::deleteSpaces(targets, SPACE_SYMBOLS);
+        ft::deleteSpaces(_Argument, SPACE_SYMBOLS);
         if (targets.empty()) {
             return _Initiator->updateReplyMessage(ERR_NORECIPIENT(_Name));
         }

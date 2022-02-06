@@ -41,7 +41,15 @@ int	Channel::addClient(Client *whom, Client *_Initiator) {
 			return 1;
 		}
 	}
-	replyToAllMembers("joined", whom);
+	else
+	{
+		if (_Clients.size() >= _maxUserLimit)
+		{
+			whom->updateReplyMessage(ERR_CHANNELISFULL(this->getChannelName()));
+			return 1;
+		}
+	}
+	// replyToAllMembers("joined", whom);
 	_Clients.insert(whom);
 	return 0;
 }

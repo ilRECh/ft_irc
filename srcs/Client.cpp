@@ -90,6 +90,10 @@ std::set<Channel const *> const & Client::getChannels() const {
 	return _Channels;
 }
 
+bool Client::isOnChannel(const Channel * channel){
+	return _Channels.find(channel) != _Channels.end();
+}
+
 bool Client::updateReplyMessage(std::string const & Msg ) {
 	// _ReplyMessage += _time.getTimeStrCurrent() + " " + Msg + "\r\n";
 	_ReplyMessage += ":" + Msg + "\r\n";
