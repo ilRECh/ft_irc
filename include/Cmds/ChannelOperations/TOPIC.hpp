@@ -17,7 +17,7 @@ public:
         Channel *FoundChannel = _Server.getChannelByChannelName(ChannelName);
         if (FoundChannel and not FoundChannel->isOnChannel(_Initiator)) {
             return _Initiator->updateReplyMessage(ERR_NOTONCHANNEL(ChannelName));
-        } else {
+        } else if (not FoundChannel) {
             return _Initiator->updateReplyMessage(ERR_NOSUCHCHANNEL(ChannelName));
         }
         std::vector<std::string> Topic = ft::split(_Argument, ":");
@@ -32,6 +32,9 @@ public:
                 return _Initiator->updateReplyMessage(ERR_CHANOPRIVSNEEDED(ChannelName));
             }
             FoundChannel->setTopic(Topic[1]);
+            FoundChannel->replyToAllMembers(
+                _Initiator->_NickName + "!" + _Initiator->_UserName + "@" + _Initiator->_HostName +
+                " TOPIC " + FoundChannel->getChannelName() + " :" + FoundChannel->getTopic());
         }
         return 0;
     }

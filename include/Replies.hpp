@@ -303,7 +303,7 @@ explicitly deny connections to you.
 "<channel> :Cannot join channel (+k)"
 */
 
-#define ERR_BADCHANMASK(Channel) "Server 476 " + _Initiator->_NickName + " " + Channel + " :Bad parse & #"
+#define ERR_BADCHANMASK(Channel) " 476 " + _Initiator->_NickName + " " + Channel + " :Bad parse & #"
 /*
 "<channel> :Bad parse & #"
 */

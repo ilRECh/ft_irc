@@ -94,7 +94,7 @@ Server::Server(string const & Port, string const & Password)
 	_Socklen = sizeof(sockaddr);
 	if (bind(_Sockfd, _ServInfo->ai_addr, _Socklen))
 		throw std::runtime_error(string("bind: ") + strerror(errno));
-	if (listen(_Sockfd, 1)) // *! Возможно второй аргумент придется увеличить
+	if (listen(_Sockfd, SOMAXCONN))
 		throw std::runtime_error(string("listen: ") + strerror(errno));
 }
 
@@ -147,7 +147,7 @@ void Server::run()
 			std::cout << "+====================CONNECTED======================+" << '\n';
 			std::cout << "<<<<<<< " << inet_ntoa(AddrUser.sin_addr) << '\n';
 			std::cout << "+===================================================+" << std::endl;
-			_Clients.insert(new Client(UserFd));
+			_Clients.insert(new Client(UserFd, inet_ntoa(AddrUser.sin_addr)));
 		} else if (UserFd < 0 && errno != EAGAIN) {
 			throw std::runtime_error("Fatal. Accepting the " + ft::to_string(UserFd) + " failed.\n" + strerror(errno));
 		}
@@ -159,7 +159,7 @@ void Server::run()
 		replyToClients();
 
 		//Erase dead clients
-		eraseClients();
+		eraseClientsAndChannels();
 	}
 }
 
@@ -280,7 +280,7 @@ void Server::replyToClients() {
 	}
 }
 
-void Server::eraseClients() {
+void Server::eraseClientsAndChannels() {
 	while (not _ClientsToBeErased.empty()) {
 		std::set<Client *>::iterator ToBeErased = _Clients.find(_ClientsToBeErased.front());
 		FD_CLR((*ToBeErased)->_Fd, &_FdsSet);

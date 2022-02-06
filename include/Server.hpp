@@ -59,7 +59,7 @@ private:
 	// Insights
 	void readerClients();
 	void replyToClients();
-	void eraseClients();
+	void eraseClientsAndChannels();
 	void processCmd(Client *User);
 	std::pair<std::string, std::string> parseCmd(std::string &Cmd);
 	void proceedCmd(std::pair<std::string, std::string> Cmd, Client *User);

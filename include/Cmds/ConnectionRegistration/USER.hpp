@@ -30,8 +30,19 @@ public:
         } else {
             return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
         }
-        _Initiator->_UserName = _Arguments[0];
-        _Initiator->_HostName = _Arguments[1];
+        std::string UserName = _Arguments[0];
+        if(UserName == "*") {
+            UserName = "~" + _Initiator->_NickName;
+        } else if (UserName.find('*') != UserName.npos) {
+            std::string RemoveAsterisks(UserName);
+            while (RemoveAsterisks.find('*') != RemoveAsterisks.npos) {
+                RemoveAsterisks.erase(RemoveAsterisks.find('*'));
+            }
+            UserName = "~" + RemoveAsterisks;
+        }
+        _Initiator->_UserName = UserName;
+        // _Initiator->_HostName = _Arguments[1]; UserName is omitted by server, because we freaking know your IP!
+                                                // I will fuck you, knigga, I know your IP!
         _Initiator->_ServerName = _Arguments[2];
         _Initiator->_RealName = _Arguments[3];
         _Initiator->_Registration.IsRegistered = true;

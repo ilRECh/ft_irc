@@ -24,11 +24,11 @@ private:
 ClientJoined:
 			_Initiator->_Channels.insert(chan);
 			chan->_Clients.insert(_Initiator);
-			chan->replyToAllMembers(_Initiator->_NickName + " JOIN :" + chan->getChannelName());
-			// _Initiator->updateReplyMessage(" JOIN :" + chan->getChannelName(), _Initiator->_NickName);
+			_Initiator->_lastJoin = chan;
+			chan->replyToAllMembers(_Initiator->_NickName + "!" + _Initiator->_UserName + "@" + _Initiator->_HostName + " JOIN :" + chan->getChannelName());
 			std::string AllNicks("");
 			for (std::set<Client *>::iterator EachNick = chan->_Clients.begin(); EachNick != chan->_Clients.end(); ++EachNick) {
-				AllNicks += (*EachNick)->_NickName + ' ';
+				AllNicks += (chan->getModeIsExist(*EachNick, 'o') ? "@" : "") + (*EachNick)->_NickName + ' ';
 			}
 			_Initiator->updateReplyMessage(RPL_NAMREPLY(chan->getChannelName()) + " :" + AllNicks);
 			_Initiator->updateReplyMessage(RPL_ENDOFNAMES(" ", chan->getChannelName()));

@@ -8,17 +8,17 @@ private:
 	WHOIS& operator=(WHOIS const &that);
 	bool	isAcceptToShowClient(Client *user_another)
 	{
-		std::set<const Channel *> &two = user_another->_Channels;
-		std::set<const Channel *> &one = _Initiator->_Channels;
-		std::set<const Channel *> common;
+		std::set<Channel *> &two = user_another->_Channels;
+		std::set<Channel *> &one = _Initiator->_Channels;
+		std::set<Channel *> common;
 
 		if (std::find_first_of(one.begin(), one.end(), two.begin(), two.end()) == one.end())
 			return false;
-		for(std::set<const Channel *>::iterator i = one.begin(); i != one.end(); ++i)
-			for(std::set<const Channel *>::iterator j = two.begin(); j != two.end(); ++j)
+		for(std::set<Channel *>::iterator i = one.begin(); i != one.end(); ++i)
+			for(std::set<Channel *>::iterator j = two.begin(); j != two.end(); ++j)
 				if (*i == *j)
 					common.insert(*i);
-		for(std::set<const Channel *>::iterator i = common.begin(); i != common.end(); ++i)
+		for(std::set<Channel *>::iterator i = common.begin(); i != common.end(); ++i)
 			if (!(*i)->getModeIsExist(user_another, 'i'))
 				return true;
 		return false;
@@ -47,8 +47,8 @@ private:
 	void getResult(std::set<Client *> & usersToShow){
 		std::set<Client *>::iterator beg_clnt = usersToShow.begin();
 		std::set<Client *>::iterator end_clnt = usersToShow.end();
-		std::set<const Channel *>::iterator beg_chan;
-		std::set<const Channel *>::iterator end_chan;
+		std::set<Channel *>::iterator beg_chan;
+		std::set<Channel *>::iterator end_chan;
 		if (beg_clnt != end_clnt)
 		{
 			for (;beg_clnt != end_clnt; ++beg_clnt)
