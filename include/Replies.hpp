@@ -582,7 +582,7 @@ after processing each list item with <name> being
 the item.
 */
 
-#define	RPL_NAMREPLY(Channel) " 353 " + _Initiator->_NickName + " " + Channel
+#define	RPL_NAMREPLY(Channel) " 353 " + _Initiator->_NickName + " = " + Channel
 /*
 "<channel> :[[@|+]<nick> [[@|+]<nick> [...]]]"
 */

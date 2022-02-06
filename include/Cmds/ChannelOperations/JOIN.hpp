@@ -22,11 +22,15 @@ private:
 			chan = new Channel(nameChannel, _Initiator, &_Server);
 			_Server.pushBack(chan);
 ClientJoined:
-			// chan->addClient(_Initiator);
 			_Initiator->_Channels.insert(chan);
 			chan->_Clients.insert(_Initiator);
-			_Initiator->updateReplyMessage(" JOIN :" + chan->getChannelName(), _Initiator->_NickName);
-			_Initiator->updateReplyMessage(RPL_NAMREPLY(chan->getChannelName()) + " :" + _Initiator->_RealName);
+			chan->replyToAllMembers(_Initiator->_NickName + " JOIN :" + chan->getChannelName());
+			// _Initiator->updateReplyMessage(" JOIN :" + chan->getChannelName(), _Initiator->_NickName);
+			std::string AllNicks("");
+			for (std::set<Client *>::iterator EachNick = chan->_Clients.begin(); EachNick != chan->_Clients.end(); ++EachNick) {
+				AllNicks += (*EachNick)->_NickName + ' ';
+			}
+			_Initiator->updateReplyMessage(RPL_NAMREPLY(chan->getChannelName()) + " :" + AllNicks);
 			_Initiator->updateReplyMessage(RPL_ENDOFNAMES(" ", chan->getChannelName()));
 		} else if (chan->getModeIsExist(chan, 'p') or chan->getModeIsExist(chan, 's')) {
 			_NoSuchChannel.push_back(nameChannel);

@@ -108,7 +108,7 @@ Server::~Server(void)
 	for (std::set<Client *>::iterator it = _Clients.begin();
 		it != _Clients.end(); ++it) {
 		std::string Reply = "QUIT :" + _DyingMessage;
-		send((*it)->_Fd, Reply.c_str(), Reply.length(), 0);
+		// send((*it)->_Fd, Reply.c_str(), Reply.length(), 0);
 		close((*it)->_Fd);
 		delete *it;
 	}
