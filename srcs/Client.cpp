@@ -72,15 +72,15 @@ TimeStamp const & Client::getLastActivity() const{
 	return std::max(_Activity.LastResponse, _Activity.LastPING);
 }
 
-void Client::inviteToChannel(Channel * channel, Client * Iniciator){
-	std::set<Channel *>::iterator first, last;
+// void Client::inviteToChannel(Channel * channel, Client * Iniciator){
+// 	std::set<Channel *>::iterator first, last;
 
-	if (channel->addClient(this, Iniciator ? Iniciator : this))
-		return ;
-	_lastJoin = channel;
-	if (std::find(_Channels.begin(), _Channels.end(), channel) != _Channels.end())
-		_Channels.insert(channel);
-}
+// 	if (channel->addClient(this, Iniciator ? Iniciator : this))
+// 		return ;
+// 	_lastJoin = channel;
+// 	if (std::find(_Channels.begin(), _Channels.end(), channel) != _Channels.end())
+// 		_Channels.insert(channel);
+// }
 
 void Client::leaveFromChannel(Channel * channel)
 {

@@ -66,7 +66,7 @@ public:
 	TimeStamp const & getLastActivity() const;
 
 	//	* get|set  invite Channels
-	void inviteToChannel(Channel * channel, Client * Iniciator = NULL);
+	// void inviteToChannel(Channel * channel, Client * Iniciator = NULL);
 	void leaveFromChannel(Channel * channel);
 	std::set<Channel *> const &getChannels() const;
 	bool isOnChannel(Channel * channel);
