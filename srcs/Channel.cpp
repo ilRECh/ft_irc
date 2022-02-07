@@ -17,8 +17,16 @@ Channel::Channel(
 	setMode(userAdmin, 'o');
 }
 
+std::string const &Channel::getTopic() const{
+	return _Topic;
+}
+
 bool Channel::isOnChannel(Client *whom) const {
 	return _Clients.find(whom) != _Clients.end();
+}
+
+std::set<Client *>::size_type Channel::getCountClients(){
+	return _Clients.size();
 }
 
 void Channel::removeClient(Client *whom) {

@@ -10,6 +10,7 @@
 #include "TOPIC.hpp"
 #include "MODE.hpp"
 #include "JOIN.hpp"
+#include "LIST.hpp"
 
 // Connection Registration
 #include "PASS.hpp"
@@ -74,6 +75,7 @@ Server::Server(string const & Port, string const & Password)
 	_Commands.push_back(new NAMES(*this));
 	_Commands.push_back(new ADMIN(*this));
 	_Commands.push_back(new INVITE(*this));
+	_Commands.push_back(new LIST(*this));
 	addrinfo hints;
 	memset(&hints, 0, sizeof hints);
 	hints.ai_family = AF_INET;
@@ -348,12 +350,12 @@ std::set<Client *> Server::getClientsByName(std::string Name){
 	return result;
 }
 
-std::set<Channel *> Server::getChannelsByChannelName(std::string ChannelName){
+std::set<Channel *> Server::getChannelsByChannelName(std::string ChannelName, bool enableWildcard){
 	std::set<Channel *>::iterator istart = _Channels.begin();
 	std::set<Channel *>::iterator ifinish = _Channels.end();
 	std::set<Channel *> result;
 
-	for(uint i = ChannelName.size(); true;)
+	for(uint i = ChannelName.size(); enableWildcard;)
 	{
 		if (ChannelName[--i] != '*')
 			break;
@@ -361,7 +363,7 @@ std::set<Channel *> Server::getChannelsByChannelName(std::string ChannelName){
 			return _Channels;
 	}
 
-	if (ChannelName.find('*') == std::string::npos)
+	if (ChannelName.find('*') == std::string::npos && enableWildcard)
 	{
 		for(;istart != ifinish; ++istart)
 			if (ft::wildcard(ChannelName, (*istart)->getChannelName()))

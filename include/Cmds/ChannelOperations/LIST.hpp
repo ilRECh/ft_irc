@@ -10,11 +10,48 @@ public:
     LIST(Server &Server) : ACommand("LIST", Server) {}
     virtual ~LIST() {}
     virtual int run(){
+        std::vector<std::set<Channel *> > channels;
+        std::vector<std::string> argsNameChan;
+        std::set<Channel *>::iterator beginChan, endChan;
+        _Initiator->updateReplyMessage(RPL_LISTSTART);
         if (_Arguments.empty()) {
-            return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            
+            channels.push_back(_Server.getChannelsByChannelName("*"));
         }
-        //code
+        else
+        {
+            argsNameChan = ft::split(_Arguments[0], ",");
+            for(uint i = 0; i < argsNameChan.size(); ++i)
+                channels.push_back(_Server.getChannelsByChannelName(argsNameChan[i], false));
+        }
+        for(uint i = 0; i < channels.size(); ++i)
+        {
+            endChan = channels[i].end();
+            beginChan = channels[i].begin();
+            for(;beginChan != endChan; ++beginChan)
+            {
+                if ((*beginChan)->getModeIsExist(*beginChan, 's'))
+                    continue ;
+                if ((*beginChan)->getModeIsExist(*beginChan, 'p')
+                and not (*beginChan)->isOnChannel(_Initiator))
+                {
+                    _Initiator->updateReplyMessage(RPL_LIST((*beginChan)->getChannelName(), "*", "Prv"));
+                }
+                else
+                {
+                    _Initiator->updateReplyMessage
+                    (
+                        RPL_LIST
+                        (
+                            (*beginChan)->getChannelName(), 
+                            ft::to_string((*beginChan)->getCountClients()),
+                            (*beginChan)->getTopic()
+                        )
+                    );
+                }
+            }
+        }
+        _Initiator->updateReplyMessage(RPL_LISTEND);
+        return 0;
     }
 };/*
    Parameters: [<channel>{,<channel>} [<server>]]

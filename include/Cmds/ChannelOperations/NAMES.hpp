@@ -37,13 +37,15 @@ private:
 					if (begin_client != end_client)
 					{
 						result << RPL_NAMREPLY((*begin_chan)->_ChannelName) << " :";
-						while (begin_client != end_client)
+						while (true)
 						{
 							result << ((*begin_chan)->getModeIsExist((*begin_client), 'o') ? "@" : "");
 							result << (*begin_client)->_NickName;
 							++begin_client;
 							if (begin_client != end_client)
 								result << " ";
+							else
+								break ;
 						}
 						_Initiator->updateReplyMessage(result.str());
 						result.str("");

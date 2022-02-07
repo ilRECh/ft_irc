@@ -28,6 +28,7 @@ public:
 	std::string const &getChannelName() const { return _ChannelName; }
 	void	removeClient(Client *whom);
 	bool	isOnChannel(Client *whom) const;
+	std::set<Client *>::size_type getCountClients();
 	void	setChannelName(
 		Client *who,
 		std::string const & newNameChannel);

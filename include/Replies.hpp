@@ -492,7 +492,7 @@ and it was an error).
 "Channel :Users  Name"
 */
 
-#define RPL_LIST(Channel, Visible, Topic) " 322 " + _Initiator->_NickName + " " + Channel + " # " + Visible + " :" + Topic
+#define RPL_LIST(Channel, Visible, Topic) " 322 " + _Initiator->_NickName + " " + Channel + " " + Visible + " :" + Topic
 /*
 "<channel> <# visible> :<topic>"
 */

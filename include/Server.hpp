@@ -74,7 +74,7 @@ public:
 	Client *getUserByNickName(std::string const & NickName);
 	//* now it support find by wildcard
 	std::set<Client *> getClientsByName(std::string Name);
-	std::set<Channel *> getChannelsByChannelName(std::string Name);
+	std::set<Channel *> getChannelsByChannelName(std::string Name, bool enableWildcard = true);
 	Channel *getChannelByChannelName(std::string const & NameChannel);
 	OperatorStatus canBeAutorized(
 		std::string const & Name,
