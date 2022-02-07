@@ -13,7 +13,7 @@ public:
         if (_Arguments.empty()) {
             return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
         }
-        std::string Reply = "Server 303 " + _Initiator->getNickName() + " :";
+        std::string Reply = "Server 303 " + _Initiator->_NickName + " :";
         for (std::vector<std::string>::iterator i = _Arguments.begin(); i != _Arguments.end(); ++i) {
             Client *FoundUser = _Server.getUserByNickName(*i);
             if (FoundUser != NULL) {

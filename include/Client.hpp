@@ -53,41 +53,29 @@ public:
 	bool operator!=(const Client& that) const;
 	bool operator==(const Client& that) const;
 
-	std::string const &getUserName() const { return _UserName; };
 	int const _Fd;
-	void setPassword(std::string & Password) { _Password = Password; }
 
 	// Names get|set
-	string const & getNickName() const;
-	string const & getAwayMessage() const { return _Away; }
+	string const & getNickName() const { return _NickName; }
 	
-	// * get time
-	TimeStamp const & getTime() const;
+	// * get activity
 	TimeStamp const & getLastActivity() const;
 
 	//	* get|set  invite Channels
-	// void inviteToChannel(Channel * channel, Client * Iniciator = NULL);
-	void leaveFromChannel(Channel * channel);
-	std::set<Channel *> const &getChannels() const;
 	bool isOnChannel(Channel * channel);
 
 	//	* get Registered
-	bool isRegistered() const;
-	// void setRegistered(bool const Condition);
 	bool unregisteredShouldDie() const;
-
-	// get IP address
-	std::string getAddresIP() const;
 
 	// Last Activity
 	bool inactiveShouldDie() const;
 	bool ServerNeedToPING() const;
-	bool isWaitingForPONG() const;
 	void updateActivity();
-	void PINGisSent();
 
 	// ReplyMessage
-	bool updateReplyMessage(std::string const & Msg, std::string const & From = std::string("irc.WIP.ru"));
+	bool updateReplyMessage(
+		std::string const & Msg,
+		std::string const & From = std::string("irc.WIP.ru"));
 	std::string const getReplyMessage();
 
 	// Incoming buffer

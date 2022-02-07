@@ -22,15 +22,16 @@ public:
 			return _Initiator->updateReplyMessage(ERR_NOSUCHNICK(_Arguments[0]));
 		if (!channel)
 			return _Initiator->updateReplyMessage(ERR_NOSUCHCHANNEL (_Arguments[1]));
-		if (client->isOnChannel(channel) && channel->isOnChannel(client))
+		if (channel->isOnChannel(client))
 			return _Initiator->updateReplyMessage(ERR_USERONCHANNEL(client->_NickName, channel->getChannelName()));
-		if (!_Initiator->isOnChannel(channel) && !channel->isOnChannel(_Initiator))
+		if (!channel->isOnChannel(_Initiator))
 			return _Initiator->updateReplyMessage(ERR_NOTONCHANNEL(channel->getChannelName()));
 		if (!channel->getModeIsExist(_Initiator, 'o'))
 			return _Initiator->updateReplyMessage(ERR_CHANOPRIVSNEEDED(channel->getChannelName()));
 		_Initiator->updateReplyMessage(RPL_INVITING(_Arguments[1], client->_NickName));
 		client->_Channels.insert(channel);
-		channel->addClient(client);
+		channel->_Clients.insert(client);
+		// client->inviteToChannel(channel, _Initiator);
 		return 0;
 	}
 };/*м

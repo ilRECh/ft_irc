@@ -40,7 +40,7 @@ ClientJoined:
 			_InviteOnlyChannel.push_back(nameChannel);
 		} else if (not key.empty() and chan->_Key != key) {
 			_BadChannelKey.push_back(nameChannel);
-		} else if (chan->isBanned(_Initiator)) {
+		} else if (chan->isBanned(_Initiator->_NickName)) {
 			_BannedFromChannel.push_back(nameChannel);
 		} else {
 			goto ClientJoined;
