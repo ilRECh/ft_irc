@@ -90,4 +90,5 @@ public:
 private:
 	friend class QUIT;
 	friend class INVITE;
+	friend class NAMES;
 };

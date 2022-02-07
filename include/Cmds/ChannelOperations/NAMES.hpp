@@ -9,88 +9,69 @@ private:
     NAMES(NAMES const &that);
     NAMES& operator=(NAMES const &that);
 
-	std::set<const Channel *> findChannel()
+	int sendResult(std::list<std::set<Channel *> > channels)
 	{
-		typedef std::vector<std::string> vec;
-		typedef vec::iterator			ivec;
+		std::stringstream result;
+		std::list<std::set<Channel *> >::iterator begin_chan_list, end_chan_list;
+		std::set<Client *>::iterator begin_client, end_client;
+		std::set<Channel *>::iterator begin_chan, end_chan;
+		begin_chan_list = channels.begin();
+		end_chan_list = channels.end();
 
-		ivec start = _Arguments.begin();
-		ivec finish = _Arguments.end();
-		std::set<const Channel *> channels;
-
-		for(;start != finish; ++start)
+		if (begin_chan_list == end_chan_list)
 		{
-			std::set<Channel *> tmp = _Server.getChannelsByChannelName(*start);
-			for(std::set<Channel *>::iterator i = tmp.begin(); i != tmp.end(); ++i)
-				channels.insert(*i);
+			_Initiator->updateReplyMessage(RPL_ENDOFNAMES(""));
+			return 1;
 		}
-		return channels;
+		while (begin_chan_list != end_chan_list)
+		{
+			end_chan = begin_chan_list->end();
+			begin_chan = begin_chan_list->begin();
+			while (begin_chan != end_chan)
+			{
+				if (not (*begin_chan)->getModeIsExist(*begin_chan, 'p') 
+				and not (*begin_chan)->getModeIsExist(*begin_chan, 's'))
+				{
+					end_client = (*begin_chan)->_Clients.end();
+					begin_client = (*begin_chan)->_Clients.begin();
+					if (begin_client != end_client)
+					{
+						result << RPL_NAMREPLY((*begin_chan)->_ChannelName) << " :";
+						while (begin_client != end_client)
+						{
+							result << ((*begin_chan)->getModeIsExist((*begin_client), 'o') ? "@" : "");
+							result << (*begin_client)->_NickName;
+							++begin_client;
+							if (begin_client != end_client)
+								result << " ";
+						}
+						_Initiator->updateReplyMessage(result.str());
+						result.str("");
+						result.clear();
+					}
+				}
+				++begin_chan;
+			}
+			++begin_chan_list;
+		}
+		_Initiator->updateReplyMessage(RPL_ENDOFNAMES((*channels.rbegin()->rbegin())->getChannelName()));
+		return 0;
+
 	}
 
-	std::string getNames(std::set<const Channel *> &channels)
-	{
-		std::stringstream			result;
-		std::set<const Client *>	clients;
-
-		for(std::set<const Channel *>::iterator i = channels.begin(); i != channels.end(); ++i)
-			for(std::set<Client *>::iterator j = (*i)->_Clients.begin() ;j != (**i)._Clients.end(); ++j)
-				if (!(*i)->getModeIsExist((*j), "s") && !(*i)->getModeIsExist((*j), "p"))
-					clients.insert(*j);
-		result << "+=================================================+" << "\r\n";
-		for(std::set<const Client *>::iterator i = clients.begin(); i != clients.end(); ++i){
-			_Initiator->updateReplyMessage("aaaaaaaaaaaaaaaaaaaaa");
-			// result << (*i)->_NickName << ", ";
-		}
-		result << "+=================================================+" << "\r\n";
-		return result.str();
-	}
 public:
     NAMES(Server &Server) : ACommand("NAMES", Server) {}
     virtual ~NAMES() {}
     virtual int run(){
-		std::set<Channel *>::iterator channel_begin = _Server.getChannels().begin();
-		std::set<Client *>::iterator client_begin, client_end;
+		std::list<std::set<Channel *> > channels_from_arg;
+		std::set<Channel *>::iterator channel_begin;
 	
         if (_Arguments.empty())
-		{
-			if (channel_begin != _Server.getChannels().end())
-			{
-				for(;channel_begin != _Server.getChannels().end(); ++channel_begin)
-				{
-					const Channel *channel = *channel_begin;
-					if (!channel->getModeIsExist(*channel_begin, 'p') && !channel->getModeIsExist(*channel_begin, 's'))
-					{
-						_Initiator->updateReplyMessage(RPL_NAMREPLY(std::string("#") + channel->_ChannelName));
-						client_begin = channel->_Clients.begin();
-						for(; client_begin != channel->_Clients.end(); ++client_begin)
-							_Initiator->updateReplyMessage(RPL_NAMREPLY((*client_begin)->_NickName));
-					}
-				}
-				_Initiator->updateReplyMessage(RPL_ENDOFNAMES("#",(*(--_Server.getChannels().end()))->getChannelName()));
-			}
-        }
+			channels_from_arg.push_back(_Server._Channels);
 		else
-		{
 			for(uint i = 0; i < _Arguments.size(); ++i)
-			{
-				std::set<Channel *> channels = _Server.getChannelsByChannelName(_Arguments[i]);
-				channel_begin = channels.begin();
-				if (channel_begin != channels.end())
-				{
-					for(;channel_begin != channels.end(); ++channel_begin)
-					{
-						Channel * channel = *channel_begin;
-						_Initiator->updateReplyMessage(RPL_NAMREPLY(std::string("#") + channel->_ChannelName));
-						client_begin = channel->_Clients.begin();
-						for(; client_begin != channel->_Clients.end(); ++client_begin)
-							_Initiator->updateReplyMessage(RPL_NAMREPLY((*client_begin)->_NickName));
-
-					}
-					_Initiator->updateReplyMessage(RPL_ENDOFNAMES("#", (*(--channel_begin))->_ChannelName));
-				}
-			}
-		}
-		return 0;
+				channels_from_arg.push_back(_Server.getChannelsByChannelName(_Arguments[i]));
+		return sendResult(channels_from_arg);
     }
 };/*
    Parameters: [<channel>{,<channel>}]

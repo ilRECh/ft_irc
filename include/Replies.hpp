@@ -587,7 +587,7 @@ the item.
 "<channel> :[[@|+]<nick> [[@|+]<nick> [...]]]"
 */
 
-#define RPL_ENDOFNAMES(ChannelSymbol, Channel) " 366 " + _Initiator->_NickName + " " + Channel + " :End of NAMES list."
+#define RPL_ENDOFNAMES(Channel) " 366 " + _Initiator->_NickName + " " + Channel + " :End of /NAMES list."
 /*
 "<channel> :End of /NAMES list"
 
