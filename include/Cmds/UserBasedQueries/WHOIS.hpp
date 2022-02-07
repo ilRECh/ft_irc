@@ -60,10 +60,10 @@ private:
 					(*beg_clnt)->_HostName, 
 					(*beg_clnt)->_RealName
 				));
-				if (not (*beg_clnt)->getChannels().empty())
+				if (not (*beg_clnt)->_Channels.empty())
 				{
-					beg_chan = (*beg_clnt)->getChannels().begin();
-					end_chan = (*beg_clnt)->getChannels().end();
+					beg_chan = (*beg_clnt)->_Channels.begin();
+					end_chan = (*beg_clnt)->_Channels.end();
 					for(;beg_chan != end_chan; ++beg_chan)
 					{
 						char status_in_channel = (*beg_chan)->getModeIsExist((*beg_clnt), 'o') ? '@' : '+';

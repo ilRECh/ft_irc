@@ -49,11 +49,11 @@ private:
                     if ((i + 1) > _Arguments.size())
                         return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
                     if (_Arguments[1][0] == '+'){
-                        targetChannel->setLimit(std::atoi(_Arguments[i + 1].c_str()));
+                        targetChannel->_maxUserLimit = std::atoi(_Arguments[i + 1].c_str());
                         targetChannel->setMode(targetChannel, _Arguments[1][i]);
                     }
                     else {
-                        targetChannel->setLimit(0);
+                        targetChannel->_maxUserLimit = 0;
                         targetChannel->unsetMode(targetChannel, _Arguments[1][i]);
                     }
                     break;
@@ -72,13 +72,13 @@ private:
                     if ((i + 1) > _Arguments.size())
                         return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
                     if (_Arguments[1][0] == '+'){
-                        if (not targetChannel->getKey().empty())
+                        if (not targetChannel->_Key.empty())
                             _Initiator->updateReplyMessage(ERR_KEYSET(_Arguments[0]));
-                        targetChannel->setKey(_Arguments[i + 1]);
+                        targetChannel->_Key = _Arguments[i + 1];
                         targetChannel->setMode(targetChannel, _Arguments[1][i]);
                     }
                     else {
-                        targetChannel->setKey("");
+                        targetChannel->_Key = "";
                         targetChannel->unsetMode(targetChannel, _Arguments[1][i]);
                     }
                     break;
@@ -89,7 +89,7 @@ private:
         return 0;
     }
     int procClient() {
-        if (_Initiator->getNickName() != _Arguments[0])
+        if (_Initiator->_NickName != _Arguments[0])
             return _Initiator->updateReplyMessage(ERR_USERSDONTMATCH);
 //        if (_Arguments.size() == 1)
 //            return _Initiator->updateReplyMessage(RPL_UMODEIS("todo")); //todo:

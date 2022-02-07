@@ -29,7 +29,9 @@ public:
 		if (!channel->getModeIsExist(_Initiator, 'o'))
 			return _Initiator->updateReplyMessage(ERR_CHANOPRIVSNEEDED(channel->getChannelName()));
 		_Initiator->updateReplyMessage(RPL_INVITING(_Arguments[1], client->_NickName));
-		client->inviteToChannel(channel, _Initiator);
+		_Initiator->_Channels.insert(channel);
+		channel->_Clients.insert(_Initiator);
+		// client->inviteToChannel(channel, _Initiator);
 		return 0;
 	}
 };/*м

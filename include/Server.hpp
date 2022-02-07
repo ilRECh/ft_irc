@@ -52,7 +52,6 @@ private:
 	std::set<Channel *> _Channels;
 	std::list<Channel *> _ChannelsToBeErased;
 
-
 	// Opers
 	static operators_s _Operators[1];
 
@@ -70,14 +69,11 @@ public:
 	Server(string const & Port, std::string const & Password);
 	~Server();
 
-	void sendMsg(Client *To);
 	void run();
 	std::string getServerAddrInfo() const { return _Ip + ":" + _Port; }
 	Client *getUserByNickName(std::string const & NickName);
 	//* now it support find by wildcard
 	std::set<Client *> getClientsByName(std::string Name);
-	std::set<Client *> const &getClients();
-	std::set<Channel *> const &getChannels() const;
 	std::set<Channel *> getChannelsByChannelName(std::string Name);
 	Channel *getChannelByChannelName(std::string const & NameChannel);
 	OperatorStatus canBeAutorized(
@@ -90,4 +86,5 @@ public:
 private:
 	friend class QUIT;
 	friend class INVITE;
+	friend class NAMES;
 };
