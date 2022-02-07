@@ -16,7 +16,7 @@ private:
 	std::string _Key;
 	std::string _Topic;
 	std::set<Client *> _Clients;
-	std::set<Client *> _BanList;
+	std::set<std::string> _BanList;
 	Server *_Server;
 public:
 	Channel(
@@ -37,9 +37,9 @@ public:
 		std::string const & newNameChannel);
 	void replyToAllMembers(std::string msg, Client * sender = NULL);
 	//* Ban!!
-	void addToBan(Client * toBanUser);
-	void removeFromBan(Client * unBanUser);
-	bool isBanned(Client * isBannedUser);
+	void addToBan(std::string const &BanMask);
+	void removeFromBan(std::string const &BanMask);
+	bool isBanned(std::string const &NickName);
 	//* limit Users
     uint getLimit() { return _maxUserLimit; }
     void setLimit(int limit) { _maxUserLimit = limit; }

@@ -94,33 +94,30 @@ void Channel::replyToAllMembers(std::string msg, Client * sender) {
 	}
 }
 
-void Channel::addToBan(Client * toBanUser)
+void Channel::addToBan(std::string const &BanMask)
 {
-	if (!isBanned(toBanUser))
-	{
-		_BanList.insert(toBanUser);
-		replyToAllMembers("banned!", toBanUser);
+	_BanList.insert(BanMask);
+}
+void Channel::removeFromBan(std::string const &BanMask)
+{
+SearchAgain:
+	std::set<std::string>::iterator EachBanMaskInBanList = _BanList.begin();
+	while (EachBanMaskInBanList != _BanList.end()) {
+		if (ft::wildcard(*EachBanMaskInBanList, BanMask)) {
+			_BanList.erase(EachBanMaskInBanList);
+			goto SearchAgain;
+		}
+		++EachBanMaskInBanList;
 	}
 }
-void Channel::removeFromBan(Client * unBanUser)
+bool Channel::isBanned(std::string const &NickName)
 {
-	if (isBanned(unBanUser))
-	{
-		_BanList.erase(unBanUser);
-		replyToAllMembers("unbanned", unBanUser);
-	}
-}
-bool Channel::isBanned(Client * isBannedUser)
-{
-	std::set<Client *>::iterator first, last;
-
-	first = _BanList.begin();
-	last = _BanList.end();
-	while(first != last)
-	{
-		if (*first == isBannedUser)
+	for (std::set<std::string>::iterator EachBanMask = _BanList.begin();
+		EachBanMask != _BanList.end();
+		++EachBanMask) {
+		if (ft::wildcard(*EachBanMask, NickName)) {
 			return true;
-		++first;
+		}
 	}
 	return false;
 }
