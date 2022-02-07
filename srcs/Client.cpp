@@ -2,8 +2,10 @@
 #include "Server.hpp"
 #include "Channel.hpp"
 
-Client::Client(int const Fd)
-	:	_lastJoin(NULL), _Fd(Fd) {}
+Client::Client(int const Fd, std::string HostName)
+	:	_lastJoin(NULL),
+		_HostName(HostName),
+		_Fd(Fd) {}
 
 bool Client::operator==(const Client& that) const {
 	return _UserName == that._UserName;
@@ -86,17 +88,16 @@ void Client::leaveFromChannel(Channel * channel)
 	_Channels.erase(channel);
 }
 
-std::set<Channel const *> const & Client::getChannels() const {
+std::set<Channel *> const & Client::getChannels() const {
 	return _Channels;
 }
 
-bool Client::isOnChannel(const Channel * channel){
+bool Client::isOnChannel(Channel * channel){
 	return _Channels.find(channel) != _Channels.end();
 }
 
-bool Client::updateReplyMessage(std::string const & Msg ) {
-	// _ReplyMessage += _time.getTimeStrCurrent() + " " + Msg + "\r\n";
-	_ReplyMessage += ":" + Msg + "\r\n";
+bool Client::updateReplyMessage(std::string const & Msg, std::string const & From) {
+	_ReplyMessage += ":" + From + Msg + "\r\n";
     if (!_Away.empty()){
         return 1;
 	}

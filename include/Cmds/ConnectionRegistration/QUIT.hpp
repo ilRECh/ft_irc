@@ -21,18 +21,19 @@ public:
             _Argument = _Initiator->_NickName;
         }
         if (not _ToInitiatorOnly){
-            for (std::set<Client *>::iterator ClientOnServer = _Server._Clients.begin();
-                ClientOnServer != _Server._Clients.end(); ++ClientOnServer) {
-                if ((*ClientOnServer != _Initiator and not _Server.getModeIsExist(*ClientOnServer, 'i')) or
-                    (*ClientOnServer == _Initiator and _ToInitiator)) {
-                    (*ClientOnServer)->updateReplyMessage(_Initiator->_NickName + " QUIT " +
-                        (*ClientOnServer)->_NickName + " :" + _Argument);
-                }
+            if (_ToInitiator) {
+                _Initiator->updateReplyMessage(_Initiator->getFull() + " QUIT " + _Initiator->_NickName + " :" + _Argument);
+            }
+            for (std::set<Channel *>::iterator EachChannel = _Initiator->_Channels.begin();
+                EachChannel != _Initiator->_Channels.end(); ++EachChannel) {
+                (*EachChannel)->replyToAllMembers(_Initiator->getFull() + " QUIT " + _Initiator->_NickName + " :" + _Argument, _Initiator);
             }
         } else {
             _Initiator->updateReplyMessage(_Initiator->_NickName + " QUIT " + _Initiator->_NickName + " :" + _Argument);
         }
         _Server.pushBackErase(_Initiator);
+        _ToInitiator = false;
+        _ToInitiatorOnly = false;
         return 0;
     }
     void isNeedToBeSentToInitiator() {

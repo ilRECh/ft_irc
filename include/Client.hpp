@@ -22,7 +22,7 @@ private:
 	Client(Client& that);
 	Client& operator=(Client& that);
 	Channel *	_lastJoin;
-	std::set<Channel const *> _Channels;
+	std::set<Channel *> _Channels;
 	std::string _Password;
 	std::string _UserName;
 	std::string _NickName;
@@ -45,8 +45,9 @@ private:
 	} _Activity;
     std::string _ReplyMessage;
 	std::string _IncomingBuffer;
+	std::string getFull() { return _NickName + "!" + _UserName + "@" + _HostName; }
 public:
-	Client(int const Fd);
+	Client(int const Fd, std::string HostName);
 	~Client() {}
 	
 	bool operator!=(const Client& that) const;
@@ -67,8 +68,8 @@ public:
 	//	* get|set  invite Channels
 	void inviteToChannel(Channel * channel, Client * Iniciator = NULL);
 	void leaveFromChannel(Channel * channel);
-	std::set<Channel const *> const &getChannels() const;
-	bool isOnChannel(const Channel * channel);
+	std::set<Channel *> const &getChannels() const;
+	bool isOnChannel(Channel * channel);
 
 	//	* get Registered
 	bool isRegistered() const;
@@ -86,7 +87,7 @@ public:
 	void PINGisSent();
 
 	// ReplyMessage
-	bool updateReplyMessage(std::string const & Msg);
+	bool updateReplyMessage(std::string const & Msg, std::string const & From = std::string("irc.WIP.ru"));
 	std::string const getReplyMessage();
 
 	// Incoming buffer

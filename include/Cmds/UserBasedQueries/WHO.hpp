@@ -8,17 +8,17 @@ private:
 	WHO& operator=(WHO const &that);
 	bool	isAcceptToShow(Client *user_another)
 	{
-		std::set<const Channel *> &two = user_another->_Channels;
-		std::set<const Channel *> &one = _Initiator->_Channels;
-		std::set<const Channel *> common;
+		std::set<Channel *> &two = user_another->_Channels;
+		std::set<Channel *> &one = _Initiator->_Channels;
+		std::set<Channel *> common;
 
 		if (std::find_first_of(one.begin(), one.end(), two.begin(), two.end()) == one.end())
 			return false;
-		for(std::set<const Channel *>::iterator i = one.begin(); i != one.end(); ++i)
-			for(std::set<const Channel *>::iterator j = two.begin(); j != two.end(); ++j)
+		for(std::set<Channel *>::iterator i = one.begin(); i != one.end(); ++i)
+			for(std::set<Channel *>::iterator j = two.begin(); j != two.end(); ++j)
 				if (*i == *j)
 					common.insert(*i);
-		for(std::set<const Channel *>::iterator i = common.begin(); i != common.end(); ++i)
+		for(std::set<Channel *>::iterator i = common.begin(); i != common.end(); ++i)
 			if (!(*i)->getModeIsExist(user_another, 'i'))
 				return true;
 		return false;
@@ -44,35 +44,38 @@ private:
 	void getResult(std::set<std::pair< Channel *, Client *> > & usersToShow){
 		std::set<std::pair< Channel *, Client *> >::iterator start = usersToShow.begin();
 		std::set<std::pair< Channel *, Client *> >::iterator finish = usersToShow.end();
-		uint hopCount = 0;
 
+		std::string channelName = "*";
 		for(;start != finish; ++start)
 		{
 			std::string serverName = "127.0.0.1";// _Server.getServerAddrInfo().substr(0, _Server.getServerAddrInfo().find(':'));
 			char H_G = start->second->_Away.empty() ? 'H' : 'G';
-			std::string channelName = "*";
 			std::string isAminInLastJoin = "+";
 			if (start->first)
 			{
-				channelName = "#" + start->first->getChannelName();
+				channelName = start->first->getChannelName();
 				if (start->first->getModeIsExist(start->second, 'o'))
+					isAminInLastJoin = "@";
+			} else if (start->second->_lastJoin) {
+				channelName = start->second->_lastJoin->getChannelName();
+				if (start->second->_lastJoin->getModeIsExist(start->second, 'o'))
 					isAminInLastJoin = "@";
 			}
 			_Initiator->updateReplyMessage(RPL_WHOREPLY
 			(
 				channelName, 
 				start->second->_UserName,
-				start->second->_HostName, 
-				serverName,
+				"127.0.0.1",//start->second->_HostName, 
+				"irc.WIP.ru", //serverName,
 				start->second->_NickName,
 				H_G,
 				"*",
 				isAminInLastJoin,
-				ft::to_string(hopCount++),
+				"0",
 				start->second->_RealName
 			));
 		}
-		_Initiator->updateReplyMessage(RPL_ENDOFWHO);
+		_Initiator->updateReplyMessage(RPL_ENDOFWHO(channelName));
 	}
 
 public:
@@ -105,8 +108,7 @@ public:
 				if (_Arguments[i].find_first_of(std::string("#&")) != _Arguments[i].npos)
 				{
 					std::string nameChanNoSharp = _Arguments[i];
-					ft::deleteSpaces(nameChanNoSharp, std::string() + SPACE_SYMBOLS + "&#");
-
+					ft::deleteSpaces(nameChanNoSharp, std::string() + SPACE_SYMBOLS);
 					Channel * chan =_Server.getChannelByChannelName(nameChanNoSharp);
 					if (!chan)
 					{

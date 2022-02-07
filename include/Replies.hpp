@@ -423,7 +423,7 @@ Replies RPL_UNAWAY and RPL_NOWAWAY are sent when the
 client removes and sets an AWAY message.
 */
 
-#define RPL_WHOISUSER(Nick, User, Host, RealName) " 311 " + _Initiator->_NickName + " " + Nick + " " + User + " " + Host + " * :" + RealName
+#define RPL_WHOISUSER(Nick, User, Host, RealName) " 311 " + Nick + " " + User + " " + Host + " * :" + RealName
 /* 
 "<nick> <user> <host> * :<real name>"
 */
@@ -433,12 +433,12 @@ client removes and sets an AWAY message.
 "<nick> <server> :<server info>"
 */
 
-#define RPL_WHOISOPERATOR(Nick) " 313 " + _Initiator->_NickName + " " + Nick + " :is an IRC operator"
+#define RPL_WHOISOPERATOR(Nick) " 313 " + _Initiator->_NickName + " :" + Nick + " :is an IRC operator"
 /*
 "<nick> :is an IRC operator"
 */
 
-#define RPL_WHOISIDLE(Nick, Integer) " 317 " + _Initiator->_NickName + " " + Nick + " " + Integer + " :seconds idle"
+#define RPL_WHOISIDLE(Nick, Integer) " 317 " + _Initiator->_NickName + " :" + Nick + " " + Integer + " :seconds idle"
 /*
 "<nick> <integer> :seconds idle"
 */
@@ -569,7 +569,7 @@ the version or further version details.
 <H|G>[*][@|+] :<hopcount> <real name>"
 */
 
-#define RPL_ENDOFWHO " 315 " + _Initiator->_NickName + " :End of /WHO list"
+#define RPL_ENDOFWHO(ChannelName) " 315 " + _Initiator->_NickName + " " + ChannelName + " :End of /WHO list."
 /*
 "<name> :End of /WHO list"
 
@@ -582,7 +582,7 @@ after processing each list item with <name> being
 the item.
 */
 
-#define	RPL_NAMREPLY(Channel) " 353 " + _Initiator->_NickName + " " + Channel
+#define	RPL_NAMREPLY(Channel) " 353 " + _Initiator->_NickName + " = " + Channel
 /*
 "<channel> :[[@|+]<nick> [[@|+]<nick> [...]]]"
 */

@@ -38,7 +38,7 @@ public:
                     continue ;
                 }
                 for (std::set<Client *>::iterator CurClient = ClientsToReply.begin(); CurClient != ClientsToReply.end(); ++CurClient) {
-                    if ((*CurClient)->updateReplyMessage(_Initiator->_NickName + " PRIVMSG " + (*CurClient)->_NickName + " :" + _Argument)) {
+                    if ((*CurClient)->updateReplyMessage(" PRIVMSG " + (*CurClient)->_NickName + " :" + _Argument, _Initiator->_NickName)) {
                         _Initiator->updateReplyMessage(RPL_AWAY((*CurClient)->_Away, (*CurClient)->_NickName));
                     }
                 }
