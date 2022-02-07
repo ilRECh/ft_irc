@@ -348,11 +348,6 @@ std::set<Client *> Server::getClientsByName(std::string Name){
 	return result;
 }
 
-std::set<Channel *> const &Server::getChannels() const
-{
-	return _Channels;
-}
-
 std::set<Channel *> Server::getChannelsByChannelName(std::string ChannelName){
 	std::set<Channel *>::iterator istart = _Channels.begin();
 	std::set<Channel *>::iterator ifinish = _Channels.end();

@@ -8,9 +8,6 @@ class Server;
 
 class Channel : public Modes {
 private:
-	friend class NAMES;
-	friend class JOIN;
-	friend class WHO;
 	uint _maxUserLimit;
 	std::string _ChannelName;
 	std::string _Key;
@@ -29,8 +26,7 @@ public:
 	std::string const &getTopic() const;
 	void setTopic(std::string const & Topic);
 	std::string const &getChannelName() const { return _ChannelName; }
-	int		addClient(Client *whom, Client *who = NULL);
-	void	removeClient(Client *whom);//, Client & whom);
+	void	removeClient(Client *whom);
 	bool	isOnChannel(Client *whom) const;
 	void	setChannelName(
 		Client *who,
@@ -40,9 +36,11 @@ public:
 	void addToBan(std::string const &BanMask);
 	void removeFromBan(std::string const &BanMask);
 	bool isBanned(std::string const &NickName);
-	//* limit Users
-    uint getLimit() { return _maxUserLimit; }
-    void setLimit(int limit) { _maxUserLimit = limit; }
-    void setKey(std::string const & Key) { _Key = Key; }
-    std::string &getKey() { return _Key; }
+private:
+	friend class NAMES;
+	friend class JOIN;
+	friend class WHO;
+	friend class INVITE;
+	friend class MODE;
+	friend class TOPIC;
 };

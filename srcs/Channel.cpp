@@ -21,46 +21,6 @@ bool Channel::isOnChannel(Client *whom) const {
 	return _Clients.find(whom) != _Clients.end();
 }
 
-int	Channel::addClient(Client *whom, Client *_Initiator) {
-	if (std::find(_Clients.begin(), _Clients.end(), whom) != _Clients.end())
-		return 0;
-	if (std::find(_BanList.begin(), _BanList.end(), whom) != _BanList.end())
-	{
-		(_Initiator ? _Initiator : whom)->updateReplyMessage(ERR_BANNEDFROMCHAN(_ChannelName));
-		return 1;
-	}
-	if (_Initiator != NULL)
-	{
-		if (_Clients.size() >= _maxUserLimit)
-		{
-			_Initiator->updateReplyMessage(ERR_CHANNELISFULL(this->getChannelName()));
-			return 1;
-		}
-		if (getModeIsExist(this, 'i') && not getModeIsExist(_Initiator, 'o')) {
-			_Initiator->updateReplyMessage(ERR_CHANOPRIVSNEEDED(_ChannelName));
-			return 1;
-		}
-	}
-	else
-	{
-		if (_Clients.size() >= _maxUserLimit)
-		{
-			whom->updateReplyMessage(ERR_CHANNELISFULL(this->getChannelName()));
-			return 1;
-		}
-	}
-	_Clients.insert(whom);
-	return 0;
-}
-
-std::string const &Channel::getTopic() const {
-	return _Topic;
-}
-
-void Channel::setTopic(std::string const & Topic) {
-	_Topic = Topic;
-}
-
 void Channel::removeClient(Client *whom) {
 	//? Если был удален последний Админ, то передать полномочия другому юзеру
 	static bool ToRemove = false;

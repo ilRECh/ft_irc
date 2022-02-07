@@ -48,14 +48,14 @@ public:
     NAMES(Server &Server) : ACommand("NAMES", Server) {}
     virtual ~NAMES() {}
     virtual int run(){
-		std::set<Channel *>::iterator channel_begin = _Server.getChannels().begin();
+		std::set<Channel *>::iterator channel_begin = _Server._Channels.begin();
 		std::set<Client *>::iterator client_begin, client_end;
 	
         if (_Arguments.empty())
 		{
-			if (channel_begin != _Server.getChannels().end())
+			if (channel_begin != _Server._Channels.end())
 			{
-				for(;channel_begin != _Server.getChannels().end(); ++channel_begin)
+				for(;channel_begin != _Server._Channels.end(); ++channel_begin)
 				{
 					const Channel *channel = *channel_begin;
 					if (!channel->getModeIsExist(*channel_begin, 'p') && !channel->getModeIsExist(*channel_begin, 's'))
@@ -66,7 +66,7 @@ public:
 							_Initiator->updateReplyMessage(RPL_NAMREPLY((*client_begin)->_NickName));
 					}
 				}
-				_Initiator->updateReplyMessage(RPL_ENDOFNAMES("#",(*(--_Server.getChannels().end()))->getChannelName()));
+				_Initiator->updateReplyMessage(RPL_ENDOFNAMES("#",(*(--_Server._Channels.end()))->getChannelName()));
 			}
         }
 		else

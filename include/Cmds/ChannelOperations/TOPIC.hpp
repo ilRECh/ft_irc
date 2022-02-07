@@ -22,19 +22,19 @@ public:
         }
         std::vector<std::string> Topic = ft::split(_Argument, ":");
         if (Topic.size() != 2) {
-            if (FoundChannel->getTopic().empty()) {
+            if (FoundChannel->_Topic.empty()) {
                 return _Initiator->updateReplyMessage(RPL_NOTOPIC(ChannelName));
             }
-            return _Initiator->updateReplyMessage(RPL_TOPIC(ChannelName, FoundChannel->getTopic()));
+            return _Initiator->updateReplyMessage(RPL_TOPIC(ChannelName, FoundChannel->_Topic));
         } else {
             if (FoundChannel->getModeIsExist(FoundChannel, 't') and
                 not FoundChannel->getModeIsExist(_Initiator, 'o')) {
                 return _Initiator->updateReplyMessage(ERR_CHANOPRIVSNEEDED(ChannelName));
             }
-            FoundChannel->setTopic(Topic[1]);
+            FoundChannel->_Topic = Topic[1];
             FoundChannel->replyToAllMembers(
                 _Initiator->_NickName + "!" + _Initiator->_UserName + "@" + _Initiator->_HostName +
-                " TOPIC " + FoundChannel->getChannelName() + " :" + FoundChannel->getTopic());
+                " TOPIC " + FoundChannel->getChannelName() + " :" + FoundChannel->_Topic);
         }
         return 0;
     }

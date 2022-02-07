@@ -15,11 +15,11 @@ public:
     ~Modes();
     bool getModeIsExist(Channel const * Channel, std::string SomeModes) const;
     bool getModeIsExist(Channel const * Channel, char mode) const;
-    void setMode(Channel const * Channel, char mode);
-    void unsetMode(Channel const * Channel, char mode);
     bool getModeIsExist(Client const * Client, std::string SomeModes) const;
     bool getModeIsExist(Client const * Client, char mode) const;
+    void setMode(Channel const * Channel, char mode);
     void setMode(Client const * Client, char mode);
+    void unsetMode(Channel const * Channel, char mode);
     void unsetMode(Client const * Client, char mode);
     void eraseClientFromModes(Client const * Client);
 };
