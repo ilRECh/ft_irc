@@ -54,7 +54,7 @@ public:
             }
 
             if ((IsNICK and not IsPassProv) or
-                (IsUSER and (not IsPassProv or not IsNickProv)) or
+                (IsUSER and not IsPassProv) or
                 not (IsPASS or IsNICK or IsUSER)) {
                 _Initiator->updateReplyMessage(ERR_NOTREGISTERED);
                 throw("dummy");
