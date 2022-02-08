@@ -31,7 +31,8 @@ public:
 		_Initiator->updateReplyMessage(RPL_INVITING(_Arguments[1], client->_NickName));
 		client->_Channels.insert(channel);
 		channel->_Clients.insert(client);
-		// client->inviteToChannel(channel, _Initiator);
+		client->updateReplyMessage(RPL_AWAY(channel->getTopic(), client->_NickName));
+		channel->replyToAllMembers(client->_NickName + " invited, by " + _Initiator->_NickName);
 		return 0;
 	}
 };/*м

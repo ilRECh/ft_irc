@@ -11,6 +11,7 @@
 #include "MODE.hpp"
 #include "JOIN.hpp"
 #include "LIST.hpp"
+#include "KICK.hpp"
 
 // Connection Registration
 #include "PASS.hpp"
@@ -76,6 +77,7 @@ Server::Server(string const & Port, string const & Password)
 	_Commands.push_back(new ADMIN(*this));
 	_Commands.push_back(new INVITE(*this));
 	_Commands.push_back(new LIST(*this));
+	_Commands.push_back(new KICK(*this));
 	addrinfo hints;
 	memset(&hints, 0, sizeof hints);
 	hints.ai_family = AF_INET;

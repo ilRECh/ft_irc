@@ -89,3 +89,17 @@ bool Channel::isBanned(std::string const &NickName)
 	}
 	return false;
 }
+
+Client * Channel::getClient(std::string nickName){
+	std::set<Client *>::iterator beginClient = _Clients.begin();
+	std::set<Client *>::iterator endClient = _Clients.end();
+
+	nickName = ft::tolowerString(nickName);
+	while(beginClient != endClient)
+	{
+		if (nickName == ft::tolowerString((*beginClient)->_NickName))
+			return *beginClient;
+		++beginClient;
+	}
+	return NULL;
+}

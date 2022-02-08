@@ -37,6 +37,7 @@ public:
 	void addToBan(std::string const &BanMask);
 	void removeFromBan(std::string const &BanMask);
 	bool isBanned(std::string const &NickName);
+	Client * getClient(std::string nickName);
 private:
 	friend class NAMES;
 	friend class JOIN;

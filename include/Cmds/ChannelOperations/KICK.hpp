@@ -10,11 +10,28 @@ public:
     KICK(Server &Server) : ACommand("KICK", Server) {}
     virtual ~KICK() {}
     virtual int run(){
-        if (_Arguments.empty()) {
+        if (_Arguments.size() < 2) {
             return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-            
         }
-        //code
+        ft::deleteSpaces(_Arguments[0], SPACE_SYMBOLS);
+        ft::deleteSpaces(_Arguments[1], SPACE_SYMBOLS);
+        if (_Arguments[0].find_first_of("&#"))  // Если в начале нет (# or &)
+            return _Initiator->updateReplyMessage(ERR_BADCHANMASK(_Arguments[0]));
+        Channel * chan = _Server.getChannelByChannelName(_Arguments[0]);
+        if (not chan)
+            return _Initiator->updateReplyMessage(ERR_NOSUCHCHANNEL(_Arguments[0]));
+        if (not chan->getModeIsExist(_Initiator, 'o'))
+            return _Initiator->updateReplyMessage(ERR_CHANOPRIVSNEEDED(_Arguments[0]));
+        Client * client = chan->getClient(_Arguments[1]);
+        if (not client)
+            return _Initiator->updateReplyMessage(ERR_NOTONCHANNEL(chan->getChannelName()));
+        if (_Arguments.size() > 2)
+            chan->replyToAllMembers(_Initiator->getFull() + " kicked " + client->_NickName + " :" + _Arguments[3]);
+        else
+            chan->replyToAllMembers(_Initiator->getFull() + " kicked " + client->_NickName);
+        client->_Channels.erase(chan);
+        chan->removeClient(client);
+        return 0;
     }
 };/*
    Parameters: <channel> <user> [<comment>]
