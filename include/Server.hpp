@@ -84,6 +84,7 @@ public:
 	void pushBackErase(Channel *Channel);
 	void buryMe(std::string const & DyingMessage);
 private:
+	friend class PASS;
 	friend class QUIT;
 	friend class INVITE;
 	friend class NAMES;

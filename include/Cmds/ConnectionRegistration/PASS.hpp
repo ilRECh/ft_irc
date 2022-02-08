@@ -14,10 +14,11 @@ public:
             return _Initiator->updateReplyMessage(ERR_ALREADYREGISTRED);
         } else if (_Arguments.empty()) {
             return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-        } else if (not _Initiator->_RealName.empty()) {
+        }
+        if (not (ft::split(_Argument, " :").back() == _Server._Password)) {
             return 0;
         }
-        _Initiator->_Password = ft::split(_Argument, " :").end()[-1];
+        _Initiator->_PasswordCorrect = true;
         return 0;
     }
 };/*

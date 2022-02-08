@@ -23,7 +23,7 @@ private:
 	Client& operator=(Client& that);
 	Channel *	_lastJoin;
 	std::set<Channel *> _Channels;
-	std::string _Password;
+	bool _PasswordCorrect;
 	std::string _UserName;
 	std::string _NickName;
 	std::string _RealName;

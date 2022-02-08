@@ -43,7 +43,7 @@ public:
         if (_Initiator->_Activity.WaitingForPONG and _Name not_eq "PONG") {
             throw("dummy");
         } else if (not _Initiator->_Registration.IsRegistered){
-            bool IsPassProv = not _Initiator->_Password.empty();
+            bool IsPassProv = not _Initiator->_PasswordCorrect;
             bool IsNickProv = not _Initiator->_NickName.empty();
             bool IsPASS = _Name == "PASS";
             bool IsNICK = _Name == "NICK";
