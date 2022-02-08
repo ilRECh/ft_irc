@@ -60,6 +60,13 @@ public:
                 throw("dummy");
             }
         }
+#else
+        if (not _Initiator->_Registration.IsRegistered) {
+            _Initiator->_Registration.IsRegistered = true;
+            _Initiator->updateReplyMessage(RPL_MOTDSTART(_Server.getServerAddrInfo()));
+            _Initiator->updateReplyMessage(RPL_MOTD(std::string("Privet peer")));
+            _Initiator->updateReplyMessage(RPL_ENDOFMOTD);
+        }
 #endif
         if (not _Initiator->_Activity.WaitingForPONG) {
             _Initiator->updateActivity();
