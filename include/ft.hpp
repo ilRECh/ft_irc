@@ -19,6 +19,7 @@
 #include <set>
 #include <list>
 #include <map>
+#include <limits>
 #include "TimeStamp.hpp"
 
 #define SIZE 512

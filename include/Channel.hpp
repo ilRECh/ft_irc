@@ -20,7 +20,7 @@ public:
 		std::string const & nameChannel,
 		Client *userAdmin,
 		Server *Server,
-		uint maxUserLimit = 1024);
+		uint maxUserLimit = std::numeric_limits<unsigned int>::max());
 	~Channel() {}
 	
 	std::string const &getTopic() const;

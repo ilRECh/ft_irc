@@ -17,6 +17,7 @@ private:
 		std::set<Channel *>::iterator begin_chan, end_chan;
 		begin_chan_list = channels.begin();
 		end_chan_list = channels.end();
+		std::string LastChannel = "*";
 
 		if (begin_chan_list == end_chan_list)
 		{
@@ -30,12 +31,13 @@ private:
 			while (begin_chan != end_chan)
 			{
 				if (not (*begin_chan)->getModeIsExist(*begin_chan, 'p') 
-				and not (*begin_chan)->getModeIsExist(*begin_chan, 's'))
+					and not (*begin_chan)->getModeIsExist(*begin_chan, 's'))
 				{
 					end_client = (*begin_chan)->_Clients.end();
 					begin_client = (*begin_chan)->_Clients.begin();
 					if (begin_client != end_client)
 					{
+						LastChannel = (*begin_chan)->_ChannelName;
 						result << RPL_NAMREPLY((*begin_chan)->_ChannelName) << " :";
 						while (true)
 						{
@@ -56,7 +58,7 @@ private:
 			}
 			++begin_chan_list;
 		}
-		_Initiator->updateReplyMessage(RPL_ENDOFNAMES((*channels.rbegin()->rbegin())->getChannelName()));
+		_Initiator->updateReplyMessage(RPL_ENDOFNAMES(LastChannel));
 		return 0;
 
 	}

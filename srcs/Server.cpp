@@ -92,8 +92,7 @@ Server::Server(string const & Port, string const & Password)
 	_Sockfd = socket(AF_INET, SOCK_STREAM/* | SOCK_NONBLOCK*/, 0);
 	if (_Sockfd < 0)
 		throw std::runtime_error(string("Socket: ") + strerror(errno));
-	int    retFcntl = fcntl(_Sockfd, F_GETFL, 0);
-	if (retFcntl < 0 || fcntl(_Sockfd, F_SETFL, retFcntl | O_NONBLOCK) < 0)
+	if (fcntl(_Sockfd, F_SETFL, O_NONBLOCK) < 0)
 		throw std::runtime_error(string("fcntl: ") + strerror(errno));
 	_Socklen = sizeof(sockaddr);
 	if (bind(_Sockfd, _ServInfo->ai_addr, _Socklen))
@@ -139,7 +138,7 @@ void Server::run()
 			if (UserFd > _MaxFd) {
 				_MaxFd = UserFd;
 			}
-			fcntl(UserFd, F_SETFD, fcntl(UserFd, F_GETFD) | O_NONBLOCK);
+			fcntl(UserFd, F_SETFD, O_NONBLOCK);
 			FD_SET(UserFd, &_FdsSet);
 #ifdef __linux__
 	sockaddr_in AddrUser = {0,0,{0},{0}};
@@ -152,8 +151,6 @@ void Server::run()
 			std::cout << "<<<<<<< " << inet_ntoa(AddrUser.sin_addr) << '\n';
 			std::cout << "+===================================================+" << std::endl;
 			_Clients.insert(new Client(UserFd, inet_ntoa(AddrUser.sin_addr)));
-		} else if (UserFd < 0 && errno != EAGAIN) {
-			throw std::runtime_error("Fatal. Accepting the " + ft::to_string(UserFd) + " failed.\n" + strerror(errno));
 		}
 
 		//ReadPart
@@ -183,9 +180,10 @@ void Server::readerClients()
 			char Buffer[SIZE] = { 0 };
 			ssize_t ReadByte = 0;
 			ReadByte = recv((*Client)->_Fd, Buffer, SIZE, 0);
-			if (ReadByte < 0 && errno != EAGAIN) {
-				throw std::runtime_error(std::string("recv: ") + strerror(errno));
-			} else if (ReadByte == 0) {
+			if (ReadByte < 0) {
+				continue ;
+			}
+			if (ReadByte == 0) {
 				QUIT q(*this);
 				q.setQuitInitiator(*Client);
 				q.setArgument(std::string(":Is dead. Just dead. People die, ya know?"));
@@ -200,8 +198,10 @@ void Server::readerClients()
 
 void Server::processCmd(Client *Client)
 {
-	if (Client->getIncomingBuffer().end()[-1] != '\n' or
-		Client->getIncomingBuffer().find_first_not_of("\r\n") == Client->getIncomingBuffer().npos) {
+	if (Client->getIncomingBuffer().end()[-1] != '\n') {
+		return ;
+	}
+	if (Client->getIncomingBuffer().find_first_not_of("\r\n") == Client->getIncomingBuffer().npos) {
 		Client->getIncomingBuffer().clear();
 		return ;
 	}
