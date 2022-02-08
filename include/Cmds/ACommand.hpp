@@ -43,7 +43,7 @@ public:
         if (_Initiator->_Activity.WaitingForPONG and _Name not_eq "PONG") {
             throw("dummy");
         } else if (not _Initiator->_Registration.IsRegistered){
-            bool IsPassProv = not _Initiator->_PasswordCorrect;
+            bool IsPassProv = _Initiator->_PasswordCorrect;
             bool IsNickProv = not _Initiator->_NickName.empty();
             bool IsPASS = _Name == "PASS";
             bool IsNICK = _Name == "NICK";
@@ -59,13 +59,6 @@ public:
                 _Initiator->updateReplyMessage(ERR_NOTREGISTERED);
                 throw("dummy");
             }
-        }
-#else
-        if (not _Initiator->_Registration.IsRegistered) {
-            _Initiator->_Registration.IsRegistered = true;
-            _Initiator->updateReplyMessage(RPL_MOTDSTART(_Server.getServerAddrInfo()));
-            _Initiator->updateReplyMessage(RPL_MOTD(std::string("Privet peer")));
-            _Initiator->updateReplyMessage(RPL_ENDOFMOTD);
         }
 #endif
         if (not _Initiator->_Activity.WaitingForPONG) {
