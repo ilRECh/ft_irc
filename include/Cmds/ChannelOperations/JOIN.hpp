@@ -31,7 +31,7 @@ ClientJoined:
 				AllNicks += (chan->getModeIsExist(*EachNick, 'o') ? "@" : "") + (*EachNick)->_NickName + ' ';
 			}
 			_Initiator->updateReplyMessage(RPL_NAMREPLY(chan->getChannelName()) + " :" + AllNicks);
-			_Initiator->updateReplyMessage(RPL_ENDOFNAMES(" ", chan->getChannelName()));
+			_Initiator->updateReplyMessage(RPL_ENDOFNAMES(chan->getChannelName()));
 		} else if (chan->getModeIsExist(chan, 'p') or chan->getModeIsExist(chan, 's')) {
 			_NoSuchChannel.push_back(nameChannel);
 		} else if (chan->_Clients.size() >= chan->_maxUserLimit) {

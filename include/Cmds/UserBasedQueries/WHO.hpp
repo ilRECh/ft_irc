@@ -10,19 +10,11 @@ private:
 	{
 		std::set<Channel *> &two = user_another->_Channels;
 		std::set<Channel *> &one = _Initiator->_Channels;
-		std::set<Channel *> common;
 
-		if (std::find_first_of(one.begin(), one.end(), two.begin(), two.end()) == one.end())
-			return false;
-		for(std::set<Channel *>::iterator i = one.begin(); i != one.end(); ++i)
-			for(std::set<Channel *>::iterator j = two.begin(); j != two.end(); ++j)
-				if (*i == *j)
-					common.insert(*i);
-		for(std::set<Channel *>::iterator i = common.begin(); i != common.end(); ++i)
-			if (!(*i)->getModeIsExist(user_another, 'i'))
-				return true;
-		return false;
-		
+		if (_Server.getModeIsExist(user_another, 'i'))
+			if (std::find_first_of(one.begin(), one.end(), two.begin(), two.end()) == one.end())
+				return false;
+		return true;
 	}
 
 	bool	isRespondRequireTreeAlpha(){
@@ -45,9 +37,10 @@ private:
 		std::set<std::pair< Channel *, Client *> >::iterator start = usersToShow.begin();
 		std::set<std::pair< Channel *, Client *> >::iterator finish = usersToShow.end();
 
-		std::string channelName = "*";
+		std::string channelName;
 		for(;start != finish; ++start)
 		{
+			channelName = "*";
 			std::string serverName = "127.0.0.1";// _Server.getServerAddrInfo().substr(0, _Server.getServerAddrInfo().find(':'));
 			char H_G = start->second->_Away.empty() ? 'H' : 'G';
 			std::string isAminInLastJoin = "+";

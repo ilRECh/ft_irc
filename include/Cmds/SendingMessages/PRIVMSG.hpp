@@ -38,7 +38,7 @@ public:
                     continue ;
                 }
                 for (std::set<Client *>::iterator CurClient = ClientsToReply.begin(); CurClient != ClientsToReply.end(); ++CurClient) {
-                    if ((*CurClient)->updateReplyMessage(" PRIVMSG " + (*CurClient)->_NickName + " :" + _Argument, _Initiator->_NickName)) {
+                    if ((*CurClient)->updateReplyMessage(" PRIVMSG " + (*CurClient)->_NickName + " :" + _Argument, _Initiator->getFull())) {
                         _Initiator->updateReplyMessage(RPL_AWAY((*CurClient)->_Away, (*CurClient)->_NickName));
                     }
                 }
@@ -49,7 +49,7 @@ public:
                     continue ;
                 }
                 for (std::set<Channel *>::iterator CurChannel = ChannelsToReply.begin(); CurChannel != ChannelsToReply.end(); ++CurChannel) {
-                    (*CurChannel)->replyToAllMembers(_Initiator->_NickName + " PRIVMSG " + (*CurChannel)->getChannelName() + " :" + _Argument, _Initiator);
+                    (*CurChannel)->replyToAllMembers(_Initiator->getFull() + " PRIVMSG " + (*CurChannel)->getChannelName() + " :" + _Argument, _Initiator);
                 }
             }
         }

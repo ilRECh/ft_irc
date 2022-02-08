@@ -4,6 +4,7 @@
 
 Client::Client(int const Fd, std::string HostName)
 	:	_lastJoin(NULL),
+		_PasswordCorrect(false),
 		_HostName(HostName),
 		_Fd(Fd) {}
 

@@ -10,7 +10,7 @@ public:
     USER(Server & Server) : ACommand("USER", Server) {}
     virtual ~USER() {}
     virtual int run(){
-        if (_Initiator->_Registration.IsRegistered == true) {
+        if (not _Initiator->_RealName.empty()) {
             return _Initiator->updateReplyMessage(ERR_ALREADYREGISTRED);
         } else if (not _Argument.empty()) {
             size_t scFound = _Argument.find(':');
@@ -45,10 +45,13 @@ public:
                                                 // I will fuck you, knigga, I know your IP!
         _Initiator->_ServerName = _Arguments[2];
         _Initiator->_RealName = _Arguments[3];
-        _Initiator->_Registration.IsRegistered = true;
-        _Initiator->updateReplyMessage(RPL_MOTDSTART(_Server.getServerAddrInfo()));
-        _Initiator->updateReplyMessage(RPL_MOTD(std::string("Privet peer")));
-        _Initiator->updateReplyMessage(RPL_ENDOFMOTD);
+        if (not _Initiator->_Registration.IsRegistered and 
+            _Initiator->_PasswordCorrect and not _Initiator->_NickName.empty()) {
+            _Initiator->_Registration.IsRegistered = true;
+            _Initiator->updateReplyMessage(RPL_MOTDSTART(_Server.getServerAddrInfo()));
+            _Initiator->updateReplyMessage(RPL_MOTD(std::string("Privet peer")));
+            _Initiator->updateReplyMessage(RPL_ENDOFMOTD);
+        }
         return 0;
     }
 };/*

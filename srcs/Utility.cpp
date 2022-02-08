@@ -43,15 +43,6 @@ std::vector<std::string> ft::splitByCmds(
         pos_start = pos_end + DelimiterWord.length();
         pos_end = tosplit.find(DelimiterWord, pos_start);
     }
-    if (ret.size() > 1 and std::find_if(ret.begin(), ret.end(), isNick) != ret.end()
-        and std::find_if(ret.begin(), ret.end(), isUser) != ret.end()
-        and std::find_if(ret.begin(), ret.end(), isNick) > std::find_if(ret.begin(), ret.end(), isUser)) {
-        std::vector<std::string>::iterator Nick = std::find_if(ret.begin(), ret.end(), isNick);
-        std::vector<std::string>::iterator User = std::find_if(ret.begin(), ret.end(), isUser);
-        std::string tmp = *Nick;
-        *Nick = *User;
-        *User = tmp;
-    }
     return ret;
 }
 

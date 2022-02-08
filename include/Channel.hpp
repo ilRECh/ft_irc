@@ -20,7 +20,7 @@ public:
 		std::string const & nameChannel,
 		Client *userAdmin,
 		Server *Server,
-		uint maxUserLimit = 1024);
+		uint maxUserLimit = std::numeric_limits<unsigned int>::max());
 	~Channel() {}
 	
 	std::string const &getTopic() const;
@@ -28,6 +28,7 @@ public:
 	std::string const &getChannelName() const { return _ChannelName; }
 	void	removeClient(Client *whom);
 	bool	isOnChannel(Client *whom) const;
+	std::set<Client *>::size_type getCountClients();
 	void	setChannelName(
 		Client *who,
 		std::string const & newNameChannel);
@@ -36,6 +37,7 @@ public:
 	void addToBan(std::string const &BanMask);
 	void removeFromBan(std::string const &BanMask);
 	bool isBanned(std::string const &NickName);
+	Client * getClient(std::string nickName);
 private:
 	friend class NAMES;
 	friend class JOIN;
