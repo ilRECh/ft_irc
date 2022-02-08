@@ -10,7 +10,7 @@ public:
     USER(Server & Server) : ACommand("USER", Server) {}
     virtual ~USER() {}
     virtual int run(){
-        if (_Initiator->_Registration.IsRegistered == true) {
+        if (not _Initiator->_RealName.empty()) {
             return _Initiator->updateReplyMessage(ERR_ALREADYREGISTRED);
         } else if (not _Argument.empty()) {
             size_t scFound = _Argument.find(':');
