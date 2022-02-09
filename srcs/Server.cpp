@@ -166,7 +166,7 @@ void Server::run()
 
 void Server::readerClients()
 {
-	timeval tm = {0, 10000};
+	timeval tm = {0, 0};
 	fd_set fdsCopy = _FdsSet;
 	if (select(_MaxFd + 1, &fdsCopy, NULL, NULL, &tm) < 0) {
 		throw std::runtime_error(std::string("Error: Select") + strerror(errno));
