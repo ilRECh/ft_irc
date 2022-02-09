@@ -13,6 +13,7 @@ private:
 	std::string _Key;
 	std::string _Topic;
 	std::set<Client *> _Clients;
+    std::set<Client *> _InviteClients;
 	std::set<std::string> _BanList;
 	Server *_Server;
 public:
@@ -38,6 +39,7 @@ public:
 	void removeFromBan(std::string const &BanMask);
 	bool isBanned(std::string const &NickName);
 	Client * getClient(std::string nickName);
+    bool isInvited(Client *client);
 private:
 	friend class NAMES;
 	friend class JOIN;

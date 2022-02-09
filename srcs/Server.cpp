@@ -78,6 +78,7 @@ Server::Server(string const & Port, string const & Password)
 	_Commands.push_back(new INVITE(*this));
 	_Commands.push_back(new LIST(*this));
 	_Commands.push_back(new KICK(*this));
+	_Commands.push_back(new NOTICE(*this));
 	addrinfo hints;
 	memset(&hints, 0, sizeof hints);
 	hints.ai_family = AF_INET;

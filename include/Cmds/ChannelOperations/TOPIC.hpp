@@ -33,7 +33,7 @@ public:
             }
             FoundChannel->_Topic = Topic[1];
             FoundChannel->replyToAllMembers(
-                _Initiator->_NickName + "!" + _Initiator->_UserName + "@" + _Initiator->_HostName +
+                _Initiator->getFull() +
                 " TOPIC " + FoundChannel->getChannelName() + " :" + FoundChannel->_Topic);
         }
         return 0;

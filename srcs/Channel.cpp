@@ -64,6 +64,9 @@ void Channel::replyToAllMembers(std::string msg, Client * sender) {
 
 void Channel::addToBan(std::string const &BanMask)
 {
+    // * = *!*@*
+    // *!*q = *!*q@*
+    // qw!qw@qw = qw!qw@qw
 	_BanList.insert(BanMask);
 }
 void Channel::removeFromBan(std::string const &BanMask)
@@ -102,4 +105,12 @@ Client * Channel::getClient(std::string nickName){
 		++beginClient;
 	}
 	return NULL;
+}
+
+bool Channel::isInvited(Client *client){
+    if (_InviteClients.find(client) != _InviteClients.end()){
+        _InviteClients.erase(client);
+        return true;
+    }
+    return false;
 }

@@ -1,7 +1,7 @@
 #pragma once
 #include "ACommand.hpp"
 #define MAX_NUMBER_OF_CHANNELS 10
-
+//todo: check ban
 class JOIN : public ACommand {
 private:
     JOIN();
@@ -25,18 +25,16 @@ ClientJoined:
 			_Initiator->_Channels.insert(chan);
 			chan->_Clients.insert(_Initiator);
 			_Initiator->_lastJoin = chan;
-			chan->replyToAllMembers(_Initiator->_NickName + "!" + _Initiator->_UserName + "@" + _Initiator->_HostName + " JOIN :" + chan->getChannelName());
+			chan->replyToAllMembers( _Initiator->getFull() + " JOIN :" + chan->getChannelName());
 			std::string AllNicks("");
 			for (std::set<Client *>::iterator EachNick = chan->_Clients.begin(); EachNick != chan->_Clients.end(); ++EachNick) {
 				AllNicks += (chan->getModeIsExist(*EachNick, 'o') ? "@" : "") + (*EachNick)->_NickName + ' ';
 			}
 			_Initiator->updateReplyMessage(RPL_NAMREPLY(chan->getChannelName()) + " :" + AllNicks);
 			_Initiator->updateReplyMessage(RPL_ENDOFNAMES(chan->getChannelName()));
-		} else if (chan->getModeIsExist(chan, 'p') or chan->getModeIsExist(chan, 's')) {
-			_NoSuchChannel.push_back(nameChannel);
 		} else if (chan->_Clients.size() >= chan->_maxUserLimit) {
 			_ChannelIsFull.push_back(nameChannel);
-		} else if (chan->getModeIsExist(chan, 'i')) {
+		} else if (chan->getModeIsExist(chan, 'i') and not chan->isInvited(_Initiator)) {
 			_InviteOnlyChannel.push_back(nameChannel);
 		} else if (not key.empty() and chan->_Key != key) {
 			_BadChannelKey.push_back(nameChannel);

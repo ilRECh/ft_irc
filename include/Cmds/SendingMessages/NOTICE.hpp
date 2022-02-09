@@ -11,8 +11,8 @@ public:
     virtual ~NOTICE() {}
     virtual int run(){
         std::string targets = ft::SplitOneTimes(_Argument, ":");
-        ft::deleteSpaces(targets);
-        ft::deleteSpaces(_Argument);
+        ft::deleteSpaces(targets, SPACE_SYMBOLS);
+        ft::deleteSpaces(_Argument, SPACE_SYMBOLS);
         if (targets.empty()) {
             return 0;
         }
@@ -26,21 +26,27 @@ public:
                 recipients.erase(last_target);
             }
         }
-        Client *last_target = NULL;
-        for (std::set<std::string>::iterator it = recipients.begin();
-             it != recipients.end(); ++it)
-        {
-            last_target = _Server.getUserByNickName(*it);
-            if (last_target == NULL){
-//                last_target = _Server.getChannelByName(*it);
-//                if (last_target == NULL)
-//                else if (last_target->updateReplyMessage(_Argument))
-            }
-            else {
-                    last_target->updateReplyMessage(_Argument);
+        std::set<Client *> ClientsToReply;
+        std::set<Channel *> ChannelsToReply;
+        for (std::set<std::string>::iterator it = recipients.begin(); it != recipients.end(); ++it) {
+            if ((*it)[0] != '#') {
+                ClientsToReply = _Server.getClientsByName(*it);
+                if (ClientsToReply.empty()) {
+                    continue ;
+                }
+                for (std::set<Client *>::iterator CurClient = ClientsToReply.begin(); CurClient != ClientsToReply.end(); ++CurClient) {
+                    (*CurClient)->updateReplyMessage(" NOTICE " + (*CurClient)->_NickName + " :" + _Argument, _Initiator->getFull());
+                }
+            } else {
+                ChannelsToReply = _Server.getChannelsByChannelName(*it);
+                if (ChannelsToReply.empty()) {
+                    continue ;
+                }
+                for (std::set<Channel *>::iterator CurChannel = ChannelsToReply.begin(); CurChannel != ChannelsToReply.end(); ++CurChannel) {
+                    (*CurChannel)->replyToAllMembers(_Initiator->getFull() + " NOTICE " + (*CurChannel)->getChannelName() + " :" + _Argument, _Initiator);
+                }
             }
         }
-        _Argument.erase();
         return 0;
     }
 };/*

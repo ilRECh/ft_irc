@@ -528,7 +528,7 @@ the topic is set, RPL_TOPIC is sent back else
 RPL_NOTOPIC.
 */
 
-#define RPL_INVITING(Channel, Nick) " 341 " + _Initiator->_NickName + " " + Channel + " " + Nick
+#define RPL_INVITING(Channel, Nick) " 341 " + _Initiator->_NickName + " " + Nick + " " + Channel
 /*
 "<channel> <nick>"
 
