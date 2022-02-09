@@ -14,11 +14,11 @@ private:
 
 		if (std::find_first_of(one.begin(), one.end(), two.begin(), two.end()) == one.end())
 			return false;
-		for(std::set<Channel *>::iterator i = one.begin(); i != one.end(); ++i)
-			for(std::set<Channel *>::iterator j = two.begin(); j != two.end(); ++j)
+		for(std::set<Channel *>::iterator i = one.begin(); i not_eq one.end(); ++i)
+			for(std::set<Channel *>::iterator j = two.begin(); j not_eq two.end(); ++j)
 				if (*i == *j)
 					common.insert(*i);
-		for(std::set<Channel *>::iterator i = common.begin(); i != common.end(); ++i)
+		for(std::set<Channel *>::iterator i = common.begin(); i not_eq common.end(); ++i)
 			if (!(*i)->getModeIsExist(user_another, 'i'))
 				return true;
 		return false;
@@ -33,7 +33,7 @@ private:
 		uint		countAlpha = 0;
 
 		for(size_t i = 0; i < _Arguments[0].size(); ++i)
-			_Arguments[0][i] != '*' && ++countAlpha;
+			_Arguments[0][i] not_eq '*' && ++countAlpha;
 		return countAlpha >= minAlpha;
 	}
 
@@ -49,9 +49,9 @@ private:
 		std::set<Client *>::iterator end_clnt = usersToShow.end();
 		std::set<Channel *>::iterator beg_chan;
 		std::set<Channel *>::iterator end_chan;
-		if (beg_clnt != end_clnt)
+		if (beg_clnt not_eq end_clnt)
 		{
-			for (;beg_clnt != end_clnt; ++beg_clnt)
+			for (;beg_clnt not_eq end_clnt; ++beg_clnt)
 			{
 				_Initiator->updateReplyMessage(RPL_WHOISUSER
 				(
@@ -64,7 +64,7 @@ private:
 				{
 					beg_chan = (*beg_clnt)->_Channels.begin();
 					end_chan = (*beg_clnt)->_Channels.end();
-					for(;beg_chan != end_chan; ++beg_chan)
+					for(;beg_chan not_eq end_chan; ++beg_chan)
 					{
 						char status_in_channel = (*beg_chan)->getModeIsExist((*beg_clnt), 'o') ? '@' : '+';
 						_Initiator->updateReplyMessage(RPL_WHOISCHANNELS(
@@ -98,7 +98,7 @@ public:
 		{
 			clients = _Arguments.empty() ? _Server.getClientsByName("*") : _Server.getClientsByName(_Arguments[0]);
 			channels = _Arguments.empty() ? _Server.getChannelsByChannelName("*") : _Server.getChannelsByChannelName(_Arguments[0]);
-			for (std::set<Client *>::iterator i = clients.begin(); i != clients.end(); ++i)
+			for (std::set<Client *>::iterator i = clients.begin(); i not_eq clients.end(); ++i)
 				if (isAcceptToShowClient(*i))
 					users_to_show.insert(*i);
 		}

@@ -34,13 +34,12 @@ namespace ft {
         std::string const& DelimiterWord);
     void deleteSpaces(std::string &string, std::string const &symbols = std::string(" "));
     std::string SplitOneTimes(std:: string &str, std::string delimiter);
-
+	bool	wildcard(std::string wildcardExpression, std::string beingToCompare);
+    std::string tolowerString(std::string toLowStr);
     template <typename T>
     std::string to_string(T to_convert) {
         std::stringstream ss;
         ss << to_convert;
         return ss.str();
     }
-	bool	wildcard(std::string wildcardExpression, std::string beingToCompare);
-    std::string tolowerString(std::string toLowStr);
 } // namespace ft

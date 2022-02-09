@@ -1,6 +1,6 @@
 #include "Bot.hpp"
 
-#define AUTH_REPLY(passwd) "PASS " + _PasswordToServer + "\r\n"\
+#define AUTH_REPLY "PASS " + _PasswordToServer + "\r\n"\
         "NICK " + _Name + "\r\n"\
         "USER * * * :I'm alive! YES, I AM!\r\n"
 
@@ -43,7 +43,7 @@ Bot::~Bot() {
 }
 
 void Bot::run() {
-    _ReplyMessage = AUTH_REPLY(_PasswordToServer);
+    _ReplyMessage = AUTH_REPLY;
     while (true) {
         Reply();
         Receive();
@@ -55,7 +55,6 @@ void Bot::run() {
 void Bot::Receive() {
     ssize_t BytesReceived;
     char Buffer[1001] = {0};
-
     if ((BytesReceived = recv(_BotSock, Buffer, sizeof(Buffer) - 1, 0)) > 0) {
         _IncomingBuffer += Buffer;
         std::cout << "Received: |" << _IncomingBuffer << "|" << std::endl;
@@ -65,16 +64,19 @@ void Bot::Receive() {
 }
 
 void Bot::Parse() {
-    if (_IncomingBuffer.end()[-1] != '\n') {
+    if (_IncomingBuffer.end()[-1] not_eq '\n') {
         return ;
     }
-    if (_IncomingBuffer.find(" PRIVMSG ") != _IncomingBuffer.npos or
-        _IncomingBuffer.find(" NOTICE ") != _IncomingBuffer.npos) {
+    if (_IncomingBuffer.find(" PRIVMSG ") not_eq _IncomingBuffer.npos or
+        _IncomingBuffer.find(" NOTICE ") not_eq _IncomingBuffer.npos) {
         _CurrentIncomingType = PRIVMSG;
-    } else if (_IncomingBuffer.find (" PING ") != _IncomingBuffer.npos) {
+    } else if (_IncomingBuffer.find (" PING ") not_eq _IncomingBuffer.npos) {
         _CurrentIncomingType = PING;
-    } else if (_IncomingBuffer.find("You have not registered") != _IncomingBuffer.npos) {
+    } else if (_IncomingBuffer.find("You have not registered") not_eq _IncomingBuffer.npos) {
         _CurrentIncomingType = AUTH;
+    } else if (_IncomingBuffer.find("KILL") not_eq _IncomingBuffer.npos) {
+        std::cout << "Oops! My friend is here already, I'll be gone then!" << std::endl;
+        throw("goodbye");
     } else {
         _CurrentIncomingType = UNPROCEEDING;
     }
@@ -83,18 +85,35 @@ void Bot::Parse() {
 void Bot::Proceed() {
     switch(_CurrentIncomingType) {
         case PRIVMSG:
+            
             break ;
         case PING:
+            size_t PongArgPos = _IncomingBuffer.find_first_not_of(" \n\r\t\v", _IncomingBuffer.find("PING") + 4);
+            if (PongArgPos != _IncomingBuffer.npos) {
+                _ReplyMessage = _IncomingBuffer.substr(PongArgPos);
+            }
+            _ReplyMessage = "PONG " + _ReplyMessage;
             break ;
         case AUTH:
             static int AttemptsLeft = 3;
-            std::cout << "I think you have provided wrong password. Let's try this again:\n";
+            if (AttemptsLeft < 0) {
+                std::cout << "Well, not this time, I guess. See ya around!" << std::endl;
+                throw("goodbye");
+            }
+            std::cout << "I think you have provided wrong password. Let's try this again:" << std::endl;
+            std::cin >> _PasswordToServer;
+            std::cout << "You have entered:|" << _PasswordToServer << "|" << std::endl;
+            _ReplyMessage = AUTH_REPLY;
             break ;
         default:
             break ;
     }
+    _IncomingBuffer.clear();
 }
 
 void Bot::Reply() {
-    send(_BotSock, _ReplyMessage.c_str(), _ReplyMessage.length(), 0);
+    if (not _ReplyMessage.empty()) {
+        send(_BotSock, _ReplyMessage.c_str(), _ReplyMessage.length(), MSG_NOSIGNAL);
+        _ReplyMessage.clear();
+    }
 }

@@ -16,7 +16,7 @@ private:
 		std::stringstream result;
 
 		for (size_t i = 0; i < clientsToShow.size(); i++)
-			for (IsetClient j = clientsToShow[i].begin(); j != clientsToShow[i].end(); ++j)
+			for (IsetClient j = clientsToShow[i].begin(); j not_eq clientsToShow[i].end(); ++j)
 				if ((*j)->getLastActivity().hasTimePassed(MAY_BE_INACTIVE_seconds))
 					toSortVec.push_back(*j);
 		for (size_t i = 0; i < toSortVec.size(); i++)

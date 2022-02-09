@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ft.hpp"
 #include <unistd.h>
 #include <cerrno>
 #include <cstdlib>
@@ -17,7 +18,7 @@ private:
     Bot(Bot const &that);
     Bot& operator=(Bot const &that);
     std::string const _Name;
-    std::string const &_PasswordToServer;
+    std::string _PasswordToServer;
     std::string _IncomingBuffer;
     std::string _ReplyMessage;
     int _BotSock;

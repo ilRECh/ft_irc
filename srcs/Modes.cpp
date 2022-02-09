@@ -5,13 +5,13 @@
 Modes::Modes(Channel *Channel) : _Channel(Channel) {}
 
 Modes::~Modes() {
-    for (clients_modes::iterator it = _ClientsModes.begin(); it != _ClientsModes.end(); ++it) {
+    for (clients_modes::iterator it = _ClientsModes.begin(); it not_eq _ClientsModes.end(); ++it) {
         delete it->second;
     }
 }
 
 bool Modes::getModeIsExist(Channel const * Channel, std::string SomeModes) const {
-    if (Channel != _Channel) {
+    if (Channel not_eq _Channel) {
         throw (std::runtime_error("You cannot peek or change modes of " +
             Channel->getChannelName() + " from " + _Channel->getChannelName()));
     }
@@ -19,7 +19,7 @@ bool Modes::getModeIsExist(Channel const * Channel, std::string SomeModes) const
 }
 
 bool Modes::getModeIsExist(Channel const * Channel, char mode) const {
-    if (Channel != _Channel) {
+    if (Channel not_eq _Channel) {
         throw (std::runtime_error("You cannot peek or change modes of " +
             Channel->getChannelName() + " from " + _Channel->getChannelName()));
     }
@@ -27,7 +27,7 @@ bool Modes::getModeIsExist(Channel const * Channel, char mode) const {
 }
 
 void Modes::setMode(Channel const * Channel, char mode) {
-    if (Channel != _Channel) {
+    if (Channel not_eq _Channel) {
         throw (std::runtime_error("You cannot peek or change modes of " +
             Channel->getChannelName() + " from " + _Channel->getChannelName()));
     }
@@ -35,7 +35,7 @@ void Modes::setMode(Channel const * Channel, char mode) {
 }
 
 void Modes::unsetMode(Channel const * Channel, char mode) {
-    if (Channel != _Channel) {
+    if (Channel not_eq _Channel) {
         throw (std::runtime_error("You cannot peek or change modes of " +
             Channel->getChannelName() + " from " + _Channel->getChannelName()));
     }
@@ -44,7 +44,7 @@ void Modes::unsetMode(Channel const * Channel, char mode) {
 
 bool Modes::getModeIsExist(Client const * Client, std::string SomeModes) const {
     clients_modes::const_iterator Modes = _ClientsModes.find(Client);
-    if (Modes != _ClientsModes.end()) {
+    if (Modes not_eq _ClientsModes.end()) {
         for (size_t i = 0; i < SomeModes.size(); ++i) {
             if (Modes->second->find(SomeModes[i]) == Modes->second->end()) {
                 return false;
@@ -58,8 +58,8 @@ bool Modes::getModeIsExist(Client const * Client, std::string SomeModes) const {
 
 bool Modes::getModeIsExist(Client const * Client, char mode) const {
     clients_modes::const_iterator Modes = _ClientsModes.find(Client);
-    if (Modes != _ClientsModes.end()) {
-        return Modes->second->find(mode) != Modes->second->end();
+    if (Modes not_eq _ClientsModes.end()) {
+        return Modes->second->find(mode) not_eq Modes->second->end();
     }
     return false;
 }
@@ -79,14 +79,14 @@ void Modes::setMode(Client const * Client, char mode) {
 
 void Modes::unsetMode(Client const * Client, char mode) {
     clients_modes::iterator Modes = _ClientsModes.find(Client);
-    if (Modes != _ClientsModes.end()) {
+    if (Modes not_eq _ClientsModes.end()) {
         Modes->second->erase(mode);
     }
 }
 
 void Modes::eraseClientFromModes(Client const * Client) {
     clients_modes::iterator ToBeErasedFromModes = _ClientsModes.find(Client);
-    if (ToBeErasedFromModes != _ClientsModes.end()) {
+    if (ToBeErasedFromModes not_eq _ClientsModes.end()) {
         delete ToBeErasedFromModes->second;
         _ClientsModes.erase(ToBeErasedFromModes);
     }

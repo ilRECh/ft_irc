@@ -50,7 +50,7 @@ public:
 	Client(int const Fd, std::string HostName);
 	~Client() {}
 	
-	bool operator!=(const Client& that) const;
+	bool operatornot_eq(const Client& that) const;
 	bool operator==(const Client& that) const;
 
 	int const _Fd;

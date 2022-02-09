@@ -10,7 +10,7 @@ public:
     TOPIC(Server &Server) : ACommand("TOPIC", Server) {}
     virtual ~TOPIC() {}
     virtual int run(){
-        if (_Arguments.empty() or (_Arguments[0][0] != '#')) {
+        if (_Arguments.empty() or (_Arguments[0][0] not_eq '#')) {
             return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
         }
         std::string ChannelName = _Arguments[0];
@@ -21,7 +21,7 @@ public:
             return _Initiator->updateReplyMessage(ERR_NOSUCHCHANNEL(ChannelName));
         }
         std::vector<std::string> Topic = ft::split(_Argument, ":");
-        if (Topic.size() != 2) {
+        if (Topic.size() not_eq 2) {
             if (FoundChannel->_Topic.empty()) {
                 return _Initiator->updateReplyMessage(RPL_NOTOPIC(ChannelName));
             }

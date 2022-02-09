@@ -27,7 +27,7 @@ public:
         {
             endChan = channels[i].end();
             beginChan = channels[i].begin();
-            for(;beginChan != endChan; ++beginChan)
+            for(;beginChan not_eq endChan; ++beginChan)
             {
                 if ((*beginChan)->getModeIsExist(*beginChan, 's'))
                     continue ;

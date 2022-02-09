@@ -7,7 +7,7 @@ void usage() {
 
 int main(int argc, char **argv) {
 #ifndef GODMODE
-	if (argc != 3) {
+	if (argc not_eq 3) {
 		usage();
 		return 1;
 	}

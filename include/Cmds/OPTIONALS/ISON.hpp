@@ -14,11 +14,11 @@ public:
             return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
         }
         std::string Reply = "Server 303 " + _Initiator->_NickName + " :";
-        for (std::vector<std::string>::iterator i = _Arguments.begin(); i != _Arguments.end(); ++i) {
+        for (std::vector<std::string>::iterator i = _Arguments.begin(); i not_eq _Arguments.end(); ++i) {
             Client *FoundUser = _Server.getUserByNickName(*i);
-            if (FoundUser != NULL) {
+            if (FoundUser not_eq NULL) {
                 Reply += FoundUser->_NickName;
-                if (i + 1 != _Arguments.end()) {
+                if (i + 1 not_eq _Arguments.end()) {
                     Reply += " ";
                 }
             }

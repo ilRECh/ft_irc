@@ -89,7 +89,7 @@ private:
         return 0;
     }
     int procClient() {
-        if (_Initiator->_NickName != _Arguments[0])
+        if (_Initiator->_NickName not_eq _Arguments[0])
             return _Initiator->updateReplyMessage(ERR_USERSDONTMATCH);
 //        if (_Arguments.size() == 1)
 //            return _Initiator->updateReplyMessage(RPL_UMODEIS("todo")); //todo:
@@ -120,7 +120,7 @@ public:
         if (_Arguments.empty()) {
             return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
         }
-        if (not _Arguments[1].empty() && (_Arguments[1][0] != '-' || _Arguments[1][0] != '+'))
+        if (not _Arguments[1].empty() && (_Arguments[1][0] not_eq '-' || _Arguments[1][0] not_eq '+'))
             return _Initiator->updateReplyMessage(ERR_UMODEUNKNOWNFLAG);
         if (_Arguments[0][0] == '#' || _Arguments[0][0] == '&')
             procChannel();

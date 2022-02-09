@@ -17,7 +17,6 @@ public:
 		ft::deleteSpaces(_Arguments[1], SPACE_SYMBOLS);
 		Client * client = _Server.getUserByNickName(_Arguments[0]);
 		Channel * channel = _Server.getChannelByChannelName(_Arguments[1]);
-
 		if (!client)
 			return _Initiator->updateReplyMessage(ERR_NOSUCHNICK(_Arguments[0]));
 		if (!channel)

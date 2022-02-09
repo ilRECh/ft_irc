@@ -24,18 +24,18 @@ private:
 			_Initiator->updateReplyMessage(RPL_ENDOFNAMES(""));
 			return 1;
 		}
-		while (begin_chan_list != end_chan_list)
+		while (begin_chan_list not_eq end_chan_list)
 		{
 			end_chan = begin_chan_list->end();
 			begin_chan = begin_chan_list->begin();
-			while (begin_chan != end_chan)
+			while (begin_chan not_eq end_chan)
 			{
 				if (not (*begin_chan)->getModeIsExist(*begin_chan, 'p') 
 					and not (*begin_chan)->getModeIsExist(*begin_chan, 's'))
 				{
 					end_client = (*begin_chan)->_Clients.end();
 					begin_client = (*begin_chan)->_Clients.begin();
-					if (begin_client != end_client)
+					if (begin_client not_eq end_client)
 					{
 						LastChannel = (*begin_chan)->_ChannelName;
 						result << RPL_NAMREPLY((*begin_chan)->_ChannelName) << " :";
@@ -44,7 +44,7 @@ private:
 							result << ((*begin_chan)->getModeIsExist((*begin_client), 'o') ? "@" : "");
 							result << (*begin_client)->_NickName;
 							++begin_client;
-							if (begin_client != end_client)
+							if (begin_client not_eq end_client)
 								result << " ";
 							else
 								break ;

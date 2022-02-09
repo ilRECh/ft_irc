@@ -14,7 +14,7 @@ public:
             return _Initiator->updateReplyMessage(ERR_ALREADYREGISTRED);
         } else if (not _Argument.empty()) {
             size_t scFound = _Argument.find(':');
-            if (scFound != _Argument.npos and scFound > 0 and _Argument[scFound + 1] != '\0') {
+            if (scFound not_eq _Argument.npos and scFound > 0 and _Argument[scFound + 1] not_eq '\0') {
                 std::string left = _Argument.substr(0, scFound);
                 std::string right = _Argument.substr(scFound + 1);
                 std::vector<std::string> NewArguments = ft::split(left, " ");
@@ -33,9 +33,9 @@ public:
         std::string UserName = _Arguments[0];
         if(UserName == "*") {
             UserName = "~" + _Initiator->_NickName;
-        } else if (UserName.find('*') != UserName.npos) {
+        } else if (UserName.find('*') not_eq UserName.npos) {
             std::string RemoveAsterisks(UserName);
-            while (RemoveAsterisks.find('*') != RemoveAsterisks.npos) {
+            while (RemoveAsterisks.find('*') not_eq RemoveAsterisks.npos) {
                 RemoveAsterisks.erase(RemoveAsterisks.find('*'));
             }
             UserName = "~" + RemoveAsterisks;

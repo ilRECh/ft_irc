@@ -12,8 +12,8 @@ bool Client::operator==(const Client& that) const {
 	return _UserName == that._UserName;
 }
 
-bool Client::operator!=(const Client& that) const {
-	return _UserName != that._UserName;
+bool Client::operatornot_eq(const Client& that) const {
+	return _UserName not_eq that._UserName;
 }
 
 bool Client::unregisteredShouldDie() const {
@@ -52,7 +52,7 @@ TimeStamp const & Client::getLastActivity() const{
 }
 
 bool Client::isOnChannel(Channel * channel){
-	return _Channels.find(channel) != _Channels.end();
+	return _Channels.find(channel) not_eq _Channels.end();
 }
 
 bool Client::updateReplyMessage(std::string const & Msg, std::string const & From) {

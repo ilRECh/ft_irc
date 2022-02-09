@@ -22,7 +22,7 @@ private:
 		uint		countAlpha = 0;
 
 		for(size_t i = 0; i < _Arguments[0].size(); ++i)
-			_Arguments[0][i] != '*' && ++countAlpha;
+			_Arguments[0][i] not_eq '*' && ++countAlpha;
 		return countAlpha >= minAlpha;
 	}
 
@@ -38,7 +38,7 @@ private:
 		std::set<std::pair< Channel *, Client *> >::iterator finish = usersToShow.end();
 
 		std::string channelName;
-		for(;start != finish; ++start)
+		for(;start not_eq finish; ++start)
 		{
 			channelName = "*";
 			std::string serverName = _Server._Name;
@@ -83,7 +83,7 @@ public:
 		if (_Arguments.empty() || !isRespondRequireTreeAlpha())
 		{
 			clients = _Arguments.empty() ? _Server.getClientsByName("*") : _Server.getClientsByName(_Arguments[0]);
-			for (std::set<Client *>::iterator i = clients.begin(); i != clients.end(); ++i){
+			for (std::set<Client *>::iterator i = clients.begin(); i not_eq clients.end(); ++i){
 				if (isAcceptToShow(*i)){
 					user_pair_el.first = NULL;
 					user_pair_el.second = *i;
@@ -98,7 +98,7 @@ public:
 				ft::deleteSpaces(_Arguments[i], SPACE_SYMBOLS);
 				if (_Arguments[i].empty())
 					continue ;
-				if (_Arguments[i].find_first_of(std::string("#&")) != _Arguments[i].npos)
+				if (_Arguments[i].find_first_of(std::string("#&")) not_eq _Arguments[i].npos)
 				{
 					std::string nameChanNoSharp = _Arguments[i];
 					ft::deleteSpaces(nameChanNoSharp, std::string() + SPACE_SYMBOLS);
@@ -111,7 +111,7 @@ public:
 					clients = chan->_Clients;
 					begin_client = clients.begin();
 					end_client = clients.end();
-					for(;begin_client != end_client; ++begin_client)
+					for(;begin_client not_eq end_client; ++begin_client)
 					{
 						user_pair_el.first = chan;
 						user_pair_el.second = *begin_client;
@@ -123,7 +123,7 @@ public:
 					clients = _Server.getClientsByName(_Arguments[i]);
 					begin_client = clients.begin();
 					end_client = clients.end();
-					for(;begin_client != end_client; ++begin_client)
+					for(;begin_client not_eq end_client; ++begin_client)
 					{
 						user_pair_el.first = NULL;
 						user_pair_el.second = *begin_client;

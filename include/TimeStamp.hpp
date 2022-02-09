@@ -64,7 +64,7 @@ private:
 public:
 	TimeStamp		&operator=(TimeStamp const & oth);
 	bool			operator==(TimeStamp const & oth) const;
-	bool			operator!=(TimeStamp const & oth) const;
+	bool			operatornot_eq(TimeStamp const & oth) const;
 	bool			operator>(TimeStamp const & oth) const;
 	bool			operator>=(TimeStamp const & oth) const;
 	bool			operator<(TimeStamp const & oth) const;

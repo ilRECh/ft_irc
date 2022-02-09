@@ -110,20 +110,20 @@ void Server::buryMe(std::string const & DyingMessage) {
 Server::~Server(void)
 {
 	for (std::set<Client *>::iterator it = _Clients.begin();
-		it != _Clients.end(); ++it) {
+		it not_eq _Clients.end(); ++it) {
 		std::string Reply = "QUIT :" + _DyingMessage;
-		// send((*it)->_Fd, Reply.c_str(), Reply.length(), 0);
+		send((*it)->_Fd, Reply.c_str(), Reply.length(), MSG_NOSIGNAL);
 		close((*it)->_Fd);
 		delete *it;
 	}
 	freeaddrinfo(_ServInfo);
 	close(_Sockfd);
 	for (std::vector<ACommand *>::iterator it = _Commands.begin();
-		it != _Commands.end(); ++it) {
+		it not_eq _Commands.end(); ++it) {
 		delete *it;
 	}
 	for (std::set<Channel *>::iterator it = _Channels.begin();
-		it != _Channels.end(); ++it) {
+		it not_eq _Channels.end(); ++it) {
 		delete *it;
 	}
 }
@@ -173,7 +173,7 @@ void Server::readerClients()
 		throw std::runtime_error(std::string("Error: Select") + strerror(errno));
 	}
 	for (std::set<Client *>::iterator Client = _Clients.begin();
-		 Client != _Clients.end(); ++Client)
+		 Client not_eq _Clients.end(); ++Client)
 	{
 		if (FD_ISSET((*Client)->_Fd, &fdsCopy) > 0)
 		{
@@ -199,7 +199,7 @@ void Server::readerClients()
 
 void Server::processCmd(Client *Client)
 {
-	if (Client->getIncomingBuffer().end()[-1] != '\n') {
+	if (Client->getIncomingBuffer().end()[-1] not_eq '\n') {
 		return ;
 	}
 	if (Client->getIncomingBuffer().find_first_not_of("\r\n") == Client->getIncomingBuffer().npos) {
@@ -209,7 +209,7 @@ void Server::processCmd(Client *Client)
 	std::vector<std::string> Cmds = ft::splitByCmds(Client->getIncomingBuffer(), "\r\n");
 	Client->getIncomingBuffer().clear();
 	for (std::vector<std::string>::iterator it = Cmds.begin();
-			it != Cmds.end(); ++it) {
+			it not_eq Cmds.end(); ++it) {
 		std::pair<std::string, std::string> Cmd = parseCmd(*it);
 		proceedCmd(Cmd, Client);
 	}
@@ -218,7 +218,7 @@ void Server::processCmd(Client *Client)
 void Server::proceedCmd(std::pair<std::string, std::string> Cmd, Client *_Initiator) {
     try {
         for (std::vector<ACommand *>::iterator command = _Commands.begin();
-            command != _Commands.end(); ++command) {
+            command not_eq _Commands.end(); ++command) {
             if (Cmd.first == (*command)->_Name) {
                     (*command)->setArgument(Cmd.second);
                     (*command)->setInitiator(_Initiator);
@@ -239,15 +239,15 @@ std::pair<std::string, std::string> Server::parseCmd(std::string &Cmd)
 	}
 	char const *Empty = "\010\011\012\013\014\015 ";
 	size_t pos_WordStart = Cmd.find_first_not_of(Empty);
-	size_t pos_WordEnd = (pos_WordStart != Cmd.npos) ? Cmd.find_first_of(Empty, pos_WordStart) : Cmd.npos;
+	size_t pos_WordEnd = (pos_WordStart not_eq Cmd.npos) ? Cmd.find_first_of(Empty, pos_WordStart) : Cmd.npos;
 	std::string pair_First;
-	if (pos_WordStart != Cmd.npos && pos_WordEnd != Cmd.npos) {
+	if (pos_WordStart not_eq Cmd.npos && pos_WordEnd not_eq Cmd.npos) {
 		pair_First = Cmd.substr(pos_WordStart, pos_WordEnd - pos_WordStart);
 	} else {
 		pair_First = Cmd;
 	}
 	std::string pair_Second;
-	if (pos_WordEnd != Cmd.npos) {
+	if (pos_WordEnd not_eq Cmd.npos) {
 		pair_Second = Cmd.substr(pos_WordEnd);
 	}
 	std::pair<std::string, std::string> Value(pair_First, pair_Second);
@@ -255,7 +255,7 @@ std::pair<std::string, std::string> Server::parseCmd(std::string &Cmd)
 }
 
 void Server::replyToClients() {
-	for (std::set<Client *>::iterator User = _Clients.begin(); User != _Clients.end(); ++User) {
+	for (std::set<Client *>::iterator User = _Clients.begin(); User not_eq _Clients.end(); ++User) {
 		if ((*User)->ServerNeedToPING()) {
 			PING ping(*this);
 			ping.setTarget(*User);
@@ -266,8 +266,8 @@ void Server::replyToClients() {
 			QUIT q(*this);
 			q.setQuitInitiator(*User);
 			if ((*User)->inactiveShouldDie()) {
-				q.isNeedToBeSentToInitiator();
-				q.setArgument(":Smells Like He's Spirit. B-gone, ghosts.");
+				q.isNeedToBeSentToInitiatorOnly();
+				q.setArgument(":Smells Like He's Spirit. B-gone, ghost.");
 				q.run();
 			} else if ((*User)->unregisteredShouldDie()) {
 				q.isNeedToBeSentToInitiatorOnly();
@@ -280,7 +280,7 @@ void Server::replyToClients() {
 			std::cout << "+=======================out=========================+" << std::endl;
 			std::cout << ReplyMessage;
 			std::cout << "+===================================================+" << std::endl;
-			send((*User)->_Fd, ReplyMessage.c_str(), ReplyMessage.length(), 0);
+			send((*User)->_Fd, ReplyMessage.c_str(), ReplyMessage.length(), MSG_NOSIGNAL);
 		}
 	}
 }
@@ -316,7 +316,7 @@ Client *Server::getUserByNickName(std::string const & NickName){
 	first = _Clients.begin();
 	last = _Clients.end();
 
-	for (;first != last; ++first)
+	for (;first not_eq last; ++first)
 		if (ft::tolowerString((*first)->getNickName()) == ft::tolowerString(NickName))
 			return *first;
 	return NULL;
@@ -330,15 +330,15 @@ std::set<Client *> Server::getClientsByName(std::string Name){
 
 	for(uint i = Name.size(); true;)
 	{
-		if (Name[--i] != '*')
+		if (Name[--i] not_eq '*')
 			break;
 		if (!i)
 			return _Clients;
 	}
 
-	if (Name.find('*') != std::string::npos)
+	if (Name.find('*') not_eq std::string::npos)
 	{
-		for(;istart != ifinish; ++istart)
+		for(;istart not_eq ifinish; ++istart)
 		{
 			if (ft::wildcard(ft::tolowerString(Name), ft::tolowerString((*istart)->_NickName)))
 				result.insert(*istart);
@@ -346,7 +346,7 @@ std::set<Client *> Server::getClientsByName(std::string Name){
 	}
 	else
 	{
-		for(;istart != ifinish; ++istart)
+		for(;istart not_eq ifinish; ++istart)
 			if (ft::tolowerString((*istart)->getNickName()) == ft::tolowerString(Name))
 				result.insert(*istart);
 	}
@@ -360,7 +360,7 @@ std::set<Channel *> Server::getChannelsByChannelName(std::string ChannelName, bo
 
 	for(uint i = ChannelName.size(); enableWildcard;)
 	{
-		if (ChannelName[--i] != '*')
+		if (ChannelName[--i] not_eq '*')
 			break;
 		if (!i)
 			return _Channels;
@@ -368,13 +368,13 @@ std::set<Channel *> Server::getChannelsByChannelName(std::string ChannelName, bo
 
 	if (ChannelName.find('*') == std::string::npos && enableWildcard)
 	{
-		for(;istart != ifinish; ++istart)
+		for(;istart not_eq ifinish; ++istart)
 			if (ft::wildcard(ChannelName, (*istart)->getChannelName()))
 				result.insert(*istart);
 	}
 	else
 	{
-		for(;istart != ifinish; ++istart)
+		for(;istart not_eq ifinish; ++istart)
 			if ((*istart)->getChannelName() == ChannelName)
 				result.insert(*istart);
 	}
@@ -386,7 +386,7 @@ Channel *Server::getChannelByChannelName(std::string const & NameChannel){
 
 	first = _Channels.begin();
 	last = _Channels.end();
-	for(;first != last; ++first)
+	for(;first not_eq last; ++first)
 		if (ft::tolowerString((*first)->getChannelName()) == ft::tolowerString(NameChannel))
 			return *first;
 	return NULL;
@@ -399,7 +399,7 @@ OperatorStatus Server::canBeAutorized(
 	operators_s *oper = std::find(_Operators, _Operators_end, Name);
 	if (oper == _Operators_end) {
 		return NOOPERHOST;
-	} else if (oper->Password != Password) {
+	} else if (oper->Password not_eq Password) {
 		return PASSWDMISMATCH;
 	}
 	return YOUREOPER;

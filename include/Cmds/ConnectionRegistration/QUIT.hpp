@@ -6,38 +6,29 @@ private:
     QUIT();
     QUIT(QUIT const &that);
     QUIT& operator=(QUIT const &that);
-    bool _ToInitiator;
     bool _ToInitiatorOnly;
 public:
     QUIT(Server &Server)
         :   ACommand("QUIT", Server),
-            _ToInitiator(false),
             _ToInitiatorOnly(false) {}
     virtual ~QUIT() {}
     virtual int run(){
-        if (_Argument.find(':') != _Argument.npos and _Argument[_Argument.find(':') + 1]) {
+        if (_Argument.find(':') not_eq _Argument.npos and _Argument[_Argument.find(':') + 1]) {
             _Argument = _Argument.substr(_Argument.find(':') + 1);
         } else {
             _Argument = _Initiator->_NickName;
         }
         if (not _ToInitiatorOnly){
-            if (_ToInitiator) {
-                _Initiator->updateReplyMessage(_Initiator->getFull() + " QUIT " + _Initiator->_NickName + " :" + _Argument);
-            }
             for (std::set<Channel *>::iterator EachChannel = _Initiator->_Channels.begin();
-                EachChannel != _Initiator->_Channels.end(); ++EachChannel) {
-                (*EachChannel)->replyToAllMembers(_Initiator->getFull() + " QUIT " + _Initiator->_NickName + " :" + _Argument, _Initiator);
+                EachChannel not_eq _Initiator->_Channels.end(); ++EachChannel) {
+                (*EachChannel)->replyToAllMembers(" " + _Initiator->getFull() + " QUIT " + _Initiator->_NickName + " :" + _Argument, _Initiator);
             }
         } else {
-            _Initiator->updateReplyMessage(_Initiator->_NickName + " QUIT " + _Initiator->_NickName + " :" + _Argument);
+            _Initiator->updateReplyMessage(" QUIT " + _Initiator->_NickName + " :" + _Argument);
         }
         _Server.pushBackErase(_Initiator);
-        _ToInitiator = false;
         _ToInitiatorOnly = false;
         return 0;
-    }
-    void isNeedToBeSentToInitiator() {
-        _ToInitiator = true;
     }
     void isNeedToBeSentToInitiatorOnly() {
         _ToInitiatorOnly = true;

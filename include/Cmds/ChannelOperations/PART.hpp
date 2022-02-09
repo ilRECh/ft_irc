@@ -15,7 +15,7 @@ public:
         }
         _Arguments = ft::split(_Argument, " ,");
         std::string Reply;
-        for (std::vector<std::string>::iterator i = _Arguments.begin(); i != _Arguments.end(); ++i) {
+        for (std::vector<std::string>::iterator i = _Arguments.begin(); i not_eq _Arguments.end(); ++i) {
             std::string ChannelName(*i);
             Channel *FoundChannel = _Server.getChannelByChannelName(ChannelName);
             if (not FoundChannel) {
@@ -25,7 +25,7 @@ public:
             } else {
                 FoundChannel->removeClient(_Initiator);
             }
-            if (i + 1 != _Arguments.end()) {
+            if (i + 1 not_eq _Arguments.end()) {
                 Reply += "\r\n";
             }
         }

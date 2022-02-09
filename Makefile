@@ -7,12 +7,10 @@ OBJ_DIR		:= $(BUILD)/objects/ircserv
 APP_DIR		:= $(BUILD)/apps
 INC_DIRS	:= $(shell find ./include -type d)
 INCLUDE		:= $(addprefix -I,$(INC_DIRS))
-SRC			:=                      \
-	$(wildcard srcs/*.cpp)
+SRC			:= $(wildcard srcs/*.cpp)
 
 OBJECTS		:= $(SRC:%.cpp=$(OBJ_DIR)/%.o)
-DEPENDENCIES \
-			:= $(OBJECTS:.o=.d)
+DEPENDENCIES := $(OBJECTS:.o=.d)
 
 .PHONY: all build clean fclean debug release info re
 
@@ -63,7 +61,7 @@ BOT_DEPENDENCIES 	:= $(BOT_OBJECTS:.o=.d)
 
 $(BOT_OBJ_DIR)/%.o: %.cpp
 	@mkdir -p $(@D)
-	@$(CXX) $(CXXFLAGS) -c $< -MMD -o $@
+	@$(CXX) $(CXXFLAGS) $(INCLUDE) -c $< -MMD -o $@
 	@echo $(CXX) $(CXXFLAGS) $@
 
 $(APP_DIR)/$(BOT_TARGET): $(BOT_OBJECTS)

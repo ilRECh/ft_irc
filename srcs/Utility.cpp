@@ -10,7 +10,7 @@ std::vector<std::string> ft::split(
     str[tosplit.size()] = '\0';
     std::memmove(str, tosplit.c_str(), tosplit.size());
     tmp = std::strtok(str, delimiters.c_str());
-    while (tmp != NULL) {
+    while (tmp not_eq NULL) {
         ret.push_back(tmp);
         tmp = std::strtok(NULL, delimiters.c_str());
     }
@@ -19,10 +19,10 @@ std::vector<std::string> ft::split(
 }
 
 bool isNick(std::string const & value) {
-    return value.find("NICK") != value.npos;
+    return value.find("NICK") not_eq value.npos;
 }
 bool isUser(std::string const & value) {
-    return value.find("USER") != value.npos;
+    return value.find("USER") not_eq value.npos;
 }
 std::vector<std::string> ft::splitByCmds(
         std::string const& tosplit,
@@ -32,7 +32,7 @@ std::vector<std::string> ft::splitByCmds(
     size_t pos_end = tosplit.find(DelimiterWord, pos_start);
 
     while (true) {
-        if (pos_end != tosplit.npos) {
+        if (pos_end not_eq tosplit.npos) {
             ret.push_back(tosplit.substr(pos_start, pos_end - pos_start));
         } else {
             if (tosplit[pos_start]) {
@@ -49,11 +49,11 @@ std::vector<std::string> ft::splitByCmds(
 void ft::deleteSpaces(std::string &string, std::string const &symbolsToDelete)
 {
     size_t strBegin = string.find_first_not_of(symbolsToDelete);
-    if (strBegin != string.npos) {
+    if (strBegin not_eq string.npos) {
         string.erase(0, strBegin);
     }
     size_t strEnd = string.find_last_not_of(symbolsToDelete);
-    if (strEnd != string.npos and strEnd + 1 < string.length()) {
+    if (strEnd not_eq string.npos and strEnd + 1 < string.length()) {
         string.erase(strEnd+1, string.length() - strEnd);
     } 
 }
@@ -65,7 +65,7 @@ std::string ft::SplitOneTimes(std::string &str, std::string delimiter)
 
     if (delimiter.empty())
         return (NULL);
-    while ((pos = str.find(delimiter)) != std::string::npos) {
+    while ((pos = str.find(delimiter)) not_eq std::string::npos) {
         token = str.substr(0, pos);
         str.erase(0, pos + delimiter.size());
         if (!token.empty())
@@ -94,7 +94,7 @@ bool ft::wildcard(std::string wExpression, std::string toCompare)
 		splitedByStar.push_back(tmp[i]);
 		splitedByStar.push_back("*");
 	}
-	if (wExpression[wExpression.size() -1] != '*')
+	if (wExpression[wExpression.size() -1] not_eq '*')
 		splitedByStar.pop_back();
 
 	for (size_type i = 0; i < splitedByStar.size(); i++)
@@ -104,12 +104,12 @@ bool ft::wildcard(std::string wExpression, std::string toCompare)
 		pos2 = std::string(toCompare.begin() + pos1 + lenWord, toCompare.end()).find(splitedByStar[i]);
 		//pos2 = find_word(splitedByStar[i], );
 		pos1 = pos2 + pos1 + lenWord;
-		if ((pos2 == std::string::npos) || (pos2 && (!i || (i && splitedByStar[i - 1][0] != '*'))))
+		if ((pos2 == std::string::npos) || (pos2 && (!i || (i && splitedByStar[i - 1][0] not_eq '*'))))
 			return false;
 		lenWord = splitedByStar[i].size();
 		if (i + 1 == splitedByStar.size())
-			if (wExpression[wExpression.size() - 1] != '*')
-				if (toCompare.size() != pos1 + lenWord)
+			if (wExpression[wExpression.size() - 1] not_eq '*')
+				if (toCompare.size() not_eq pos1 + lenWord)
 					--i;
 	}
 	return true;

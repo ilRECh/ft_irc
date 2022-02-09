@@ -27,7 +27,7 @@ ClientJoined:
 			_Initiator->_lastJoin = chan;
 			chan->replyToAllMembers(_Initiator->_NickName + "!" + _Initiator->_UserName + "@" + _Initiator->_HostName + " JOIN :" + chan->getChannelName());
 			std::string AllNicks("");
-			for (std::set<Client *>::iterator EachNick = chan->_Clients.begin(); EachNick != chan->_Clients.end(); ++EachNick) {
+			for (std::set<Client *>::iterator EachNick = chan->_Clients.begin(); EachNick not_eq chan->_Clients.end(); ++EachNick) {
 				AllNicks += (chan->getModeIsExist(*EachNick, 'o') ? "@" : "") + (*EachNick)->_NickName + ' ';
 			}
 			_Initiator->updateReplyMessage(RPL_NAMREPLY(chan->getChannelName()) + " :" + AllNicks);
@@ -38,7 +38,7 @@ ClientJoined:
 			_ChannelIsFull.push_back(nameChannel);
 		} else if (chan->getModeIsExist(chan, 'i')) {
 			_InviteOnlyChannel.push_back(nameChannel);
-		} else if (not key.empty() and chan->_Key != key) {
+		} else if (not key.empty() and chan->_Key not_eq key) {
 			_BadChannelKey.push_back(nameChannel);
 		} else if (chan->isBanned(_Initiator->_NickName)) {
 			_BannedFromChannel.push_back(nameChannel);
@@ -61,19 +61,19 @@ public:
 		}
 		std::vector<std::string>::iterator Name = Names.begin();
 		std::vector<std::string>::iterator Key = Keys.begin();
-		for(; Name != Names.end(); ++Name) {
-			if ((*Name)[0] != '#') {
+		for(; Name not_eq Names.end(); ++Name) {
+			if ((*Name)[0] not_eq '#') {
 				_BadChannelMask.push_back(*Name);
 				continue ;
 			} else if ((*Name).length() > 200 or
-				Name->find_first_of("\007 ,") != Name->npos) {
+				Name->find_first_of("\007 ,") not_eq Name->npos) {
 				_NoSuchChannel.push_back(*Name);
 				continue ;
 			}
-			_NamesWithKeys.push_back(std::pair<std::string, std::string>(*Name, Key != Keys.end() ? *Key++ : ""));
+			_NamesWithKeys.push_back(std::pair<std::string, std::string>(*Name, Key not_eq Keys.end() ? *Key++ : ""));
 		}
 		for (std::list< std::pair<std::string, std::string> >::iterator i = _NamesWithKeys.begin();
-			i != _NamesWithKeys.end(); ++i) {
+			i not_eq _NamesWithKeys.end(); ++i) {
 			if (_Initiator->_Channels.size() < MAX_NUMBER_OF_CHANNELS) {
 				join(i->first, i->second);
 			} else {
@@ -81,37 +81,37 @@ public:
 			}
 		}
 		std::list<std::string>::iterator ErrorNames = _NoSuchChannel.begin();
-		while (ErrorNames != _NoSuchChannel.end()) {
+		while (ErrorNames not_eq _NoSuchChannel.end()) {
 			_Initiator->updateReplyMessage(ERR_NOSUCHCHANNEL(*ErrorNames));
 			++ErrorNames;
 		}
 		ErrorNames = _BadChannelMask.begin();
-		while (ErrorNames != _BadChannelMask.end()) {
+		while (ErrorNames not_eq _BadChannelMask.end()) {
 			_Initiator->updateReplyMessage(ERR_BADCHANMASK(*ErrorNames));
 			++ErrorNames;
 		}
 		ErrorNames = _BadChannelKey.begin();
-		while (ErrorNames != _BadChannelKey.end()) {
+		while (ErrorNames not_eq _BadChannelKey.end()) {
 			_Initiator->updateReplyMessage(ERR_BADCHANNELKEY(*ErrorNames));
 			++ErrorNames;
 		}
 		ErrorNames = _BannedFromChannel.begin();
-		while (ErrorNames != _BannedFromChannel.end()) {
+		while (ErrorNames not_eq _BannedFromChannel.end()) {
 			_Initiator->updateReplyMessage(ERR_BANNEDFROMCHAN(*ErrorNames));
 			++ErrorNames;
 		}
 		ErrorNames = _InviteOnlyChannel.begin();
-		while (ErrorNames != _InviteOnlyChannel.end()) {
+		while (ErrorNames not_eq _InviteOnlyChannel.end()) {
 			_Initiator->updateReplyMessage(ERR_INVITEONLYCHAN(*ErrorNames));
 			++ErrorNames;
 		}
 		ErrorNames = _ChannelIsFull.begin();
-		while (ErrorNames != _ChannelIsFull.end()) {
+		while (ErrorNames not_eq _ChannelIsFull.end()) {
 			_Initiator->updateReplyMessage(ERR_CHANNELISFULL(*ErrorNames));
 			++ErrorNames;
 		}
 		ErrorNames = _TooManyChannels.begin();
-		while (ErrorNames != _TooManyChannels.end()) {
+		while (ErrorNames not_eq _TooManyChannels.end()) {
 			_Initiator->updateReplyMessage(ERR_TOOMANYCHANNELS(*ErrorNames));
 			++ErrorNames;
 		}

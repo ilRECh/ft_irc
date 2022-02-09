@@ -28,7 +28,7 @@ public:
         }
         Client *last_target = NULL;
         for (std::set<std::string>::iterator it = recipients.begin();
-             it != recipients.end(); ++it)
+             it not_eq recipients.end(); ++it)
         {
             last_target = _Server.getUserByNickName(*it);
             if (last_target == NULL){

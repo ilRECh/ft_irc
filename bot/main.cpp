@@ -5,7 +5,7 @@ void usage() {
 }
 
 int main(int argc, char **argv) {
-    if (argc != 4) {
+    if (argc not_eq 4) {
         usage();
         return 1;
     }

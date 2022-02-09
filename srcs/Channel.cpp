@@ -22,7 +22,7 @@ std::string const &Channel::getTopic() const{
 }
 
 bool Channel::isOnChannel(Client *whom) const {
-	return _Clients.find(whom) != _Clients.end();
+	return _Clients.find(whom) not_eq _Clients.end();
 }
 
 std::set<Client *>::size_type Channel::getCountClients(){
@@ -36,7 +36,7 @@ void Channel::removeClient(Client *whom) {
 		return ;
 	}
 	std::set<Client *>::iterator i = find(_Clients.begin(), _Clients.end(), whom);
-	if (i != _Clients.end()) {
+	if (i not_eq _Clients.end()) {
 		eraseClientFromModes(*i);
 		_Clients.erase(i);
 	}
@@ -49,14 +49,14 @@ void Channel::removeClient(Client *whom) {
 
 void Channel::replyToAllMembers(std::string msg, Client * sender) {
 	std::string Reply = msg;//_ChannelName +  " :" + msg;
-	if (sender != NULL) {
-		for (std::set<Client *>::iterator i = _Clients.begin(); i != _Clients.end(); ++i) {
-			if (*i != sender) {
+	if (sender not_eq NULL) {
+		for (std::set<Client *>::iterator i = _Clients.begin(); i not_eq _Clients.end(); ++i) {
+			if (*i not_eq sender) {
 				(*i)->updateReplyMessage(Reply, "");
 			}
 		}
 	} else {
-		for (std::set<Client *>::iterator i = _Clients.begin(); i != _Clients.end(); ++i) {
+		for (std::set<Client *>::iterator i = _Clients.begin(); i not_eq _Clients.end(); ++i) {
 			(*i)->updateReplyMessage(Reply, "");
 		}
 	}
@@ -70,7 +70,7 @@ void Channel::removeFromBan(std::string const &BanMask)
 {
 SearchAgain:
 	std::set<std::string>::iterator EachBanMaskInBanList = _BanList.begin();
-	while (EachBanMaskInBanList != _BanList.end()) {
+	while (EachBanMaskInBanList not_eq _BanList.end()) {
 		if (ft::wildcard(*EachBanMaskInBanList, BanMask)) {
 			_BanList.erase(EachBanMaskInBanList);
 			goto SearchAgain;
@@ -81,7 +81,7 @@ SearchAgain:
 bool Channel::isBanned(std::string const &NickName)
 {
 	for (std::set<std::string>::iterator EachBanMask = _BanList.begin();
-		EachBanMask != _BanList.end();
+		EachBanMask not_eq _BanList.end();
 		++EachBanMask) {
 		if (ft::wildcard(*EachBanMask, NickName)) {
 			return true;
@@ -95,7 +95,7 @@ Client * Channel::getClient(std::string nickName){
 	std::set<Client *>::iterator endClient = _Clients.end();
 
 	nickName = ft::tolowerString(nickName);
-	while(beginClient != endClient)
+	while(beginClient not_eq endClient)
 	{
 		if (nickName == ft::tolowerString((*beginClient)->_NickName))
 			return *beginClient;
