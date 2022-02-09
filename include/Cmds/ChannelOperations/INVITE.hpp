@@ -28,10 +28,9 @@ public:
 		if (!channel->getModeIsExist(_Initiator, 'o'))
 			return _Initiator->updateReplyMessage(ERR_CHANOPRIVSNEEDED(channel->getChannelName()));
 		_Initiator->updateReplyMessage(RPL_INVITING(_Arguments[1], client->_NickName));
-		client->_Channels.insert(channel);
-		channel->_Clients.insert(client);
-		client->updateReplyMessage(RPL_AWAY(channel->getTopic(), client->_NickName));
-		channel->replyToAllMembers(client->_NickName + " invited, by " + _Initiator->_NickName);
+		client->updateReplyMessage(" INVITE " + client->_NickName + " :" + channel->getChannelName(), _Initiator->getFull());
+        if (channel->getModeIsExist(channel, 'i'))
+		    channel->_InviteClients.insert(client);
 		return 0;
 	}
 };/*м

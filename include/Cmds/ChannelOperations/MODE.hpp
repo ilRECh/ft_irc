@@ -6,33 +6,99 @@ private:
     MODE();
     MODE(MODE const &that);
     MODE& operator=(MODE const &that);
-    int procChannel(){
+    int channelModeIs(Channel *targetChannel) {
+        std::string rplModes = "+";
+        std::string rplArgs;
+        std::string modes = "psitnm";
+        for (int i = 0; modes[i] ; ++i) {
+            if (targetChannel->getModeIsExist(targetChannel, modes[i]))
+                rplModes += modes[i];
+        }
+        if (targetChannel->getModeIsExist(targetChannel, 'k')){
+            rplModes += "k";
+            rplArgs += " " + targetChannel->_Key;
+        }
+        if (targetChannel->getModeIsExist(targetChannel, 'l')){
+            rplModes += "l";
+            rplArgs += " " + ft::to_string(targetChannel->_maxUserLimit);
+        }
+        _Initiator->updateReplyMessage(RPL_CHANNELMODEIS(_Arguments[0], rplModes, rplArgs));
+        return 0;
+    }
+    int clientModeIS() {
+        std::string rplModes = "+";
+        std::string modes = "iwso";
+        for (int i = 0; modes[i] ; ++i) {
+            if (_Server.getModeIsExist(_Initiator, modes[i]))
+                rplModes += modes[i];
+        }
+        return _Initiator->updateReplyMessage(RPL_UMODEIS(rplModes));
+    }
+    void printBanList(Channel *targetChannel) {
+        for (std::set<std::string>::iterator EachBanMask = targetChannel->_BanList.begin();
+             EachBanMask != targetChannel->_BanList.end();
+             ++EachBanMask) {
+            if (not EachBanMask->empty())
+                _Initiator->updateReplyMessage(RPL_BANLIST(targetChannel->getChannelName(), *EachBanMask));
+        }
+        _Initiator->updateReplyMessage(RPL_ENDOFBANLIST(targetChannel->getChannelName()));
+    }
+    int procChannel() {
+        std::list<std::pair<char, std::string> > modes;
+        std::string rplModes;
+        std::string rplArgs;
+        unsigned long i = 0;
+        unsigned long b = 1;
+        unsigned long j = 2;
+
         Channel *targetChannel = _Server.getChannelByChannelName(_Arguments[0]);
         if (not targetChannel)
             return _Initiator->updateReplyMessage(ERR_NOSUCHCHANNEL(_Arguments[0]));
-        if (not targetChannel->isOnChannel(_Initiator))
-            return _Initiator->updateReplyMessage(ERR_NOTONCHANNEL(_Arguments[0]));
-        if (not targetChannel->getModeIsExist(_Initiator, 'o'))
-            return _Initiator->updateReplyMessage(ERR_CHANOPRIVSNEEDED(_Arguments[0]));
         if (_Arguments.size() == 1)
-            return _Initiator->updateReplyMessage(RPL_CHANNELMODEIS(_Arguments[0], "todo", "todo")); //todo:
-        for (unsigned long i = 1; i < _Arguments[1].size(); ++i) {
+            return channelModeIs(targetChannel);
+        if (_Arguments[1][i] == '+' || _Arguments[1][i] == '-'){
+            rplModes = std::string(1, _Arguments[1][i]);
+            i++;
+        }
+        else
+            rplModes = "+";
+        for (; i < _Arguments[1].size(); ++i){
             switch (_Arguments[1][i]) {
                 case 'o':
-                case 'v':
-                    {
-                        if ((i + 1) > _Arguments.size())
-                            return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-                        Client *targetNick = _Server.getUserByNickName( _Arguments[i + 1]);
-                        if (not targetNick){
-                            _Initiator->updateReplyMessage(ERR_NOSUCHNICK(_Arguments[i + 1]));
-                            continue;
+                case 'v':{
+                    if (j + 1 > _Arguments.size())
+                        return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+                    modes.push_back(std::make_pair(_Arguments[1][i], _Arguments[j++]));
+                }
+                    break;
+                case 'l': {
+                    if (_Arguments[1][0] != '-' && j + 1 > _Arguments.size())
+                        return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+                    if (_Arguments[1][0] != '-')
+                        modes.push_back(std::make_pair(_Arguments[1][i], _Arguments[j++]));
+                    else
+                        modes.push_back(std::make_pair(_Arguments[1][i], ""));
+                }
+                    break;
+                case 'b': {
+                    if (j + 1 > _Arguments.size()){
+                        if (b){
+                            b--;
+                            printBanList(targetChannel);
                         }
-                        if (_Arguments[1][0] == '+')
-                            targetChannel->setMode(targetNick, _Arguments[1][i]);
-                        else
-                            targetChannel->unsetMode(targetNick, _Arguments[1][i]);
+                        continue;
                     }
+                    modes.push_back(std::make_pair(_Arguments[1][i], _Arguments[j++]));
+                }
+                    break;
+                case 'k': {
+                    if (_Arguments[1][0] != '-' && j + 1 > _Arguments.size())
+                        return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
+                    if (_Arguments[1][0] != '-')
+                        modes.push_back(std::make_pair(_Arguments[1][i], _Arguments[j++]));
+                    else
+                        modes.push_back(std::make_pair(_Arguments[1][i], ""));
+                }
                     break;
                 case 'p':
                 case 's':
@@ -40,77 +106,140 @@ private:
                 case 't':
                 case 'n':
                 case 'm':
-                    if (_Arguments[1][0] == '+')
-                        targetChannel->setMode(targetChannel, _Arguments[1][i]);
-                    else
-                        targetChannel->unsetMode(targetChannel, _Arguments[1][i]);
-                    break;
-                case 'l':
-                    if ((i + 1) > _Arguments.size())
-                        return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-                    if (_Arguments[1][0] == '+'){
-                        targetChannel->_maxUserLimit = std::atoi(_Arguments[i + 1].c_str());
-                        targetChannel->setMode(targetChannel, _Arguments[1][i]);
-                    }
-                    else {
-                        targetChannel->_maxUserLimit = 0;
-                        targetChannel->unsetMode(targetChannel, _Arguments[1][i]);
-                    }
-                    break;
-                case 'b': //todo: banlist in chan
-                {
-                    if ((i + 1) > _Arguments.size())
-                        return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-                    
-                    if (_Arguments[1][0] == '+')
-                        ;
-                    else
-                        ;
-                }
-                    break;
-                case 'k':
-                    if ((i + 1) > _Arguments.size())
-                        return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
-                    if (_Arguments[1][0] == '+'){
-                        if (not targetChannel->_Key.empty())
-                            _Initiator->updateReplyMessage(ERR_KEYSET(_Arguments[0]));
-                        targetChannel->_Key = _Arguments[i + 1];
-                        targetChannel->setMode(targetChannel, _Arguments[1][i]);
-                    }
-                    else {
-                        targetChannel->_Key = "";
-                        targetChannel->unsetMode(targetChannel, _Arguments[1][i]);
-                    }
+                    modes.push_back(std::make_pair(_Arguments[1][i], ""));
                     break;
                 default:
                     _Initiator->updateReplyMessage(ERR_UNKNOWNMODE(std::string(1, _Arguments[1][i])));
             }
         }
+        if (modes.empty())
+            return 0;
+        if (not targetChannel->isOnChannel(_Initiator))
+            return _Initiator->updateReplyMessage(ERR_NOTONCHANNEL(_Arguments[0]));
+        if (not targetChannel->getModeIsExist(_Initiator, 'o'))
+            return _Initiator->updateReplyMessage(ERR_CHANOPRIVSNEEDED(_Arguments[0]));
+        std::list<std::pair<char, std::string> >::iterator it = modes.begin();
+        while(it != modes.end()) {
+            switch (it->first) {
+                case 'o':
+                case 'v': {
+                        Client *targetNick = _Server.getUserByNickName(it->second);
+                        if (not targetNick){
+                            _Initiator->updateReplyMessage(ERR_NOSUCHNICK(it->second));
+                            it = modes.erase(it);
+                            continue;
+                        }
+                        if (_Arguments[1][0] != '-')
+                            targetChannel->setMode(targetNick, it->first);
+                        else
+                            targetChannel->unsetMode(targetNick, it->first);
+                    rplModes += it->first;
+                    rplArgs += " " + it->second;
+                }
+                    break;
+                case 'l': {
+                    if (_Arguments[1][0] != '-') {
+                        targetChannel->_maxUserLimit = std::atoi(it->second.c_str());
+                        targetChannel->setMode(targetChannel, it->first);
+                        rplArgs += " " + it->second;
+                    } else {
+                        targetChannel->_maxUserLimit = 0;
+                        targetChannel->unsetMode(targetChannel, it->first);
+                    }
+                    rplModes += it->first;
+                }
+                    break;
+                case 'b': {
+                    for (std::set<std::string>::iterator EachBanMask = targetChannel->_BanList.begin();
+                         EachBanMask != targetChannel->_BanList.end();
+                         ++EachBanMask){
+                        if (it->second == *EachBanMask){
+                            it = modes.erase(it);
+                            continue;
+                        }
+                    }
+                    if (_Arguments[1][0] != '-')
+                        targetChannel->addToBan(it->second);
+                    else
+                        targetChannel->removeFromBan(it->second);
+                    rplModes += it->first;
+                    rplArgs += " " + it->second;
+                }
+                    break;
+                case 'k': {
+                    if (_Arguments[1][0] != '-') {
+                        if (not targetChannel->_Key.empty()){
+                            _Initiator->updateReplyMessage(ERR_KEYSET(_Arguments[0]));
+                            it = modes.erase(it);
+                            continue;
+                        }
+                        targetChannel->_Key = it->second;
+                        targetChannel->setMode(targetChannel, it->first);
+                        rplArgs += " " + it->second;
+                    } else {
+                        targetChannel->_Key = "";
+                        targetChannel->unsetMode(targetChannel, it->first);
+                    }
+                    rplModes += it->first;
+                }
+                    break;
+                case 'p':
+                case 's':
+                case 'i':
+                case 't':
+                case 'n':
+                case 'm':{
+                    if (_Arguments[1][0] != '-')
+                        targetChannel->setMode(targetChannel, it->first);
+                    else
+                        targetChannel->unsetMode(targetChannel, it->first);
+                    rplModes += it->first;
+                }
+                    break;
+                default:
+                    _Initiator->updateReplyMessage(ERR_UNKNOWNMODE(std::string(1, _Arguments[1][i])));
+            }
+            it++;
+        }
+        _Initiator->updateReplyMessage(" MODE " + _Arguments[0] + " " + rplModes + rplArgs, _Initiator->getFull());
         return 0;
     }
     int procClient() {
-        if (_Initiator->_NickName not_eq _Arguments[0])
+        std::string modes;
+        if (_Initiator->_NickName != _Arguments[0])
             return _Initiator->updateReplyMessage(ERR_USERSDONTMATCH);
-//        if (_Arguments.size() == 1)
-//            return _Initiator->updateReplyMessage(RPL_UMODEIS("todo")); //todo:
-        for (unsigned long i = 1; i < _Arguments[1].size(); ++i) {
+        if (_Arguments.size() == 1)
+             return clientModeIS();
+        unsigned long i = 0;
+        if (_Arguments[1][i] == '+' || _Arguments[1][i] == '-'){
+            modes = std::string(1, _Arguments[1][i]);
+            i++;
+        }
+        else
+            modes = "+";
+        for (; i < _Arguments[1].size(); ++i) {
             switch (_Arguments[1][i]) {
                 case 'o':
-                    if (_Arguments[1][0] == '-')
+                    if (_Arguments[1][0] == '-'){
+                        modes += std::string(1, _Arguments[1][i]);
                         _Server.unsetMode(_Initiator, _Arguments[1][i]);
+                    }
                     break;
                 case 'i':
                 case 's':
                 case 'w':
-                    if (_Arguments[1][0] == '+')
+                    if (_Arguments[1][0] != '-')
                         _Server.setMode(_Initiator, _Arguments[1][i]);
                     else
                         _Server.unsetMode(_Initiator, _Arguments[1][i]);
+                    modes += std::string(1, _Arguments[1][i]);
                     break;
                 default:
-                    _Initiator->updateReplyMessage(ERR_UMODEUNKNOWNFLAG);
+                    _Initiator->updateReplyMessage(ERR_UNKNOWNMODE(std::string(1, _Arguments[1][i])));
             }
         }
+        _Initiator->updateReplyMessage(" MODE " + _Initiator->_NickName + " :" + modes, \
+                                _Initiator->getFull());
         return 0;
     }
 public:
@@ -120,9 +249,7 @@ public:
         if (_Arguments.empty()) {
             return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
         }
-        if (not _Arguments[1].empty() && (_Arguments[1][0] not_eq '-' || _Arguments[1][0] not_eq '+'))
-            return _Initiator->updateReplyMessage(ERR_UMODEUNKNOWNFLAG);
-        if (_Arguments[0][0] == '#' || _Arguments[0][0] == '&')
+        if (_Arguments[0][0] == '#')
             procChannel();
         else
             procClient();

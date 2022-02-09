@@ -303,7 +303,7 @@ explicitly deny connections to you.
 "<channel> :Cannot join channel (+k)"
 */
 
-#define ERR_BADCHANMASK(Channel) " 476 " + _Initiator->_NickName + " " + Channel + " :Bad parse & #"
+#define ERR_BADCHANMASK(Channel) " 476 " + _Initiator->_NickName + " " + Channel + " :Bad parse, use & #"
 /*
 "<channel> :Bad parse & #"
 */
@@ -528,7 +528,7 @@ the topic is set, RPL_TOPIC is sent back else
 RPL_NOTOPIC.
 */
 
-#define RPL_INVITING(Channel, Nick) " 341 " + _Initiator->_NickName + " " + Channel + " " + Nick
+#define RPL_INVITING(Channel, Nick) " 341 " + _Initiator->_NickName + " " + Nick + " " + Channel
 /*
 "<channel> <nick>"
 
@@ -727,40 +727,40 @@ RPL_ENDOFUSERS.
 */
 
 #define RPL_TRACELINK(VersionDebugLevel, Destination, NextServer) \
-	": 200 Link " + VersionDebugLevel + " " + Destination + "\n" + NextServer
+	" 200 " + _Initiator->_NickName + " Link " + VersionDebugLevel + " " + Destination + "\n" + NextServer
 /*
 "Link <version & debug level> <destination> \
 <next server>"
 */
 
-#define RPL_TRACECONNECTING(Class, Server) " 201 T + _Initiator->_NickName + " "ry. " + Class + " " + Server
+#define RPL_TRACECONNECTING(Class, Server) " 201 " + _Initiator->_NickName + " Try. " + Class + " " + Server
 /*
 "Try. <class> <server>"
 */
 
-#define RPL_TRACEHANDSHAKE(Class, Server) " 202 H + _Initiator->_NickName + " ".S. " + Class + " " + Server
+#define RPL_TRACEHANDSHAKE(Class, Server) " 202 " + _Initiator->_NickName + " H.S. " + Class + " " + Server
 /*
 "H.S. <class> <server>"
 */
 
-#define RPL_TRACEUNKNOWN(Class, Ip) " 203 ? + _Initiator->_NickName + " "??? " + Class + not Ip.empty() ? " " + Ip : ""
+#define RPL_TRACEUNKNOWN(Class, Ip) " 203 " + _Initiator->_NickName + " ???? " + Class + not Ip.empty() ? " " + Ip : ""
 /*
 "???? <class> [<client IP address in dot form>]"
 */
 
-#define RPL_TRACEOPERATOR(Class, Nick) " 204 O + _Initiator->_NickName + " "per " + Class + " " + Nick
+#define RPL_TRACEOPERATOR(Class, Nick) " 204 " + _Initiator->_NickName + " Oper " + Class + " " + Nick
 /*
 "Oper <class> <nick>"
 */
 
-#define RPL_TRACEUSER(Class, Nick) " 205 U + _Initiator->_NickName + " "ser " + Class + " " + Nick
+#define RPL_TRACEUSER(Class, Nick) " 205 " + _Initiator->_NickName + " User " + Class + " " + Nick
 /*
 "User <class> <nick>"
 */
 
 #define RPL_TRACESERVER(Class, Int1, Int2, Server, NickUser, Host_or_server) \
-	": 206 "                                                                 \
-	"Serv " +                                                                \
+	" 206 " + _Initiator->_NickName                                                                 \
+	" Serv " +                                                                \
 		Class + " " + Int1 + "S " + Int2 + "C " + Server + "\n" + NickUser + "@" + Host_or_Server
 /*
 "Serv <class> <int>S <int>C <server> \
@@ -772,7 +772,7 @@ RPL_ENDOFUSERS.
 "<newtype> 0 <client name>"
 */
 
-#define RPL_TRACELOG(Logfile, DebugLevel) " 261 F + _Initiator->_NickName + " "ile " + Logfile + " " + DebugLevel
+#define RPL_TRACELOG(Logfile, DebugLevel) " 261 " + _Initiator->_NickName + " File " + Logfile + " " + DebugLevel
 /*
 "File <logfile> <debug level>"
 
