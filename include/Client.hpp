@@ -75,7 +75,7 @@ public:
 	// ReplyMessage
 	bool updateReplyMessage(
 		std::string const & Msg,
-		std::string const & From = std::string("irc.WIP.ru"));
+		std::string const & From = std::string(SERVER_NAME));
 	std::string const getReplyMessage();
 
 	// Incoming buffer

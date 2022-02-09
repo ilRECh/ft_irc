@@ -22,6 +22,7 @@
 #include <limits>
 #include "TimeStamp.hpp"
 
+#define SERVER_NAME "irc.WIP.ru"
 #define SIZE 512
 
 namespace ft {

@@ -41,7 +41,7 @@ private:
 		for(;start != finish; ++start)
 		{
 			channelName = "*";
-			std::string serverName = "127.0.0.1";// _Server.getServerAddrInfo().substr(0, _Server.getServerAddrInfo().find(':'));
+			std::string serverName = _Server._Name;
 			char H_G = start->second->_Away.empty() ? 'H' : 'G';
 			std::string isAminInLastJoin = "+";
 			if (start->first)
@@ -58,8 +58,8 @@ private:
 			(
 				channelName, 
 				start->second->_UserName,
-				"127.0.0.1",//start->second->_HostName, 
-				"irc.WIP.ru", //serverName,
+				start->second->_HostName, 
+				serverName,
 				start->second->_NickName,
 				H_G,
 				"*",

@@ -6,11 +6,14 @@ void usage() {
 }
 
 int main(int argc, char **argv) {
+#ifndef GODMODE
+	if (argc != 3) {
+		usage();
+		return 1;
+	}
+#else
 	(void)argc;
-	// if (argc != 3) {
-	// 	usage();
-	// 	return 1;
-	// }
+#endif
 	try {
 		Server server(argv[1] ? argv[1] : "6668", argv[2] ? argv[2] : "123");
 		server.run();

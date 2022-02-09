@@ -3,13 +3,12 @@ CXX			:= clang++
 CXXFLAGS	:= -pedantic-errors -Wall -Wextra -Werror -std=c++98 -pedantic -g -D_GLIBCXX_DEBUG -fdiagnostics-color=always
 LDFLAGS		:= -L/usr/lib -lstdc++ -lm
 BUILD		:= ./build
-OBJ_DIR		:= $(BUILD)/objects
+OBJ_DIR		:= $(BUILD)/objects/ircserv
 APP_DIR		:= $(BUILD)/apps
 INC_DIRS	:= $(shell find ./include -type d)
 INCLUDE		:= $(addprefix -I,$(INC_DIRS))
 SRC			:=                      \
-	$(wildcard srcs/*.cpp) \
-	$(wildcard srcs/cmds/*.cpp)
+	$(wildcard srcs/*.cpp)
 
 OBJECTS		:= $(SRC:%.cpp=$(OBJ_DIR)/%.o)
 DEPENDENCIES \
@@ -55,3 +54,23 @@ info:
 	@echo "[*] Dependencies:    ${DEPENDENCIES}\n"
 
 re			: clean all
+
+BOT_TARGET=bot
+BOT_OBJ_DIR=$(BUILD)/objects/bot
+BOT_SRC=$(wildcard bot/*.cpp)
+BOT_OBJECTS		:= $(BOT_SRC:%.cpp=$(BOT_OBJ_DIR)/%.o)
+BOT_DEPENDENCIES 	:= $(BOT_OBJECTS:.o=.d)
+
+$(BOT_OBJ_DIR)/%.o: %.cpp
+	@mkdir -p $(@D)
+	@$(CXX) $(CXXFLAGS) -c $< -MMD -o $@
+	@echo $(CXX) $(CXXFLAGS) $@
+
+$(APP_DIR)/$(BOT_TARGET): $(BOT_OBJECTS)
+	@mkdir -p $(@D)
+	@$(CXX) $(CXXFLAGS) -o $(APP_DIR)/$(BOT_TARGET) $^ $(LDFLAGS)
+	@echo $(CXX) $(CXXFLAGS) $@
+
+bot: 
+	@mkdir -p $(BOT_OBJ_DIR)
+bot: all $(APP_DIR)/$(BOT_TARGET)

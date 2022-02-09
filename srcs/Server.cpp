@@ -46,6 +46,7 @@ operators_s Server::_Operators[] = { {"admin", "admin"} };
 //* Domain can be AF_INET
 Server::Server(string const & Port, string const & Password)
 	:   Modes(),
+		_Name(SERVER_NAME),
 		_Ip("0"),
 		_Port(Port),
 		_Password(Password),
@@ -89,7 +90,7 @@ Server::Server(string const & Port, string const & Password)
 	if (1024 > std::atoi(_Port.c_str()) || std::atoi(_Port.c_str()) > 49151)
 		throw std::runtime_error("wrong _Port! min 1024, max 49151,");
 	std::cout << "Server will be bound to _Port: " << _Port << '\n';
-	_Sockfd = socket(AF_INET, SOCK_STREAM/* | SOCK_NONBLOCK*/, 0);
+	_Sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (_Sockfd < 0)
 		throw std::runtime_error(string("Socket: ") + strerror(errno));
 	if (fcntl(_Sockfd, F_SETFL, O_NONBLOCK) < 0)

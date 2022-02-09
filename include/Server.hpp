@@ -29,6 +29,8 @@ private:
 	// Time since start
 	TimeStamp _Age;
 
+	std::string const _Name;
+
 	// Parameters
 	std::string _Ip;
 	std::string _Port;
@@ -84,6 +86,8 @@ public:
 	void pushBackErase(Channel *Channel);
 	void buryMe(std::string const & DyingMessage);
 private:
+	friend class PING;
+	friend class WHO;
 	friend class PASS;
 	friend class QUIT;
 	friend class INVITE;
