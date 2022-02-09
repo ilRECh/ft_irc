@@ -23,6 +23,7 @@ private:
     std::string _PasswordToServer;
     std::string _IncomingBuffer;
     std::string _ReplyMessage;
+    std::string _CurrentChannel;
     int _BotSock;
     enum e_incoming_type {
         PRIVMSG,
@@ -35,6 +36,7 @@ private:
     void Parse();
     void Proceed();
     void Reply();
+    void updateReplyMessage(std::string const &Rpl);
     static bool find(std::string *arr, int size, std::string const &ToFind);
 public:
     Bot(std::string const &Domain_or_Ip,

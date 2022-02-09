@@ -88,12 +88,17 @@ void Bot::Receive() {
 }
 
 void Bot::Parse() {
-    if (_IncomingBuffer.end()[-1] not_eq '\n') {
-        return ;
-    }
     if (_IncomingBuffer.find_first_not_of(" \n\t\v") == _IncomingBuffer.npos) {
         _IncomingBuffer.clear();
         return ;
+    }
+    if (_IncomingBuffer.end()[-1] not_eq '\n') {
+        return ;
+    } else {
+        _IncomingBuffer.erase(_IncomingBuffer.end()-1);
+        if (_IncomingBuffer.end()[-1] == '\r') {
+            _IncomingBuffer.erase(_IncomingBuffer.end()-1);
+        }
     }
     if (_IncomingBuffer.find(" PRIVMSG ") not_eq _IncomingBuffer.npos or
         _IncomingBuffer.find(" NOTICE ") not_eq _IncomingBuffer.npos) {
@@ -115,6 +120,7 @@ void Bot::Parse() {
 void Bot::Proceed() {
     switch(_CurrentIncomingType) {
         case PRIVMSG: {
+            static bool isGoodBye = false;
             size_t MessagePos = _IncomingBuffer.rfind(':');
             std::string MessageGet;
             if (MessagePos != _IncomingBuffer.npos and
@@ -124,13 +130,14 @@ void Bot::Proceed() {
             if (Bot::find(HelloMessages, 4, MessageGet) and
                 MessageGet.find(_Name) not_eq MessageGet.npos) {
                 std::srand(std::time(NULL));
-                _ReplyMessage = " :" + HelloMessages[std::rand() % 4] + "!";
+                updateReplyMessage(" :" + HelloMessages[std::rand() % 4] + "!");
             } else if (Bot::find(GoodbyeMessages, 5, MessageGet) and
                 MessageGet.find(_Name) not_eq MessageGet.npos) {
                 std::srand(std::time(NULL));
-                _ReplyMessage = " :" + GoodbyeMessages[std::rand() % 5] + "!";
+                updateReplyMessage(" :" + GoodbyeMessages[std::rand() % 5] + "!");
+                isGoodBye = true;
             } else {
-                _ReplyMessage = " : Wanna play a game?";
+                updateReplyMessage(" : Wanna play a game?");
             }
             size_t FirstSpacePos = _IncomingBuffer.find(' ');
             std::string WhoSent;
@@ -145,19 +152,27 @@ void Bot::Proceed() {
                 WhoSent = "irc.WIP.ru";
             }
             std::string Where;
-            if (_IncomingBuffer.find(_Name) == _IncomingBuffer.npos) {
+            size_t LastSemiCol = _IncomingBuffer.rfind(':');
+            if (LastSemiCol != _IncomingBuffer.npos and
+                _IncomingBuffer.substr(0, LastSemiCol).find(_Name) == _IncomingBuffer.npos) {
                 size_t Sharp = _IncomingBuffer.find('#');
                 if (Sharp != _IncomingBuffer.npos) {
                     size_t SymbolAfterChannelName = _IncomingBuffer.find(' ', Sharp);
-                    Where = _IncomingBuffer.substr(Sharp + 1, SymbolAfterChannelName - Sharp + 1);
+                    Where = _IncomingBuffer.substr(Sharp, SymbolAfterChannelName - Sharp);
                 }
             }
-            _ReplyMessage = "NOTICE " + (Where.empty() ? WhoSent : Where) + _ReplyMessage; 
+            _ReplyMessage = "NOTICE " + (Where.empty() ? WhoSent : Where) + _ReplyMessage;
+            if (isGoodBye) {
+                if (not _CurrentChannel.empty()) {
+                    updateReplyMessage("PART " + _CurrentChannel);
+                }
+                updateReplyMessage("QUIT :So long, pal!");
+            }
         } break ;
         case PING: {
             size_t PongArgPos = _IncomingBuffer.find_first_not_of(" \n\r\t\v", _IncomingBuffer.find("PING") + 4);
             if (PongArgPos != _IncomingBuffer.npos) {
-                _ReplyMessage = _IncomingBuffer.substr(PongArgPos);
+                updateReplyMessage(_IncomingBuffer.substr(PongArgPos));
             }
             _ReplyMessage = "PONG " + _ReplyMessage;
         } break ;
@@ -174,16 +189,21 @@ void Bot::Proceed() {
             break ;
         case INVITE: {
             size_t ChannelNameStart = _IncomingBuffer.rfind(':');
+            if (not _CurrentChannel.empty()) {
+                updateReplyMessage("PART " + _CurrentChannel);
+            }
             if (ChannelNameStart != _IncomingBuffer.npos and
                 ChannelNameStart != _IncomingBuffer.length() - 1) {
                 std::string JoinTo = _IncomingBuffer.substr(ChannelNameStart + 1);
-                _ReplyMessage = "JOIN " + JoinTo;
+                _CurrentChannel = JoinTo;
+                updateReplyMessage("JOIN " + JoinTo);
             }
         } break ;
         default:
             break ;
     }
     _IncomingBuffer.clear();
+    sleep(2);
 }
 
 void Bot::Reply() {
@@ -194,4 +214,8 @@ void Bot::Reply() {
         send(_BotSock, _ReplyMessage.c_str(), _ReplyMessage.length(), MSG_NOSIGNAL);
         _ReplyMessage.clear();
     }
+}
+
+void Bot::updateReplyMessage(std::string const &Rpl) {
+    _ReplyMessage += Rpl + "\r\n";
 }

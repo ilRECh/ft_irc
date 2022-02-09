@@ -29,8 +29,7 @@ std::set<Client *>::size_type Channel::getCountClients(){
 	return _Clients.size();
 }
 
-void Channel::removeClient(Client *whom) {
-	std::set<Client *>::iterator first = _Clients.begin();
+void Channel::removeClient(Client *whom) {	
 	int countUserO = 0;
 
 	static bool ToRemove = false;
@@ -49,7 +48,7 @@ void Channel::removeClient(Client *whom) {
 	else
 	{	
 		if (countUserO == 0)
-			for(;first != _Clients.end(); ++first)
+			for(std::set<Client *>::iterator first = _Clients.begin();first != _Clients.end(); ++first)
 				if (getModeIsExist(*first, 'o'))
 					++countUserO;
 		if (countUserO == 0 and ++countUserO)
