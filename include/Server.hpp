@@ -86,10 +86,11 @@ public:
 	void pushBackErase(Channel *Channel);
 	void buryMe(std::string const & DyingMessage);
 private:
-	friend class PING;
-	friend class WHO;
 	friend class PASS;
 	friend class QUIT;
+	friend class PING;
+	friend class PONG;
 	friend class INVITE;
 	friend class NAMES;
+	friend class WHO;
 };

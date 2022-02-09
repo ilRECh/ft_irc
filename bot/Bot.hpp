@@ -11,6 +11,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <cstdlib>
+#include <ctime>
 
 class Bot {
 private:
@@ -26,12 +28,14 @@ private:
         PRIVMSG,
         PING,
         AUTH,
+        INVITE,
         UNPROCEEDING
     } _CurrentIncomingType;
     void Receive();
     void Parse();
     void Proceed();
     void Reply();
+    static bool find(std::string *arr, int size, std::string const &ToFind);
 public:
     Bot(std::string const &Domain_or_Ip,
         std::string const &Port,

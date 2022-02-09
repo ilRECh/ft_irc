@@ -10,7 +10,7 @@ public:
     PONG(Server &Server) : ACommand("PONG", Server) {}
     virtual ~PONG() {}
     virtual int run() {
-        if (not _Arguments.empty() && _Arguments[0] == _Server.getServerAddrInfo()) {
+        if (not _Arguments.empty() && _Arguments[0] == _Server._Name) {
             _Initiator->updateActivity();
         }
         return 0;
