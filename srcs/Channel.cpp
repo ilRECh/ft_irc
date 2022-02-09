@@ -30,7 +30,9 @@ std::set<Client *>::size_type Channel::getCountClients(){
 }
 
 void Channel::removeClient(Client *whom) {
-	//? Если был удален последний Админ, то передать полномочия другому юзеру
+	std::set<Client *>::iterator first = _Clients.begin();
+	int countUserO = 0;
+
 	static bool ToRemove = false;
 	if (ToRemove) {
 		return ;
@@ -43,6 +45,15 @@ void Channel::removeClient(Client *whom) {
 	if (_Clients.empty()) {
 		ToRemove = true;
 		_Server->pushBackErase(this);
+	}
+	else
+	{	
+		if (countUserO == 0)
+			for(;first != _Clients.end(); ++first)
+				if (getModeIsExist(*first, 'o'))
+					++countUserO;
+		if (countUserO == 0 and ++countUserO)
+			setMode(*_Clients.begin(), 'o');
 	}
 	replyToAllMembers("leaved", whom);
 }

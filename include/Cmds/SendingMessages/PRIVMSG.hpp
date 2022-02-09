@@ -49,6 +49,9 @@ public:
                     continue ;
                 }
                 for (std::set<Channel *>::iterator CurChannel = ChannelsToReply.begin(); CurChannel not_eq ChannelsToReply.end(); ++CurChannel) {
+                    if ((*CurChannel)->getModeIsExist(*CurChannel, 'm') and not (*CurChannel)->getModeIsExist(_Initiator, 'v')) {
+                        return _Initiator->updateReplyMessage(ERR_CANNOTSENDTOCHAN((*CurChannel)->getChannelName()));
+                    }
                     (*CurChannel)->replyToAllMembers(_Initiator->getFull() + " PRIVMSG " + (*CurChannel)->getChannelName() + " :" + _Argument, _Initiator);
                 }
             }

@@ -16,9 +16,9 @@ public:
             return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
         }
 #ifndef GODMODE
-        // if (not (ft::split(_Argument, " :").back() == _Server._Password)) {
-        //     return 0;
-        // }
+        if (not (ft::split(_Argument, " :").back() == _Server._Password)) {
+            return 0;
+        }
 #endif
         _Initiator->_PasswordCorrect = true;
         return 0;

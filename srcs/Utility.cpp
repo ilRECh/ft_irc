@@ -104,7 +104,7 @@ bool ft::wildcard(std::string wExpression, std::string toCompare)
 		pos2 = std::string(toCompare.begin() + pos1 + lenWord, toCompare.end()).find(splitedByStar[i]);
 		//pos2 = find_word(splitedByStar[i], );
 		pos1 = pos2 + pos1 + lenWord;
-		if ((pos2 == std::string::npos) || (pos2 && (!i || (i && splitedByStar[i - 1][0] not_eq '*'))))
+		if ((pos2 == std::string::npos) || (pos2 && (!i || splitedByStar[i - 1][0] != '*')))
 			return false;
 		lenWord = splitedByStar[i].size();
 		if (i + 1 == splitedByStar.size())
