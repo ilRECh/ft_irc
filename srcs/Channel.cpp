@@ -49,7 +49,13 @@ void Channel::removeClient(Client *whom) {
 
 void Channel::replyToAllMembers(std::string msg, Client * sender) {
 	std::string Reply = msg;//_ChannelName +  " :" + msg;
+	Client * _Initiator = sender;
 	if (sender != NULL) {
+		if (this->getModeIsExist(this, 'm') && !this->getModeIsExist(sender, 'v'))
+		{
+			sender->updateReplyMessage(ERR_CANNOTSENDTOCHAN(_ChannelName));
+			return ;
+		}
 		for (std::set<Client *>::iterator i = _Clients.begin(); i != _Clients.end(); ++i) {
 			if (*i != sender) {
 				(*i)->updateReplyMessage(Reply, "");
