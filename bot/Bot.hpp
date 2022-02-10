@@ -13,6 +13,7 @@
 #include <arpa/inet.h>
 #include <cstdlib>
 #include <ctime>
+#include <list>
 
 class Bot {
 private:
