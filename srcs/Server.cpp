@@ -207,7 +207,10 @@ void Server::processCmd(Client *Client)
 		Client->getIncomingBuffer().clear();
 		return ;
 	}
-	std::vector<std::string> Cmds = ft::splitByCmds(Client->getIncomingBuffer(), "\r\n");
+	std::vector<std::string> Cmds = ft::split(Client->getIncomingBuffer(), "\n");
+	for (std::vector<std::string>::iterator i = Cmds.begin(); i != Cmds.end(); ++i) {
+		ft::deleteSpaces(*i, "\r");
+	}
 	Client->getIncomingBuffer().clear();
 	for (std::vector<std::string>::iterator it = Cmds.begin();
 			it not_eq Cmds.end(); ++it) {
