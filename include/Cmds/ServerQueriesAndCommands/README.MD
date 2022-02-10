@@ -12,11 +12,4 @@ usually mean it can be a nickname or a server or a wildcard name of
 some sort.  For each parameter, however, only one query and set of
 replies is to be generated.
 ---
-- 4.3.1 [VERSION](VERSION.hpp)
-- 4.3.2 [STATS](STATS.hpp)
-- 4.3.3 [LINKS](LINKS.hpp)
-- 4.3.4 [TIME](TIME.hpp)
-- 4.3.5 [CONNECT](CONNECT.hpp)
-- 4.3.6 [TRACE](TRACE.hpp)
 - 4.3.7 [ADMIN](ADMIN.hpp)
-- 4.3.8 [INFO](INFO.hpp)

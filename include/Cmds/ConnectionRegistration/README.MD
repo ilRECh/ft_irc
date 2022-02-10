@@ -25,9 +25,7 @@ recommended order for a client to register is as follows:
 - 4.1.3 [User message](USER.hpp)
 
       Command: USER
-- 4.1.4 [Server message](SERVER.hpp)
 
-      Command: SERVER
 - 4.1.5 [Oper](OPER.hpp)
 
       Command: OPER

@@ -12,6 +12,4 @@ but are nonetheless still a part of and required by the protocol.
 4.6.3 [Pong message](PONG.hpp)
 
       Command: PONG
-4.6.4 [Error](ERROR.hpp)
 
-      Command: ERROR

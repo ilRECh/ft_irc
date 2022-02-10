@@ -56,7 +56,6 @@ information for that nickname.
 
 #define ERR_TOOMANYTARGETS(Target) " 407 " + _Initiator->_NickName + " " + Target + " :Duplicate recipients. No message \
 delivered"
-
 /*
 "<target> :Duplicate recipients. No message \
 delivered"
@@ -83,22 +82,6 @@ without valid prefixes.
 #define ERR_NOTEXTTOSEND " 412 " + _Initiator->_NickName + " No text to send"
 /*
 ":No text to send"
-*/
-
-#define ERR_NOTOPLEVEL(Mask) " 413 " + _Initiator->_NickName + " " + Mask + " :No toplevel domain specified"
-/*
-"<mask> :No toplevel domain specified"
-*/
-
-#define ERR_WILDTOPLEVEL(Mask) " 414 " + _Initiator->_NickName + " " + Mask + " :Wildcard in toplevel domain"
-/*
-"<mask> :Wildcard in toplevel domain"
-
-- 412 - 414 are returned by PRIVMSG to indicate that
-the message wasn`t delivered for some reason.
-ERR_NOTOPLEVEL and ERR_WILDTOPLEVEL are errors that
-are returned when an invalid use of
-"PRIVMSG $<server>" or "PRIVMSG #<host>" is attempted.
 */
 
 #define ERR_UNKNOWNCOMMAND(Initiator, Command) " 421 " + Initiator + " " + Command + " :Unknown command"
@@ -390,10 +373,7 @@ whether the client has set an AWAY message or not
 respectively.
 */
 
-#define RPL_ISON(Nick1, Nick2) " 302 " + _Initiator->_NickName + " " +                                       \
-									   (not Nick1.empty() and not Nick2.empty()) \
-								   ? Nick1 + " { " + Nick2 + "}"                 \
-								   : ""
+#define RPL_ISON " 303 "
 /*
 ":[<nick> {<space><nick>}]"
 
@@ -602,20 +582,6 @@ RPL_NAMEREPLY messages with a RPL_ENDOFNAMES to mark
 the end.
 */
 
-#define RPL_LINKS(Mask, Server, Hopcount, ServerInfo) " 364 " + _Initiator->_NickName + " " + Mask + " " + Server + " :" + Hopcount + " " + ServerInfo
-/*
-"<mask> <server> :<hopcount> <server info>"
-*/
-
-#define RPL_ENDOFLINKS(Mask) " 365 " + _Initiator->_NickName + " " + Mask + " :End of /LINKS list"
-/*
-"<mask> :End of /LINKS list"
-
-- In replying to the LINKS message, a server must send
-replies back using the RPL_LINKS numeric and mark the
-end of the list using an RPL_ENDOFLINKS reply.
-*/
-
 #define RPL_BANLIST(Channel, Banid) " 367 " + _Initiator->_NickName + " " + Channel + " " + Banid
 /*
 "<channel> <banid>"
@@ -631,21 +597,6 @@ RPL_BANLIST and RPL_ENDOFBANLIST messages.  A separate
 RPL_BANLIST is sent for each active banid.  After the
 banids have been listed (or if none present) a
 RPL_ENDOFBANLIST must be sent.
-*/
-
-#define RPL_INFO(String) " 371 " + _Initiator->_NickName + " " + String
-/*
-":<string>"
-*/
-
-#define RPL_ENDOFINFO " 374 " + _Initiator->_NickName + " End of /INFO list"
-/*
-":End of /INFO list"
-
-- A server responding to an INFO message is required to
-send all its 'info' in a series of RPL_INFO messages
-with a RPL_ENDOFINFO reply to indicate the end of the
-replies.
 */
 
 #define	RPL_MOTDSTART(Server) " 375 " + _Initiator->_NickName + " :- " + Server + " Message of the day - "
@@ -679,233 +630,12 @@ just successfully issued an OPER message and gained
 operator status.
 */
 
-#define RPL_REHASHING(ConfigFile) " 382 " + _Initiator->_NickName + " " + ConfigFile + " :Rehashing"
-/*
-"<config file> :Rehashing"
-
-- If the REHASH option is used and an operator sends
-a REHASH message, an RPL_REHASHING is sent back to
-the operator.
-*/
-
-#define RPL_TIME(Server, ServerLocalTime) " 391 " + _Initiator->_NickName + " " + Server + " :" + ServerLocalTime
-/*
-"<server> :<string showing server`s local time>"
-
-- When replying to the TIME message, a server must send
-the reply using the RPL_TIME format above.  The string
-showing the time need only contain the correct day and
-time there.  There is no further requirement for the
-time string.
-*/
-
-#define RPL_USERSSTART " 392 " + _Initiator->_NickName + " UserID   Terminal  Host"
-/*
-":UserID   Terminal  Host"
-*/
-
-#define RPL_USERS " 393 " + _Initiator->_NickName + " %-8s %-9s %-8s"
-/*
-":%-8s %-9s %-8s"
-*/
-
-#define RPL_ENDOFUSERS " 394 " + _Initiator->_NickName + " End of users"
-/*
-":End of users"
-*/
-
-#define RPL_NOUSERS " 395 " + _Initiator->_NickName + " Nobody logged in"
-/*
-":Nobody logged in"
-
-- If the USERS message is handled by a server, the
-replies RPL_USERSTART, RPL_USERS, RPL_ENDOFUSERS and
-RPL_NOUSERS are used.  RPL_USERSSTART must be sent
-first, following by either a sequence of RPL_USERS
-or a single RPL_NOUSER.  Following this is
-RPL_ENDOFUSERS.
-*/
-
-#define RPL_TRACELINK(VersionDebugLevel, Destination, NextServer) \
-	" 200 " + _Initiator->_NickName + " Link " + VersionDebugLevel + " " + Destination + "\n" + NextServer
-/*
-"Link <version & debug level> <destination> \
-<next server>"
-*/
-
-#define RPL_TRACECONNECTING(Class, Server) " 201 " + _Initiator->_NickName + " Try. " + Class + " " + Server
-/*
-"Try. <class> <server>"
-*/
-
-#define RPL_TRACEHANDSHAKE(Class, Server) " 202 " + _Initiator->_NickName + " H.S. " + Class + " " + Server
-/*
-"H.S. <class> <server>"
-*/
-
-#define RPL_TRACEUNKNOWN(Class, Ip) " 203 " + _Initiator->_NickName + " ???? " + Class + not Ip.empty() ? " " + Ip : ""
-/*
-"???? <class> [<client IP address in dot form>]"
-*/
-
-#define RPL_TRACEOPERATOR(Class, Nick) " 204 " + _Initiator->_NickName + " Oper " + Class + " " + Nick
-/*
-"Oper <class> <nick>"
-*/
-
-#define RPL_TRACEUSER(Class, Nick) " 205 " + _Initiator->_NickName + " User " + Class + " " + Nick
-/*
-"User <class> <nick>"
-*/
-
-#define RPL_TRACESERVER(Class, Int1, Int2, Server, NickUser, Host_or_server) \
-	" 206 " + _Initiator->_NickName                                                                 \
-	" Serv " +                                                                \
-		Class + " " + Int1 + "S " + Int2 + "C " + Server + "\n" + NickUser + "@" + Host_or_Server
-/*
-"Serv <class> <int>S <int>C <server> \
-<nick!user|*!*>@<host|server>"
-*/
-
-#define RPL_TRACENEWTYPE(Newtype, ClientName) " 208 " + _Initiator->_NickName + " " + Newtype + " 0 " + ClientName
-/*
-"<newtype> 0 <client name>"
-*/
-
-#define RPL_TRACELOG(Logfile, DebugLevel) " 261 " + _Initiator->_NickName + " File " + Logfile + " " + DebugLevel
-/*
-"File <logfile> <debug level>"
-
-- The RPL_TRACE* are all returned by the server in
-response to the TRACE message.  How many are
-returned is dependent on the the TRACE message and
-
-whether it was sent by an operator or not.  There
-is no predefined order for which occurs first.
-Replies RPL_TRACEUNKNOWN, RPL_TRACECONNECTING and
-RPL_TRACEHANDSHAKE are all used for connections
-which have not been fully established and are either
-unknown, still attempting to connect or in the
-process of completing the `server handshake'.
-RPL_TRACELINK is sent by any server which handles
-a TRACE message and has to pass it on to another
-server.  The list of RPL_TRACELINKs sent in
-response to a TRACE command traversing the IRC
-network should reflect the actual connectivity of
-the servers themselves along that path.
-RPL_TRACENEWTYPE is to be used for any connection
-which does not fit in the other categories but is
-being displayed anyway.
-*/
-
-#define RPL_STATSLINKINFO(Linkname, Sendq, SentMessages, SentBytes, ReceivedMessages, ReceivedBytes, TimeOpen) \
-	": 211 " + Linkname + " " + Sendq + " " + SentMessages + " \n " + SentBytes + " " + ReceivedMessages + " \n " + ReceivedBytes + " " + TimeOpen
-/*
-"<linkname> <sendq> <sent messages> \
-<sent bytes> <received messages> \
-<received bytes> <time open>"
-*/
-
-#define RPL_STATSCOMMANDS(Command, Count) " 212 " + _Initiator->_NickName + " " + Command + " " + Count
-/*
-"<command> <count>"
-*/
-
-#define RPL_STATSCLINE(Host, Name, Port, Class) " 213 C + _Initiator->_NickName + " " " + Host + " * " + Name + " " + Port + " " + Class
-/*
-"C <host> * <name> <port> <class>"
-*/
-
-#define RPL_STATSNLINE(Host, Name, Port, Class) " 214 N + _Initiator->_NickName + " " " + Host + " * " + Name + " " + Port + " " + Class
-/*
-"N <host> * <name> <port> <class>"
-*/
-
-#define RPL_STATSILINE(Host1, Host2, Port, Class) " 215 I + _Initiator->_NickName + " " " + Host1 + " * " + Host2 + " " + Port + " " + Class
-/*
-"I <host> * <host> <port> <class>"
-*/
-
-#define RPL_STATSKLINE(Host, Username, Port, Class) " 216 K + _Initiator->_NickName + " " " + Host + " * " + Username + " " + Port + " " + Class
-/*
-"K <host> * <username> <port> <class>"
-*/
-
-#define RPL_STATSYLINE(Class, PingFrequency, ConnectFrequency, MaxSendq) \
-	": 218 Y " + Class + " " + PingFrequency + " \n " + ConnectFrequency + " " + MaxSendq
-/*
-"Y <class> <ping frequency> <connect \
-frequency> <max sendq>"
-*/
-
-#define RPL_ENDOFSTATS(StatsLetter) " 219 " + _Initiator->_NickName + " " + StatsLetter + " :End of /STATS report"
-/*
-"<stats letter> :End of /STATS report"
-*/
-
-#define RPL_STATSLLINE(Hostmask, Servername, Maxdepth) " 241 L + _Initiator->_NickName + " " " + Hostmask + " * " + Servername + " " + Maxdepth
-/*
-"L <hostmask> * <servername> <maxdepth>"
-*/
-
-#define RPL_STATSUPTIME " 242 " + _Initiator->_NickName + " Server Up %d days %d:%02d:%02d"
-/*
-":Server Up %d days %d:%02d:%02d"
-*/
-
-#define RPL_STATSOLINE(Hostmask, Name) " 243 O + _Initiator->_NickName + " " " + Hostmask + " * " + Name
-/*
-"O <hostmask> * <name>"
-*/
-
-#define RPL_STATSHLINE(Hostmask, Servername) " 244 H + _Initiator->_NickName + " " " + Hostmask + " * " + Servername
-/*
-"H <hostmask> * <servername>"
-*/
-
 #define RPL_UMODEIS(UserModeString) " 221 " + _Initiator->_NickName + " " + UserModeString
 /*
 "<user mode string>"
 
 - To answer a query about a client`s own mode,
 RPL_UMODEIS is sent back.
-*/
-
-#define RPL_LUSERCLIENT(Integer1, Integer2, Integer3) \
-	": 251 :There are " + Integer1 + " users and " + Integer2 + " \n invisible on " + Integer3 + " servers"
-/*
-":There are <integer> users and <integer> \
-invisible on <integer> servers"
-*/
-
-#define RPL_LUSEROP(Integer) " 252 " + _Initiator->_NickName + " " + Integer + " :operator(s) online"
-/*
-"<integer> :operator(s) online"
-*/
-
-#define RPL_LUSERUNKNOWN(Integer) " 253 " + _Initiator->_NickName + " " + Integer + " :unknown connection(s)"
-/*
-"<integer> :unknown connection(s)"
-*/
-
-#define RPL_LUSERCHANNELS(Integer) " 254 " + _Initiator->_NickName + " " + Integer + " :channels formed"
-/*
-"<integer> :channels formed"
-*/
-
-#define RPL_LUSERME(Integer1, Integer2) " 255 " + _Initiator->_NickName + " I have " + Integer1 + " clients and " + Integer2 + " \n servers"
-/*
-":I have <integer> clients and <integer> \
-servers"
-
-- In processing an LUSERS message, the server
-sends a set of replies from RPL_LUSERCLIENT,
-RPL_LUSEROP, RPL_USERUNKNOWN,
-RPL_LUSERCHANNELS and RPL_LUSERME.  When
-replying, a server must send back
-RPL_LUSERCLIENT and RPL_LUSERME.  The other
-replies are only sent back if a non-zero count
-is found for them.
 */
 
 #define RPL_ADMINME "Server 256 " + _Initiator->_NickName + " :Administrative info"
