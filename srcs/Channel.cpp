@@ -80,12 +80,35 @@ void Channel::replyToAllMembers(std::string msg, Client * sender) {
 	}
 }
 
-void Channel::addToBan(std::string const &BanMask)
+void Channel::addToBan(std::string BanMask)
 {
-    // * = *!*@*
-    // *!*q = *!*q@*
-    // qw!qw@qw = qw!qw@qw
-	_BanList.insert(BanMask);
+	// ! NOTICE избежать блокирования инициатора (Админа канала)
+	std::string str;
+	if (BanMask.find("!@") != BanMask.npos)
+		BanMask.insert(BanMask.find("!@") + 1, "*");
+	if (BanMask[0] == '!')
+		BanMask.insert(0, "*");
+	while(BanMask.find("**") != BanMask.npos)
+		BanMask.replace(BanMask.find("**"), 2, "*");
+	std::vector<std::string> vec = ft::split(BanMask, "@!");
+	switch (vec.size())
+	{
+		case 0: str = "*!*@*"; break;
+		case 1: str = vec[0] + "!*@*"; break;
+		case 2: str = vec[0] + "!" + vec[1] + "@*"; break;
+		default:
+		for (uint i = 0; i < vec.size(); i++)
+		{
+			str += vec[i];
+			switch (i)
+			{
+				case 0: str += '!';	break;
+				case 1: str += '@';	break;
+			}
+		}
+		break;
+	}
+	_BanList.insert(str);
 }
 void Channel::removeFromBan(std::string const &BanMask)
 {

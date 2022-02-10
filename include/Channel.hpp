@@ -36,7 +36,7 @@ public:
 		std::string const & newNameChannel);
 	void replyToAllMembers(std::string msg, Client * sender = NULL);
 	//* Ban!!
-	void addToBan(std::string const &BanMask);
+	void addToBan(std::string BanMask);
 	void removeFromBan(std::string const &BanMask);
 	bool isBanned(std::string const &NickName);
 	Client * getClient(std::string nickName);
