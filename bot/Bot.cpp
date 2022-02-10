@@ -24,6 +24,44 @@ static std::string GoodbyeMessages[] = {
     "Poka",
 };
 
+static std::string JokeMessages[] = {
+    "joke",
+    "анекдот"
+};
+
+static std::string Jokes[] = {
+    "Приходит к мудрецу глупец и говорит: \"Почему все говорят, что надо жениться на девственнице?\"\n"
+"Мудрец протягивает ему 2 конфеты - 1 в блестящем фантике а другую уже раскрытую, и говорит: \"Ну вот какую ты выберешь?\"\n"
+"- Конечно раскрытую!\n"
+"- Но почему?\n"
+"- Так кто его знает что там под фантиком - может какашка, а тут все понятно.\n"
+"И сказал ему мудрец: \"Иди на хуй, такую притчу испортил!\"",
+"-чувак, а у нас в городе есть пингвины ростом в 170?\n"
+"-нет...\n"
+"-блять, значит монашку сбил",
+"Почему неудобно спать в бетономешалке?.\n"
+".\n" 
+".\n" 
+".\n" 
+".\n" 
+".\n" 
+".\n" 
+".\n" 
+".\n" 
+".\n" 
+".\n" 
+".\n" 
+".\n" 
+".\n" 
+".\n" 
+"Бетон мешает",
+"Студент спрашивает профессора:\n"
+"- Объясните, профессор, значение слова \"дилема\".\n"
+"После недолгого раздумья профессор:\n"
+"- Ну, смотрите.  Представьте, что вы лежите посреди большой кровати  и слева от вас прекрасная молодая полногрудая красавица, а справа гомосек.\n"
+"Представели? А теперь к дилеме: К кому Вы повернётесь спиной ?"
+};
+
 bool Bot::find(std::string *arr, int size, std::string const &ToFind) {
     for (int i = 0; i < size; ++i) {
         if (ToFind.find(arr[i]) != ToFind.npos) {
@@ -136,8 +174,12 @@ void Bot::Proceed() {
                 std::srand(std::time(NULL));
                 updateReplyMessage(" :" + GoodbyeMessages[std::rand() % 5] + "!");
                 isGoodBye = true;
+            } else if (Bot::find(JokeMessages, 2, MessageGet) and
+                MessageGet.find(_Name) not_eq MessageGet.npos) {
+                std::srand(std::time(NULL));
+                updateReplyMessage(" :" + Jokes[std::rand() % 4]);
             } else {
-                updateReplyMessage(" : Wanna play a game?");
+                updateReplyMessage(" : *Голосом Антохи*\nХошь анек?");
             }
             size_t FirstSpacePos = _IncomingBuffer.find(' ');
             std::string WhoSent;
