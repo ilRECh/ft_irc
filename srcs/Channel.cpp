@@ -82,7 +82,8 @@ void Channel::replyToAllMembers(std::string msg, Client * sender) {
 
 void Channel::addToBan(std::string BanMask)
 {
-	// ! NOTICE избежать блокирования инициатора (Админа канала)
+	if (BanMask.empty())
+		return ;
 	std::string str;
 	if (BanMask.find("!@") != BanMask.npos)
 		BanMask.insert(BanMask.find("!@") + 1, "*");

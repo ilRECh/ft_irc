@@ -62,7 +62,7 @@ TimeStamp &TimeStamp::operator=(const TimeStamp &oth) {
 bool TimeStamp::operator==(const TimeStamp &oth) const {
 	return _base_time == oth._base_time;
 }
-bool TimeStamp::operatornot_eq(const TimeStamp &oth) const {
+bool TimeStamp::operator not_eq(const TimeStamp &oth) const {
 	return _base_time not_eq oth._base_time;
 }
 bool TimeStamp::operator>(const TimeStamp &oth) const {
