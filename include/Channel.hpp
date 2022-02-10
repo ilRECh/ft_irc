@@ -16,6 +16,7 @@ private:
     std::set<Client *> _InviteClients;
 	std::set<std::string> _BanList;
 	Server *_Server;
+	bool _ToRemove;
 public:
 	Channel(
 		std::string const & nameChannel,
@@ -45,6 +46,7 @@ private:
 	friend class JOIN;
 	friend class WHO;
 	friend class INVITE;
+	friend class PART;
 	friend class MODE;
 	friend class TOPIC;
 };

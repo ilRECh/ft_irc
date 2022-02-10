@@ -25,7 +25,7 @@ public:
             } else {
                 FoundChannel->removeClient(_Initiator);
             }
-            if (i + 1 not_eq _Arguments.end()) {
+            if (not Reply.empty() and i + 1 not_eq _Arguments.end()) {
                 Reply += "\r\n";
             }
         }

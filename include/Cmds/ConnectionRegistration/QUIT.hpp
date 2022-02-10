@@ -21,7 +21,7 @@ public:
         if (not _ToInitiatorOnly){
             for (std::set<Channel *>::iterator EachChannel = _Initiator->_Channels.begin();
                 EachChannel not_eq _Initiator->_Channels.end(); ++EachChannel) {
-                (*EachChannel)->replyToAllMembers(" " + _Initiator->getFull() + " QUIT " + _Initiator->_NickName + " :" + _Argument, _Initiator);
+                (*EachChannel)->replyToAllMembers(_Initiator->getFull() + " QUIT " + _Initiator->_NickName + " :" + _Argument, _Initiator);
             }
         } else {
             _Initiator->updateReplyMessage(" QUIT " + _Initiator->_NickName + " :" + _Argument);

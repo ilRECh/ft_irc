@@ -4,6 +4,8 @@
 #include "Client.hpp"
 #include "Server.hpp"
 
+#include "NAMES.hpp"
+
 Channel::Channel(
 	string const & nameChannel,
 	Client * userAdmin,
@@ -12,7 +14,8 @@ Channel::Channel(
 	:	Modes(this),
 		_maxUserLimit(maxUserLimit),
 		_ChannelName(nameChannel),
-		_Server(Server){
+		_Server(Server),
+		_ToRemove(false) {
 	_Clients.insert(userAdmin);
 	setMode(userAdmin, 'o');
 }
@@ -32,8 +35,7 @@ std::set<Client *>::size_type Channel::getCountClients(){
 void Channel::removeClient(Client *whom) {	
 	int countUserO = 0;
 
-	static bool ToRemove = false;
-	if (ToRemove) {
+	if (_ToRemove) {
 		return ;
 	}
 	std::set<Client *>::iterator i = find(_Clients.begin(), _Clients.end(), whom);
@@ -42,7 +44,7 @@ void Channel::removeClient(Client *whom) {
 		_Clients.erase(i);
 	}
 	if (_Clients.empty()) {
-		ToRemove = true;
+		_ToRemove = true;
 		_Server->pushBackErase(this);
 	}
 	else
@@ -53,8 +55,14 @@ void Channel::removeClient(Client *whom) {
 					++countUserO;
 		if (countUserO == 0 and ++countUserO)
 			setMode(*_Clients.begin(), 'o');
+		replyToAllMembers(whom->getFull() + " PART " + _ChannelName);
+		NAMES n(*_Server);
+		n.setArgument(_ChannelName);
+		for(std::set<Client *>::iterator EachClient = _Clients.begin();EachClient != _Clients.end(); ++EachClient) {
+			n.setInitiator(*EachClient);
+			n.run();
+		}
 	}
-	replyToAllMembers("leaved", whom);
 }
 
 void Channel::replyToAllMembers(std::string msg, Client * sender) {
