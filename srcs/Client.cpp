@@ -48,7 +48,7 @@ TimeStamp const & Client::getLastActivity() const{
 }
 
 bool Client::updateReplyMessage(std::string const & Msg, std::string const & From) {
-	_ReplyMessage += ":" + From + Msg + "\r\n";
+	_ReplyMessage += ":" + From + Msg + "\n";
     if (!_Away.empty()){
         return 1;
 	}
