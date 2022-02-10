@@ -65,7 +65,6 @@ private:
 	std::pair<std::string, std::string> parseCmd(std::string &Cmd);
 	void proceedCmd(std::pair<std::string, std::string> Cmd, Client *User);
     void serverLog(Client *that, std::string const & ReceivedMessage);
-    void sendMsg(Client *From, Client *To);
 
 public:
 	Server(string const & Port, std::string const & Password);
@@ -88,6 +87,7 @@ public:
 private:
 	friend class PASS;
 	friend class QUIT;
+	friend class SQUIT;
 	friend class PING;
 	friend class PONG;
 	friend class INVITE;

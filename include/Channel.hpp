@@ -26,14 +26,10 @@ public:
 	~Channel() {}
 	
 	std::string const &getTopic() const;
-	void setTopic(std::string const & Topic);
 	std::string const &getChannelName() const { return _ChannelName; }
 	void	removeClient(Client *whom);
 	bool	isOnChannel(Client *whom) const;
 	std::set<Client *>::size_type getCountClients();
-	void	setChannelName(
-		Client *who,
-		std::string const & newNameChannel);
 	void replyToAllMembers(std::string msg, Client * sender = NULL);
 	//* Ban!!
 	void addToBan(std::string const &BanMask);

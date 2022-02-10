@@ -252,6 +252,7 @@ std::pair<std::string, std::string> Server::parseCmd(std::string &Cmd)
 		pair_Second = Cmd.substr(pos_WordEnd);
 	}
 	std::pair<std::string, std::string> Value(pair_First, pair_Second);
+    std::transform(Value.first.begin(), Value.first.end(), Value.first.begin(), toupper);
 	return Value;
 }
 

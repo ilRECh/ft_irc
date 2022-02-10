@@ -13,7 +13,7 @@ public:
         if (_Arguments.size() < 2) {
             return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
         }
-        if (_Arguments[0] not_eq _Server.getServerAddrInfo()) {
+        if (_Arguments[0] not_eq _Server._Name) {
             return _Initiator->updateReplyMessage(ERR_NOSUCHSERVER(_Arguments[0]));
         } else if (not _Server.getModeIsExist(_Initiator, 'o')) {
             return _Initiator->updateReplyMessage(ERR_NOPRIVILEGES);

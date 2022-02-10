@@ -41,9 +41,6 @@ public:
             UserName = "~" + RemoveAsterisks;
         }
         _Initiator->_UserName = UserName;
-        // _Initiator->_HostName = _Arguments[1]; UserName is omitted by server, because we freaking know your IP!
-                                                // I will fuck you, knigga, I know your IP!
-        _Initiator->_ServerName = _Arguments[2];
         _Initiator->_RealName = _Arguments[3];
         if (not _Initiator->_Registration.IsRegistered and 
             _Initiator->_PasswordCorrect and not _Initiator->_NickName.empty()) {

@@ -18,7 +18,6 @@ class TimeStamp;
 
 class Client {
 private:
-	TimeStamp _time;
 	Client(Client& that);
 	Client& operator=(Client& that);
 	Channel *	_lastJoin;
@@ -29,7 +28,6 @@ private:
 	std::string _RealName;
     std::string _Away;
 	std::string _HostName;
-	std::string _ServerName;
 	struct registration_s {
 		registration_s()
 			:	IsRegistered(false) {}
@@ -49,8 +47,7 @@ private:
 public:
 	Client(int const Fd, std::string HostName);
 	~Client() {}
-	
-	bool operatornot_eq(const Client& that) const;
+
 	bool operator==(const Client& that) const;
 
 	int const _Fd;
@@ -60,9 +57,6 @@ public:
 	
 	// * get activity
 	TimeStamp const & getLastActivity() const;
-
-	//	* get|set  invite Channels
-	bool isOnChannel(Channel * channel);
 
 	//	* get Registered
 	bool unregisteredShouldDie() const;
@@ -94,32 +88,17 @@ private:
 	friend class OPER;
 	friend class PASS;
 	friend class QUIT;
-	friend class SERVER;
 	friend class Server;
 	friend class SQUIT;
 	friend class USER;
-	friend class ERROR;
 	friend class KILL;
 	friend class PING;
 	friend class PONG;
 	friend class AWAY;
 	friend class ISON;
-	friend class REHASH;
-	friend class RESTART;
-	friend class SUMMON;
-	friend class USERHOST;
-	friend class USERS;
-	friend class WALLOPS;
 	friend class NOTICE;
 	friend class PRIVMSG;
 	friend class ADMIN;
-	friend class CONNECT;
-	friend class INFO;
-	friend class LINKS;
-	friend class STATS;
-	friend class TIME;
-	friend class TRACE;
-	friend class VERSIONS;
 	friend class WHO;
 	friend class WHOIS;
 	friend class WHOWAS;
