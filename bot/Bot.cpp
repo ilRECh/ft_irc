@@ -120,7 +120,7 @@ void Bot::Parse() {
 void Bot::Proceed() {
     switch(_CurrentIncomingType) {
         case PRIVMSG: {
-            static bool isGoodBye = false;
+            bool isGoodBye = false;
             size_t MessagePos = _IncomingBuffer.rfind(':');
             std::string MessageGet;
             if (MessagePos != _IncomingBuffer.npos and
