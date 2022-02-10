@@ -165,8 +165,10 @@ void Bot::Proceed() {
             if (isGoodBye) {
                 if (not _CurrentChannel.empty()) {
                     updateReplyMessage("PART " + _CurrentChannel);
+                    _CurrentChannel.clear();
+                } else {
+                    updateReplyMessage("QUIT :So long, pal!");
                 }
-                updateReplyMessage("QUIT :So long, pal!");
             }
         } break ;
         case PING: {
