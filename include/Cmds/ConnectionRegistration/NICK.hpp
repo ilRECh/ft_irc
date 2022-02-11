@@ -44,7 +44,7 @@ public:
         if (not _Initiator->_Registration.IsRegistered and 
             _Initiator->_PasswordCorrect and not _Initiator->_RealName.empty()) {
             _Initiator->_Registration.IsRegistered = true;
-            _Initiator->updateReplyMessage(RPL_MOTDSTART(_Server.getServerAddrInfo()));
+            _Initiator->updateReplyMessage(RPL_MOTDSTART(SERVER_NAME));
             _Initiator->updateReplyMessage(RPL_MOTD(std::string("Privet peer")));
             _Initiator->updateReplyMessage(RPL_ENDOFMOTD);
         }

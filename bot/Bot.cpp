@@ -2,7 +2,7 @@
 
 #define AUTH_REPLY "PASS " + _PasswordToServer + "\r\n"\
         "NICK " + _Name + "\r\n"\
-        "USER * * * :I'm alive! YES, I AM!\r\n"
+        "USER Bot Simple Bot :I'm alive! YES, I AM!\r\n"
 
 static void Error(std::string ErrorMsg) {
     std::cout << "Fatal error: " << ErrorMsg << std::endl;
@@ -22,6 +22,44 @@ static std::string GoodbyeMessages[] = {
     "See ya",
     "Bye",
     "Poka",
+};
+
+static std::string JokeMessages[] = {
+    "joke",
+    "анекдот"
+};
+
+static std::string Jokes[][20] = {
+    {"Приходит к мудрецу глупец и говорит: \"Почему все говорят, что надо жениться на девственнице?\"",
+"Мудрец протягивает ему 2 конфеты - 1 в блестящем фантике а другую уже раскрытую, и говорит: \"Ну вот какую ты выберешь?\"",
+"- Конечно раскрытую!",
+"- Но почему?",
+"- Так кто его знает что там под фантиком - может какашка, а тут все понятно.",
+"И сказал ему мудрец: \"Иди на хуй, такую притчу испортил!\"" },
+{"-чувак, а у нас в городе есть пингвины ростом в 170?",
+"-нет...",
+"-блять, значит монашку сбил"},
+{"Почему неудобно спать в бетономешалке?.",
+".",
+"." ,
+"." ,
+"." ,
+"." ,
+"." ,
+"." ,
+"." ,
+"." ,
+"." ,
+"." ,
+"." ,
+"." ,
+"." ,
+"Бетон мешает"},
+{"Студент спрашивает профессора:",
+"- Объясните, профессор, значение слова \"дилема\".",
+"После недолгого раздумья профессор:",
+"- Ну, смотрите.  Представьте, что вы лежите посреди большой кровати  и слева от вас прекрасная молодая полногрудая красавица, а справа гомосек.",
+"Представели? А теперь к дилеме: К кому Вы повернётесь спиной ?"}
 };
 
 bool Bot::find(std::string *arr, int size, std::string const &ToFind) {
@@ -127,6 +165,7 @@ void Bot::Proceed() {
                 MessagePos != _IncomingBuffer.length() - 1) {
                 MessageGet = _IncomingBuffer.substr(MessagePos + 1);
             }
+            std::list<std::string> TotalMessage;
             if (Bot::find(HelloMessages, 4, MessageGet) and
                 MessageGet.find(_Name) not_eq MessageGet.npos) {
                 std::srand(std::time(NULL));
@@ -136,8 +175,15 @@ void Bot::Proceed() {
                 std::srand(std::time(NULL));
                 updateReplyMessage(" :" + GoodbyeMessages[std::rand() % 5] + "!");
                 isGoodBye = true;
+            } else if (Bot::find(JokeMessages, 2, MessageGet) and
+                MessageGet.find(_Name) not_eq MessageGet.npos) {
+                std::srand(std::time(NULL));
+                std::string *Joke = Jokes[std::rand() % 4];
+                for (size_t i = 0; i < 20 and not Joke[i].empty(); ++i) {
+                    TotalMessage.push_back(" :" + Joke[i] + "\r\n");
+                }
             } else {
-                updateReplyMessage(" : Wanna play a game?");
+                updateReplyMessage(" : *Голосом Антохи* - Хошь анек?");
             }
             size_t FirstSpacePos = _IncomingBuffer.find(' ');
             std::string WhoSent;
@@ -161,7 +207,13 @@ void Bot::Proceed() {
                     Where = _IncomingBuffer.substr(Sharp, SymbolAfterChannelName - Sharp);
                 }
             }
-            _ReplyMessage = "NOTICE " + (Where.empty() ? WhoSent : Where) + _ReplyMessage;
+            if (not TotalMessage.empty()) {
+                for (std::list<std::string>::iterator i = TotalMessage.begin(); i != TotalMessage.end(); ++i) {
+                    _ReplyMessage += "NOTICE " + (Where.empty() ? WhoSent : Where) + *i;
+                }
+            } else {
+                _ReplyMessage = "NOTICE " + (Where.empty() ? WhoSent : Where) + _ReplyMessage;
+            }
             if (isGoodBye) {
                 if (not _CurrentChannel.empty()) {
                     updateReplyMessage("PART " + _CurrentChannel);

@@ -12,10 +12,6 @@ bool Client::operator==(const Client& that) const {
 	return _UserName == that._UserName;
 }
 
-bool Client::operatornot_eq(const Client& that) const {
-	return _UserName not_eq that._UserName;
-}
-
 bool Client::unregisteredShouldDie() const {
 	if (not _Registration.IsRegistered
 		and _Registration.Time.hasTimePassed(MAY_BE_UNREGISTERED_seconds)) {
@@ -51,12 +47,8 @@ TimeStamp const & Client::getLastActivity() const{
 	return std::max(_Activity.LastResponse, _Activity.LastPING);
 }
 
-bool Client::isOnChannel(Channel * channel){
-	return _Channels.find(channel) not_eq _Channels.end();
-}
-
 bool Client::updateReplyMessage(std::string const & Msg, std::string const & From) {
-	_ReplyMessage += ":" + From + Msg + "\r\n";
+	_ReplyMessage += ":" + From + Msg + "\n";
     if (!_Away.empty()){
         return 1;
 	}

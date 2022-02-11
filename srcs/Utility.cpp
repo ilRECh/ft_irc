@@ -18,34 +18,6 @@ std::vector<std::string> ft::split(
     return ret;
 }
 
-bool isNick(std::string const & value) {
-    return value.find("NICK") not_eq value.npos;
-}
-bool isUser(std::string const & value) {
-    return value.find("USER") not_eq value.npos;
-}
-std::vector<std::string> ft::splitByCmds(
-        std::string const& tosplit,
-        std::string const& DelimiterWord) {
-    std::vector<std::string> ret;
-    size_t pos_start = 0;
-    size_t pos_end = tosplit.find(DelimiterWord, pos_start);
-
-    while (true) {
-        if (pos_end not_eq tosplit.npos) {
-            ret.push_back(tosplit.substr(pos_start, pos_end - pos_start));
-        } else {
-            if (tosplit[pos_start]) {
-                ret.push_back(tosplit.substr(pos_start, tosplit.length() - pos_start));
-            }
-            break ;
-        }
-        pos_start = pos_end + DelimiterWord.length();
-        pos_end = tosplit.find(DelimiterWord, pos_start);
-    }
-    return ret;
-}
-
 void ft::deleteSpaces(std::string &string, std::string const &symbolsToDelete)
 {
     size_t strBegin = string.find_first_not_of(symbolsToDelete);
