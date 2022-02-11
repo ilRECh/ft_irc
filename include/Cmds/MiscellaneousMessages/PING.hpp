@@ -13,7 +13,7 @@ public:
     virtual int run(){
         if (NULL == _Initiator) {
             _Target->_Activity.WaitingForPONG = true;
-            return _Target->updateReplyMessage(" PING " + _Server._Name);
+            return _Target->updateReplyMessage(" PING :" + _Server._Name);
         }
         return 0;
     }
