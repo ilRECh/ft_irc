@@ -181,7 +181,7 @@ void Server::readerClients()
 			FD_CLR((*Client)->_Fd, &fdsCopy);
 			char Buffer[SIZE] = { 0 };
 			ssize_t ReadByte = 0;
-			ReadByte = recv((*Client)->_Fd, Buffer, SIZE, 0);
+			ReadByte = recv((*Client)->_Fd, Buffer, SIZE - 1, 0);
 			if (ReadByte < 0) {
 				continue ;
 			}
@@ -271,7 +271,6 @@ void Server::replyToClients() {
 			QUIT q(*this);
 			q.setQuitInitiator(*User);
 			if ((*User)->inactiveShouldDie()) {
-				q.isNeedToBeSentToInitiatorOnly();
 				q.setArgument(":Smells Like He's Spirit. B-gone, ghost.");
 				q.run();
 			} else if ((*User)->unregisteredShouldDie()) {
