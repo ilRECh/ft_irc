@@ -112,7 +112,7 @@ Server::~Server(void)
 {
 	for (std::set<Client *>::iterator it = _Clients.begin();
 		it not_eq _Clients.end(); ++it) {
-		std::string Reply = "QUIT :" + _DyingMessage;
+		std::string Reply = ":" + _Name + " QUIT " + (*it)->getNickName() + " :" + _DyingMessage;
 		send((*it)->_Fd, Reply.c_str(), Reply.length(), MSG_NOSIGNAL);
 		close((*it)->_Fd);
 		delete *it;
