@@ -20,6 +20,7 @@ private:
 public:
 	Channel(
 		std::string const & nameChannel,
+		std::string const & key,
 		Client *userAdmin,
 		Server *Server,
 		uint maxUserLimit = std::numeric_limits<unsigned int>::max());
