@@ -33,6 +33,7 @@ ClientJoined:
 			for (std::set<Client *>::iterator EachNick = chan->_Clients.begin(); EachNick not_eq chan->_Clients.end(); ++EachNick) {
 				AllNicks += (chan->getModeIsExist(*EachNick, 'o') ? "@" : "") + (*EachNick)->_NickName + ' ';
 			}
+			_Initiator->updateReplyMessage(RPL_TOPIC(chan->getChannelName(), chan->_Topic));
 			_Initiator->updateReplyMessage(RPL_NAMREPLY(chan->getChannelName()) + " :" + AllNicks);
 			_Initiator->updateReplyMessage(RPL_ENDOFNAMES(chan->getChannelName()));
 		} else if (chan->_Clients.size() >= chan->_maxUserLimit) {
