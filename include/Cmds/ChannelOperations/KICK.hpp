@@ -13,6 +13,15 @@ public:
         if (_Arguments.size() < 2) {
             return _Initiator->updateReplyMessage(ERR_NEEDMOREPARAMS(_Name));
         }
+        _Argument.clear();
+        if (_Arguments.size() > 2)
+        {
+            std::stringstream sscomments;
+            for(uint i = 2; i < _Arguments.size() - 1; ++i)
+                sscomments << _Arguments[i] << " ",
+            sscomments << _Arguments.back();
+            _Argument = sscomments.str();
+        }
         ft::deleteSpaces(_Arguments[0], SPACE_SYMBOLS);
         ft::deleteSpaces(_Arguments[1], SPACE_SYMBOLS);
         if (_Arguments[0].find_first_of("&#"))  // Если в начале нет (# or &)
@@ -25,10 +34,10 @@ public:
         Client * client = chan->getClient(_Arguments[1]);
         if (not client)
             return _Initiator->updateReplyMessage(ERR_NOTONCHANNEL(chan->getChannelName()));
-        if (_Arguments.size() > 2)
-            chan->replyToAllMembers(_Initiator->getFull() + chan->getChannelName() + client->_NickName + " :" + _Arguments[2]);
+        if (not _Argument.empty())
+            chan->replyToAllMembers(_Initiator->getFull() + " " + chan->getChannelName() + " " + client->_NickName + " :" + _Argument);
         else
-            chan->replyToAllMembers(_Initiator->getFull() + chan->getChannelName() + client->_NickName + " :" + client->_NickName);
+            chan->replyToAllMembers(_Initiator->getFull() + " " + chan->getChannelName() + " " + client->_NickName + " :" + client->_NickName);
         client->_Channels.erase(chan);
         chan->removeClient(client);
         return 0;
