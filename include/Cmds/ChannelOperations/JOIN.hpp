@@ -20,6 +20,9 @@ private:
 		Channel * chan = _Server.getChannelByChannelName(nameChannel);
 		if (not chan) {
 			chan = new Channel(nameChannel, key, _Initiator, &_Server);
+			if (not key.empty()) {
+				chan->setMode(chan, 'k');
+			}
 			_Server.pushBack(chan);
 ClientJoined:
 			_Initiator->_Channels.insert(chan);
@@ -36,7 +39,7 @@ ClientJoined:
 			_ChannelIsFull.push_back(nameChannel);
 		} else if (chan->getModeIsExist(chan, 'i') and not chan->isInvited(_Initiator)) {
 			_InviteOnlyChannel.push_back(nameChannel);
-		} else if (not key.empty() and chan->_Key not_eq key) {
+		} else if (chan->getModeIsExist(chan, 'k') and chan->_Key not_eq key) {
 			_BadChannelKey.push_back(nameChannel);
 		} else if (chan->isBanned(_Initiator->getFull())) {
 			_BannedFromChannel.push_back(nameChannel);
