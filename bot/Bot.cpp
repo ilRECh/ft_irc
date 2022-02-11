@@ -59,7 +59,11 @@ static std::string Jokes[][20] = {
 "- Объясните, профессор, значение слова \"дилема\".",
 "После недолгого раздумья профессор:",
 "- Ну, смотрите.  Представьте, что вы лежите посреди большой кровати  и слева от вас прекрасная молодая полногрудая красавица, а справа гомосек.",
-"Представели? А теперь к дилеме: К кому Вы повернётесь спиной ?"}
+"Представели? А теперь к дилеме: К кому Вы повернётесь спиной ?"},
+{
+    "Если в ЛГБТ все буквы сместить на одну назад по алфавиту - ",
+    "получится КВАС"
+}
 };
 
 bool Bot::find(std::string *arr, int size, std::string const &ToFind) {
@@ -178,7 +182,7 @@ void Bot::Proceed() {
             } else if (Bot::find(JokeMessages, 2, MessageGet) and
                 MessageGet.find(_Name) not_eq MessageGet.npos) {
                 std::srand(std::time(NULL));
-                std::string *Joke = Jokes[std::rand() % 4];
+                std::string *Joke = Jokes[std::rand() % 5];
                 for (size_t i = 0; i < 20 and not Joke[i].empty(); ++i) {
                     TotalMessage.push_back(" :" + Joke[i] + "\r\n");
                 }
