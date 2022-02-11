@@ -192,7 +192,12 @@ private:
                     if (_Arguments[1][0] != '-')
                         targetChannel->setMode(targetChannel, it->first);
                     else
+                    {
+                        if (it->first == 'i') {
+                            targetChannel->_InviteClients.clear();
+                        }
                         targetChannel->unsetMode(targetChannel, it->first);
+                    }
                     rplModes += it->first;
                 }
                     break;

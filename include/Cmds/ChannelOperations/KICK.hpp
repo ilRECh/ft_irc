@@ -26,9 +26,9 @@ public:
         if (not client)
             return _Initiator->updateReplyMessage(ERR_NOTONCHANNEL(chan->getChannelName()));
         if (_Arguments.size() > 2)
-            chan->replyToAllMembers(_Initiator->getFull() + chan->getChannelName() + client->_NickName + " :" + _Arguments[2]);
+            chan->replyToAllMembers(_Initiator->getFull() + " " + chan->getChannelName() + " " + client->_NickName + " :" + _Arguments[2]);
         else
-            chan->replyToAllMembers(_Initiator->getFull() + chan->getChannelName() + client->_NickName + " :" + client->_NickName);
+            chan->replyToAllMembers(_Initiator->getFull() + " " + chan->getChannelName() + " " + client->_NickName + " :" + client->_NickName);
         client->_Channels.erase(chan);
         chan->removeClient(client);
         return 0;
