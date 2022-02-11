@@ -29,17 +29,23 @@ public:
         Channel * chan = _Server.getChannelByChannelName(_Arguments[0]);
         if (not chan)
             return _Initiator->updateReplyMessage(ERR_NOSUCHCHANNEL(_Arguments[0]));
+        if (not chan->getClient(_Initiator->_NickName))
+            return _Initiator->updateReplyMessage(ERR_NOTONCHANNEL(chan->getChannelName()));
         if (not chan->getModeIsExist(_Initiator, 'o'))
             return _Initiator->updateReplyMessage(ERR_CHANOPRIVSNEEDED(_Arguments[0]));
-        Client * client = chan->getClient(_Arguments[1]);
-        if (not client)
-            return _Initiator->updateReplyMessage(ERR_NOTONCHANNEL(chan->getChannelName()));
-        if (not _Argument.empty())
-            chan->replyToAllMembers(_Initiator->getFull() + " " + chan->getChannelName() + " " + client->_NickName + " :" + _Argument);
-        else
-            chan->replyToAllMembers(_Initiator->getFull() + " " + chan->getChannelName() + " " + client->_NickName + " :" + client->_NickName);
-        client->_Channels.erase(chan);
-        chan->removeClient(client);
+        std::vector<std::string> ClientsToKick = ft::split(_Arguments[1], ",");
+        for (std::vector<std::string>::iterator EachClientToKick = ClientsToKick.begin();
+            EachClientToKick != ClientsToKick.end(); ++EachClientToKick) {
+            Client * client = chan->getClient(*EachClientToKick);
+            if (not client)
+                return _Initiator->updateReplyMessage(ERR_NOSUCHNICK(client->_NickName));
+            if (not _Argument.empty())
+                chan->replyToAllMembers(_Initiator->getFull() + " KICK " + chan->getChannelName() + " " + client->_NickName + " :" + _Argument);
+            else
+                chan->replyToAllMembers(_Initiator->getFull() + " KICK " + chan->getChannelName() + " " + client->_NickName + " :" + client->_NickName);
+            client->_Channels.erase(chan);
+            chan->removeClient(client);
+        }
         return 0;
     }
 };/*
@@ -57,7 +63,7 @@ public:
 
            ERR_NEEDMOREPARAMS              ERR_NOSUCHCHANNEL
            ERR_BADCHANMASK                 ERR_CHANOPRIVSNEEDED
-           ERR_NOTONCHANNEL
+           ERR_NOTONCHANNEL                ERR_NOSUCKNICK
 
    Examples:
 
