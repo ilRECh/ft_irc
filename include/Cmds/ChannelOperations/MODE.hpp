@@ -119,6 +119,7 @@ private:
         if (not targetChannel->getModeIsExist(_Initiator, 'o'))
             return _Initiator->updateReplyMessage(ERR_CHANOPRIVSNEEDED(_Arguments[0]));
         std::list<std::pair<char, std::string> >::iterator it = modes.begin();
+startWhile:
         while(it != modes.end()) {
             switch (it->first) {
                 case 'o':
@@ -127,7 +128,7 @@ private:
                         if (not targetNick){
                             _Initiator->updateReplyMessage(ERR_NOSUCHNICK(it->second));
                             it = modes.erase(it);
-                            continue;
+                            goto startWhile;
                         }
                         if (_Arguments[1][0] != '-')
                             targetChannel->setMode(targetNick, it->first);
@@ -155,9 +156,9 @@ private:
                          ++EachBanMask){
                         if (it->second == *EachBanMask){
                             it = modes.erase(it);
-                            continue;
-                        }
-                    }
+                            goto startWhile;
+                    	}
+					}
                     if (_Arguments[1][0] != '-')
                         targetChannel->addToBan(it->second);
                     else
@@ -171,7 +172,7 @@ private:
                         if (not targetChannel->_Key.empty()){
                             _Initiator->updateReplyMessage(ERR_KEYSET(_Arguments[0]));
                             it = modes.erase(it);
-                            continue;
+                            goto startWhile;
                         }
                         targetChannel->_Key = it->second;
                         targetChannel->setMode(targetChannel, it->first);
@@ -206,7 +207,8 @@ private:
             }
             it++;
         }
-        _Initiator->updateReplyMessage(" MODE " + _Arguments[0] + " " + rplModes + rplArgs, _Initiator->getFull());
+		if (rplModes.size() > 1)
+        	targetChannel->replyToAllMembers(_Initiator->getFull() + " MODE " + _Arguments[0] + " " + rplModes + rplArgs);
         return 0;
     }
     int procClient() {
