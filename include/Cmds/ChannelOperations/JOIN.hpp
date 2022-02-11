@@ -19,7 +19,7 @@ private:
 	void join(std::string & nameChannel, std::string & key){
 		Channel * chan = _Server.getChannelByChannelName(nameChannel);
 		if (not chan) {
-			chan = new Channel(nameChannel, _Initiator, &_Server);
+			chan = new Channel(nameChannel, key, _Initiator, &_Server);
 			_Server.pushBack(chan);
 ClientJoined:
 			_Initiator->_Channels.insert(chan);

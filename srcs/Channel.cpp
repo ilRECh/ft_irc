@@ -8,12 +8,14 @@
 
 Channel::Channel(
 	string const & nameChannel,
+	string const & key,
 	Client * userAdmin,
 	Server *Server,
 	uint maxUserLimit)
 	:	Modes(this),
 		_maxUserLimit(maxUserLimit),
 		_ChannelName(nameChannel),
+		_Key(key),
 		_Server(Server),
 		_ToRemove(false) {
 	_Clients.insert(userAdmin);
