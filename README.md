@@ -28,7 +28,7 @@ i.e.
 ./build/apps/ircserv 8888 1234
 ```
 #### Use:
-You must use one of the existing IRC client. For example *Adium* or *Pidgin* were used to test the IRC server.
+You must use one of the existing IRC client. For example **Adium** or **Pidgin** were used to test the IRC server.
 
 ## In collaboration
 [csamuro](https://github.com/cheloveknikitaa)<br>
