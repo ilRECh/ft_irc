@@ -13,7 +13,7 @@ So, let's learn the first messenger protocol, shall we?<br>
 #### Requirements:
 - MacOS/Linux
 - make
-- gcc
+- g++
 
 #### Build:
 ```
