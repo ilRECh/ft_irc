@@ -542,8 +542,6 @@ the version or further version details.
 
 #define RPL_WHOREPLY(_Channel, _User, Host, _Server, _Nick, H_or_G, optionalAsterisk, optional_At_or_Plus, Hopcount, RealName) \
 	" 352 " + _Initiator->_NickName + " " + _Channel + " " + _User + " " + Host + " " + _Server + " " + _Nick + " " + H_or_G + optionalAsterisk + optional_At_or_Plus + " :" + Hopcount + " " + RealName
-// #define RPL_WHOREPLY(_Channel, _User, Host, _Server, _Nick, H_or_G, optionalAsterisk, optional_At_or_Plus, Hopcount, RealName) \
-// 	" 352 " + _Initiator->_NickName + " " + _Channel + " " + _User + " " + Host + " " + _Server + " " + _Nick + " " + H_or_G + optionalAsterisk + optional_At_or_Plus + " :" + Hopcount + " " + RealName
 /*
 "<channel> <user> <host> <server> <nick> \
 <H|G>[*][@|+] :<hopcount> <real name>"
