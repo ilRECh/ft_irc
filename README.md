@@ -21,12 +21,15 @@ make
 ```
 #### Run:
 ```
-./a.out
+./build/apps/ircserv [port] [password]
+```
+i.e.
+```
+./build/apps/ircserv 8888 1234
 ```
 #### Use:
-```
-nc 
-```
+You must use one of the existing IRC client. For example *Adium* or *Pidgin* were used to test the IRC server.
+
 ## In collaboration
 [csamuro](https://github.com/cheloveknikitaa)<br>
 [caugusta](https://github.com/3Danger)
