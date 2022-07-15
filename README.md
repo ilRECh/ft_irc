@@ -27,6 +27,6 @@ make
 ```
 nc 
 ```
-Collaborated with:<br>
+## In collaboration
 [csamuro](https://github.com/cheloveknikitaa)<br>
 [caugusta](https://github.com/3Danger)
