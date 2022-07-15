@@ -231,7 +231,7 @@ void Server::proceedCmd(std::pair<std::string, std::string> Cmd, Client *_Initia
             }
         }
         _Initiator->updateReplyMessage(ERR_UNKNOWNCOMMAND(_Initiator->getNickName(), Cmd.first));
-    } catch (std::exception) {
+    } catch (std::exception&) {
         throw;
     } catch (...) {}
 }
