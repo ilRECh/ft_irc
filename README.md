@@ -36,5 +36,5 @@ i.e.
 You must use one of the existing IRC client. For example **Adium** or **Pidgin** were used to test the IRC server.
 
 ## In collaboration
-[csamuro](https://github.com/cheloveknikitaa)<br>
-[caugusta](https://github.com/3Danger)
+[csamuro](https://github.com/3Danger)<br>
+[caugusta](https://github.com/cheloveknikitaa)
